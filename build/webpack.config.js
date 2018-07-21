@@ -4,7 +4,6 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const portfinder = require('portfinder')
 const isDev = process.env.NODE_ENV === "dev"
 /**基本参数*/
@@ -38,17 +37,11 @@ let config = {
       {test: /\.ts$/, loader: "ts-loader"},
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: ["css-loader", "postcss-loader"]
-        })
+        use:["style-loader","css-loader","postcss-loader"]
       },
       {
         test: /\.less/,
-        use: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: ["css-loader", "postcss-loader", "less-loader"]
-        })
+        use:["style-loader","css-loader","postcss-loader","less-loader"]
       },
       {test: /\.html$/, loader: "text-loader"},
       {
@@ -143,7 +136,6 @@ else {
       ignore: ['.*']
     }
     ]),
-    new ExtractTextPlugin('css/[name].[contenthash:7].css'),
     new webpack.optimize.CommonsChunkPlugin({
       name: "common",
       minChunks: 2,
