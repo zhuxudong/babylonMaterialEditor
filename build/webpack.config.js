@@ -13,7 +13,7 @@ const base = require('./base')
 let config = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: ["babel-polyfill", "./src/app.ts"]
+    app: ["./src/app.ts"]
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
