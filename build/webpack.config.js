@@ -16,7 +16,7 @@ let config = {
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
-    filename: "js/[name].[hash].js",
+    filename: "js/[name].js",
     publicPath: base.publicPath,
     chunkFilename: path.join('js/[id].[chunkhash].js'),  /**require.ensure等分块打包*/
     library:"babylonjsMaterialEditor",
