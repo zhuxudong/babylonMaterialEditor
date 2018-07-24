@@ -12,24 +12,24 @@ const base = require('./base')
 let config = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: ["./src/app.ts"]
+    client: ["./src/client.ts"]
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
-    filename: "js/[name].js",
+    filename: "[name].js",
     publicPath: base.publicPath,
-    chunkFilename: path.join('js/[id].[chunkhash].js'),  /**require.ensure等分块打包*/
-    library:"babylonjsMaterialEditor",
-    libraryTarget:"umd"
+    chunkFilename: path.join('js/[id].[chunkhash].js'), /**require.ensure等分块打包*/
+    library: "babylonjsMaterialEditor",
+    libraryTarget: "umd"
   },
   resolve: {
-    extensions: ['ts','.js', '.json'],
+    extensions: ['ts', '.js', '.json'],
     alias: {
       '@': path.resolve(__dirname, '../src')
     }
   },
   externals: {
-  	"babylonjs":"BABYLON"
+    "babylonjs": "BABYLON"
   },
   module: {
     rules: [
@@ -37,11 +37,11 @@ let config = {
       {test: /\.ts$/, loader: "ts-loader"},
       {
         test: /\.css$/,
-        use:["style-loader","css-loader","postcss-loader"]
+        use: ["style-loader", "css-loader", "postcss-loader"]
       },
       {
         test: /\.less/,
-        use:["style-loader","css-loader","postcss-loader","less-loader"]
+        use: ["style-loader", "css-loader", "postcss-loader", "less-loader"]
       },
       {test: /\.html$/, loader: "text-loader"},
       {
@@ -79,7 +79,8 @@ let config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/temp.html')
+      template: path.resolve(__dirname, '../src/temp.html'),
+      filename: "demo.html"
     })
   ]
 }
@@ -134,6 +135,11 @@ else {
       from: path.resolve(__dirname, '../', base.copyDir),
       to: base.copyDir,
       ignore: ['.*']
+    }
+    ]),
+    new CopyWebpackPlugin([{
+      from: path.resolve(__dirname, '../src/server.js'),
+      to: ""
     }
     ]),
     new webpack.optimize.CommonsChunkPlugin({
