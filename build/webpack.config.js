@@ -104,7 +104,11 @@ if (isDev) {
   config.plugins.push(
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin(),
-    new webpack.NamedModulesPlugin()
+    new webpack.NamedModulesPlugin(),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, '../demo/template.html'),
+      filename: "index.html"
+    })
   )
   module.exports = new Promise((resolve, reject) => {
     portfinder.basePort = process.env.PORT || config.devServer.port
