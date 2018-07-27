@@ -12,13 +12,14 @@ const base = require('./base')
 let config = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    client: ["./src/client.ts"]
+    client: "./src/client.ts",
+    "demo/demo": "./demo/demo.ts"
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
     filename: "[name].js",
     publicPath: base.publicPath,
-    chunkFilename: path.join('js/[id].[chunkhash].js'), /**require.ensure等分块打包*/
+    chunkFilename: path.join('js/[id].[chunkhash].js'),
     library: "babylonjsMaterialEditor",
     libraryTarget: "umd"
   },
@@ -79,7 +80,7 @@ let config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/temp.html'),
+      template: path.resolve(__dirname, '../demo/template.html'),
       filename: "demo.html"
     })
   ]
