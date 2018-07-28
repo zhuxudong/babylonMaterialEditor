@@ -3,37 +3,107 @@
  */
 const fs = require('fs-extra');
 const path = require('path');
-const os = require('os');
+const portfinder = require('portfinder')
+const server = require('http').createServer();
+const io = require("socket.io")(server)
 
 const config = {
-  context: "",
+  // create public material library
   public: {
-
-  },
-  private: {
+    context: "./static",
     materialLibPath: "materialLib",
-    skyboxPath: path.join(config.private.materialLibPath, "skyboxs"),
-    texturePath: path.join(config.private.materialLibPath, "textures")
-  }
-
-  // USERINFOFIX: "./users",
-  // CLIENTFIX: "../3d/"
+    skyboxPath: "skyboxs",
+    texturePath: "textures"
+  },
+  // create private material library
+  private: {
+    context: "./static/model",
+    materialLibPath: "materialLib",
+    skyboxPath: "skyboxs",
+    texturePath: "textures"
+  },
+  // save userInfo on config.userInfoPath
+  // userInfo contains that who is online,editing,history and so on
+  userInfoPath: "./static/users",
+  // socket port
+  port: 2049,
+  // private.context+app
+  app: "demo"
 }
 
+/**
+ * change default config by node's args...
+ * node server.js -p 2048 -a demo
+ * */
+function checkArgs() {
+  return new Promise((resolve, reject) => {
+    //exclude node server.js
+    const args = process.argv.slice(2)
+    const presets = {
+      port: ["-p", "-port"],
+      app: ["-a", "app"]
+    }
+    args.forEach((arg, index) => {
+      for (let item in presets) {
+        let short = presets[item]
+        let shortIndex = 0
+        if ((shortIndex = short.indexOf(arg)) !== -1) {
+          let newArg = args[index + 1]
+          if (index + 1 > args.length - 1) {
+            reject("please input correct arg after " + presets[item][shortIndex])
+          }
+          if (item === "port") {
+            newArg -= 0
+          }
+          config[item] = newArg
+        }
+      }
+    })
+    resolve()
+  })
+}
 
-// //端口号，默认30
-// var PORT = process.argv[3] || 30;
-// var fs = require('fs');
-// var PATH = require('path');
-// var os = require('os');
-// var config = require('./config.js').server;
-// console.log(process.env.test)
-// //项目名字
-// var APPNAME = process.argv[2];
-// if (!APPNAME) {
-//   console.log("请输入客户端名字,如 node server.js park1")
-//   return false;
-// }
+/**
+ * ensure the valid socket port
+ * */
+function checkPort(port) {
+  return new Promise((resolve, reject) => {
+    portfinder.basePort = port;
+    portfinder.getPortPromise().then((port) => {
+      // `port` is guaranteed to be a free port
+      config.port = port;
+      resolve(port)
+    }).catch((err) => {
+      // Could not get a free port, `err` contains the reason.
+      reject(err)
+    })
+  })
+}
+
+function listen(port) {
+  console.log("------------------------")
+  console.log("socket is listening " + port + "......")
+  console.log("appPath:[" + path.resolve(__dirname, config.private.context, config.app) + "]")
+  console.log("publicMaterialLibPath:[" + path.resolve(__dirname, config.public.context, config.public.materialLibPath) + "]")
+  console.log("------------------------")
+  server.listen(port);
+  io.on('connection', (socket) => {
+    console.log("连接成功!")
+    socket.on("test", (msg) => {
+      console.log(msg)
+    })
+  })
+}
+
+checkArgs().then(() => {
+  return checkPort(config.port)
+}).then((port) => {
+  listen(port)
+}).catch((err) => {
+  console.log("something unexpected happened,exit......")
+  console.log(err)
+})
+
 // var server = require('http').createServer().listen(PORT);
 // var io = require("socket.io").listen(server);
 //
