@@ -13,7 +13,7 @@ let config = {
   context: path.resolve(__dirname, '../'),
   entry: {
     client: "./src/client.ts",
-    "demo/demo": "./demo/demo.ts"
+    "demo/demo": "./src/demo/demo.ts"
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
@@ -80,7 +80,7 @@ let config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../demo/template.html'),
+      template: path.resolve(__dirname, '../src/demo/template.html'),
       filename: "demo.html"
     })
   ]
@@ -106,7 +106,7 @@ if (isDev) {
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.NamedModulesPlugin(),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../demo/template.html'),
+      template: path.resolve(__dirname, '../src/demo/template.html'),
       filename: "index.html"
     })
   )
