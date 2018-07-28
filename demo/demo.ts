@@ -42,7 +42,7 @@ class Demo {
 
   initBg() {
     /**skybox*/
-    let hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("/static/obj/environment.dds", this.scene);
+    let hdrTexture = BABYLON.CubeTexture.CreateFromPrefilteredData("/static/model/demo/environment.dds", this.scene);
     let hdrSkybox = BABYLON.Mesh.CreateBox("bg", 500, this.scene);
     let skyboxMaterial = new BABYLON.PBRMaterial("bgMat", this.scene);
     skyboxMaterial.backFaceCulling = false;
@@ -56,13 +56,13 @@ class Demo {
     let ground = BABYLON.Mesh.CreateGround("ground", 250, 250, 30, this.scene)
     let grdMat = new BABYLON.StandardMaterial("ground_mat", this.scene);
     ground.material = grdMat
-    grdMat.opacityTexture = new BABYLON.Texture("/static/obj/backgroundGround.png", this.scene);
+    grdMat.opacityTexture = new BABYLON.Texture("/static/model/demo/backgroundGround.png", this.scene);
     grdMat.emissiveColor = new BABYLON.Color3(1, 1, 1)
     grdMat.alpha = .2;
   }
 
   loadMesh() {
-    BABYLON.SceneLoader.ImportMesh("", "/static/obj/", "MeetMat.obj", this.scene, (meshes: any) => {
+    BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes: any) => {
       console.log(meshes)
     })
   }
