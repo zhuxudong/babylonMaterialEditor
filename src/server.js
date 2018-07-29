@@ -4,8 +4,7 @@
 const fs = require('fs-extra');
 const path = require('path');
 const portfinder = require('portfinder')
-const server = require('http').createServer();
-const io = require("socket.io")(server)
+const io = require("socket.io")()
 
 const config = {
   // create public material library
@@ -86,7 +85,7 @@ function listen(port) {
   console.log("appPath:[" + path.resolve(__dirname, config.private.context, config.app) + "]")
   console.log("publicMaterialLibPath:[" + path.resolve(__dirname, config.public.context, config.public.materialLibPath) + "]")
   console.log("------------------------")
-  server.listen(port);
+  io.listen(port)
   io.on('connection', (socket) => {
     console.log("连接成功!")
     socket.on("test", (msg) => {
@@ -95,14 +94,14 @@ function listen(port) {
   })
 }
 
-checkArgs().then(() => {
-  return checkPort(config.port)
-}).then((port) => {
-  listen(port)
-}).catch((err) => {
-  console.log("something unexpected happened,exit......")
-  console.log(err)
-})
+
+checkArgs()
+  .then(() => checkPort(config.port))
+  .then(port => listen(port))
+  .catch((err) => {
+    console.log("something unexpected happened,exit......")
+    console.log(err)
+  })
 
 // var server = require('http').createServer().listen(PORT);
 // var io = require("socket.io").listen(server);
