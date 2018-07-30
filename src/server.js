@@ -15,19 +15,31 @@ const config = {
     texturePath: "textures"
   },
   // create private material library
-  private: {
+  app: {
     context: "./static/model",
+    // finalPath = private.app+private.app.appName
+    appName: "demo",
     materialLibPath: "materialLib",
     skyboxPath: "skyboxs",
-    texturePath: "textures"
+    texturePath: "textures",
+    // data contanis version and log
+    dataPath: 'editorData'
   },
   // save userInfo on config.userInfoPath
-  // userInfo contains that who is online,editing,history and so on
+  // userInfo contains account,password,userImg
   userInfoPath: "./static/users",
   // socket port
-  port: 2049,
-  // private.context+app
-  app: "demo"
+  port: 2049
+}
+const finalPath = {
+  appPath: '',
+  appSkyboxPath: '',
+  appTexturePath: '',
+  appDataPath: '',
+  publicPath: '',
+  publicSkyboxPath: '',
+  publicTexturePath: '',
+  userInfoPath: ''
 }
 
 /**
@@ -40,13 +52,16 @@ function checkArgs() {
     const args = process.argv.slice(2)
     const presets = {
       port: ["-p", "-port"],
-      app: ["-a", "app"]
+      "app.appName": ["-a", "app"]
     }
     args.forEach((arg, index) => {
       for (let item in presets) {
+        // -p
         let short = presets[item]
         let shortIndex = 0
         if ((shortIndex = short.indexOf(arg)) !== -1) {
+          //***
+          // -p 2049
           let newArg = args[index + 1]
           if (index + 1 > args.length - 1) {
             reject("please input correct arg after " + presets[item][shortIndex])
@@ -54,7 +69,17 @@ function checkArgs() {
           if (item === "port") {
             newArg -= 0
           }
-          config[item] = newArg
+          //split
+          let dst = config
+          let split = item.split(".")
+          split.forEach((item, index) => {
+            if (index + 1 === split.length) {
+              dst[item] = newArg
+            } else {
+              dst = dst[item]
+            }
+          })
+          //***
         }
       }
     })
@@ -71,7 +96,7 @@ function checkPort(port) {
     portfinder.getPortPromise().then((port) => {
       // `port` is guaranteed to be a free port
       config.port = port;
-      resolve(port)
+      resolve()
     }).catch((err) => {
       // Could not get a free port, `err` contains the reason.
       reject(err)
@@ -79,12 +104,18 @@ function checkPort(port) {
   })
 }
 
+function initFinalPath() {
+  finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
+  finalPath.appSkyboxPath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.skyboxPath);
+  finalPath.appTexturePath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.texturePath);
+  finalPath.appDataPath = path.resolve(finalPath.appPath, config.app.dataPath);
+  finalPath.publicPath = path.resolve(__dirname, config.public.context, config.public.materialLibPath);
+  finalPath.publicSkyboxPath = path.resolve(finalPath.publicPath, config.public.skyboxPath);
+  finalPath.publicTexturePath = path.resolve(finalPath.publicPath, config.public.texturePath);
+  finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath)
+}
+
 function listen(port) {
-  console.log("------------------------")
-  console.log("socket is listening " + port + "......")
-  console.log("appPath:[" + path.resolve(__dirname, config.private.context, config.app) + "]")
-  console.log("publicMaterialLibPath:[" + path.resolve(__dirname, config.public.context, config.public.materialLibPath) + "]")
-  console.log("------------------------")
   io.listen(port)
   io.on('connection', (socket) => {
     console.log("连接成功!")
@@ -94,12 +125,25 @@ function listen(port) {
   })
 }
 
+function consolePath() {
+  console.log("----------------------start--------------------------")
+  for (let item in finalPath) {
+    let path = finalPath[item];
+    console.log("*** " + item + ": [" + path + "]")
+  }
+  console.log("\n*** socket is listening " + config.port + "......")
+
+  // console.log("------------------------------------------------")
+
+}
 
 checkArgs()
   .then(() => checkPort(config.port))
-  .then(port => listen(port))
+  .then(() => initFinalPath())
+  .then(() => listen(config.port))
+  .then(() => consolePath())
   .catch((err) => {
-    console.log("something unexpected happened,exit......")
+    console.log("*** something unexpected happened,exit......")
     console.log(err)
   })
 
