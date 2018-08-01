@@ -30,7 +30,12 @@ let config = {
     }
   },
   externals: {
-    "babylonjs": "BABYLON"
+    babylonjs: {
+      commonjs: "babylonjs",
+      commonjs2: "babylonjs",
+      amd: "babylonjs",
+      root: "BABYLON"
+    }
   },
   module: {
     rules: [
