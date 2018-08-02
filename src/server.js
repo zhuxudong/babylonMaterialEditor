@@ -29,7 +29,7 @@ const config = {
   // userInfo contains account,password,userImg
   userInfoPath: "./static/users",
   // socket port
-  port: 2049
+  port: 3000
 }
 const finalPath = {
   appPath: '',
@@ -44,7 +44,7 @@ const finalPath = {
 
 /**
  * change default config by node's args...
- * node server.js -p 2048 -a demo
+ * node server.js -p 3000 -a demo
  * */
 function checkArgs() {
   return new Promise((resolve, reject) => {
@@ -61,7 +61,7 @@ function checkArgs() {
         let shortIndex = 0
         if ((shortIndex = short.indexOf(arg)) !== -1) {
           //***
-          // -p 2049
+          // -p 3000
           let newArg = args[index + 1]
           if (index + 1 > args.length - 1) {
             reject("please input correct arg after " + presets[item][shortIndex])
@@ -115,6 +115,7 @@ function initFinalPath() {
   finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath)
 }
 
+/**socket events*/
 function listen(port) {
   io.listen(port)
   io.on('connection', (socket) => {

@@ -1,4 +1,5 @@
 import * as BABYLON from "babylonjs"
+// import "./client.ts"
 
 declare let window: any
 
@@ -38,6 +39,7 @@ class Demo {
       this.engine.resize();
     });
     this.initBg();
+    this.loadMesh()
   }
 
   initBg() {
@@ -68,8 +70,5 @@ class Demo {
   }
 }
 
-/**初始化场景*/
 let demo = new Demo()
-/**导入模型*/
-demo.loadMesh()
 window.demo = demo

@@ -3,10 +3,10 @@
  */
 const fs = require('fs-extra');
 const path = require('path');
-const os = require('os');
 const portfinder = require('portfinder')
+const io = require("socket.io")()
 
-let config = {
+const config = {
   // create public material library
   public: {
     context: "./static",
@@ -15,39 +15,75 @@ let config = {
     texturePath: "textures"
   },
   // create private material library
-  private: {
+  app: {
     context: "./static/model",
+    // finalPath = private.app+private.app.appName
+    appName: "demo",
     materialLibPath: "materialLib",
     skyboxPath: "skyboxs",
-    texturePath: "textures"
+    texturePath: "textures",
+    // data contanis version and log
+    dataPath: 'editorData'
   },
   // save userInfo on config.userInfoPath
-  // userInfo contains that who is online,editing,history and so on
+  // userInfo contains account,password,userImg
   userInfoPath: "./static/users",
   // socket port
-  port: 2049,
-  // path.join( config.private.context, appName )
-  appName: "demo"
+  port: 2049
+}
+const finalPath = {
+  appPath: '',
+  appSkyboxPath: '',
+  appTexturePath: '',
+  appDataPath: '',
+  publicPath: '',
+  publicSkyboxPath: '',
+  publicTexturePath: '',
+  userInfoPath: ''
 }
 
 /**
  * change default config by node's args...
- * node server.js -p 2049 -a demo
+ * node server.js -p 2048 -a demo
  * */
 function checkArgs() {
-  //exclude node server.js
-  const args = process.argv.slice(2)
-  const presets = {
-    port: ["-p", "-port"],
-    appName: ["-a", "-appName", "-appname", "-app", "-name"]
-  }
-  args.forEach((arg, index) => {
-    for (let item in presets) {
-      let short = presets[item]
-      if (short.indexOf(arg) !== -1) {
-
-      }
+  return new Promise((resolve, reject) => {
+    //exclude node server.js
+    const args = process.argv.slice(2)
+    const presets = {
+      port: ["-p", "-port"],
+      "app.appName": ["-a", "app"]
     }
+    args.forEach((arg, index) => {
+      for (let item in presets) {
+        // -p
+        let short = presets[item]
+        let shortIndex = 0
+        if ((shortIndex = short.indexOf(arg)) !== -1) {
+          //***
+          // -p 2049
+          let newArg = args[index + 1]
+          if (index + 1 > args.length - 1) {
+            reject("please input correct arg after " + presets[item][shortIndex])
+          }
+          if (item === "port") {
+            newArg -= 0
+          }
+          //split
+          let dst = config
+          let split = item.split(".")
+          split.forEach((item, index) => {
+            if (index + 1 === split.length) {
+              dst[item] = newArg
+            } else {
+              dst = dst[item]
+            }
+          })
+          //***
+        }
+      }
+    })
+    resolve()
   })
 }
 
@@ -55,34 +91,62 @@ function checkArgs() {
  * ensure the valid socket port
  * */
 function checkPort(port) {
-  console.log("port:" + port + " is checking......")
   return new Promise((resolve, reject) => {
     portfinder.basePort = port;
     portfinder.getPortPromise().then((port) => {
       // `port` is guaranteed to be a free port
       config.port = port;
-      console.log("port:" + port + " is valid......")
-      resolve(port)
+      resolve()
     }).catch((err) => {
       // Could not get a free port, `err` contains the reason.
-      console.log(err)
       reject(err)
     })
   })
 }
 
-checkArgs();
-checkPort(config.port).then((port) => {
-  console.log(port)
-})
-// //端口号，默认30
-// var PORT = process.argv[3] || 30;
-// //项目名字
-// var APPNAME = process.argv[2];
-// if (!APPNAME) {
-//   console.log("请输入客户端名字,如 node server.js park1")
-//   return false;
-// }
+function initFinalPath() {
+  finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
+  finalPath.appSkyboxPath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.skyboxPath);
+  finalPath.appTexturePath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.texturePath);
+  finalPath.appDataPath = path.resolve(finalPath.appPath, config.app.dataPath);
+  finalPath.publicPath = path.resolve(__dirname, config.public.context, config.public.materialLibPath);
+  finalPath.publicSkyboxPath = path.resolve(finalPath.publicPath, config.public.skyboxPath);
+  finalPath.publicTexturePath = path.resolve(finalPath.publicPath, config.public.texturePath);
+  finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath)
+}
+
+function listen(port) {
+  io.listen(port)
+  io.on('connection', (socket) => {
+    console.log("连接成功!")
+    socket.on("test", (msg) => {
+      console.log(msg)
+    })
+  })
+}
+
+function consolePath() {
+  console.log("----------------------start--------------------------")
+  for (let item in finalPath) {
+    let path = finalPath[item];
+    console.log("*** " + item + ": [" + path + "]")
+  }
+  console.log("\n*** socket is listening " + config.port + "......")
+
+  // console.log("------------------------------------------------")
+
+}
+
+checkArgs()
+  .then(() => checkPort(config.port))
+  .then(() => initFinalPath())
+  .then(() => listen(config.port))
+  .then(() => consolePath())
+  .catch((err) => {
+    console.log("*** something unexpected happened,exit......")
+    console.log(err)
+  })
+
 // var server = require('http').createServer().listen(PORT);
 // var io = require("socket.io").listen(server);
 //

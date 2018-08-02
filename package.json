@@ -1,5 +1,5 @@
 {
-  "name": "babylonMaterialEditor",
+  "name": "babylon-material-editor",
   "version": "1.0.0",
   "description": "babylonMaterialEditor",
   "main": "dist/client.js",

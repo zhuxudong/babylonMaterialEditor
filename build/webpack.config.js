@@ -86,6 +86,7 @@ let config = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/demo/template.html'),
+      chunks: ["demo/demo"],
       filename: "demo.html"
     })
   ]
@@ -112,6 +113,7 @@ if (isDev) {
     new webpack.NamedModulesPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, '../src/demo/template.html'),
+      chunks: ["demo/demo"],
       filename: "index.html"
     })
   )
