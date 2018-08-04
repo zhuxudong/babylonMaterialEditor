@@ -148,20 +148,6 @@ checkArgs()
     console.log(err)
   })
 
-// var server = require('http').createServer().listen(PORT);
-// var io = require("socket.io").listen(server);
-//
-// //项目路径
-// var APPFIX = PATH.join(config.CLIENTFIX, APPNAME);
-// var APPDATAFIX = PATH.join(APPFIX, "multidebug.bak");
-// //材质库路径
-// var MATERIALLIBFIX = config.MATERIALLIBFIX
-// var SKYBOX = config.SKYBOX
-// var TEXTURE = config.TEXTURE
-// //用户信息路径
-// var USERINFOFIX = config.USERINFOFIX
-//
-//
 // function MultiDebug() {
 //   var serverData = {};
 //   var _this = this;
