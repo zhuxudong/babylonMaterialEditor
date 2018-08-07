@@ -1,0 +1,217 @@
+@color-gray: #EFEFEF;
+@color-blue: #3CA1D4;
+@color-danger: rgba(253, 0, 23, .7);
+@color-warn: #EBC131;
+@color-success: #5FB95F;
+@color-blue-shadow: rgba(102, 175, 233, .6);
+@blue-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+@color-shadow: rgba(0, 0, 0, 0.5);
+@color-babyui-title: #000;
+@color-babyui: #eee;
+@color-babyui-row: #1A1A1A;
+@color-babyui-input: #303030;
+.shadow {
+  box-shadow: -5px 0 7px @color-shadow;
+}
+
+.baby-dragbar {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  height: 0;
+  width: 5px;
+  cursor: w-resize;
+  transition-property: box-shadow, height, left;
+  transition-duration: .2s;
+  z-index: 65536;
+}
+
+@keyframes alert {
+  0% {
+    background: @color-danger;
+  }
+  100% {
+    background: @color-warn;
+  }
+}
+
+.baby-box {
+  position: fixed;
+  top: 0;
+  right: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 2;
+  box-sizing: border-box;
+  letter-spacing: .1em;
+  color: @color-babyui;
+  //box-shadow: -5px 0 7px @color-shadow;
+  z-index: 65536;
+  max-height: 100%;
+  background: rgba(0, 0, 0, .1);
+  .alert {
+    animation: alert 1s linear 0s infinite alternate;
+  }
+  div:not(.baby-folder) {
+    border-bottom: 1px solid @color-shadow;
+    border-radius: 2px;
+    cursor:auto;
+  }
+
+  .baby-folder, & {
+    > div {
+      padding-left: 10px;
+      margin-left: 15px;
+      background: @color-babyui-row;
+      position: relative;
+      overflow: hidden;
+      span:first-child {
+        cursor: default;
+        float: left;
+        width: 40%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      span:nth-child(2) {
+        float: right;
+        width: 60%;
+        cursor: default;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        border-radius: 2px;
+        background: @color-blue;
+      }
+    }
+    & > span:first-child {
+      display: inline-block;
+      width: 100%;
+      position: relative;
+      cursor: pointer;
+      background: @color-babyui-title;
+      padding-left: 5px;
+      &.close:before, &.open:before {
+        content: "";
+        display: inline-block;
+        height: 0;
+        width: 0;
+        position: relative;
+        margin-right: 5px;
+        border: 5px solid transparent;
+        border-radius: 3px;
+      }
+      &.close:before {
+        border-left-color: @color-babyui;
+        top: 0;
+        left: 4px;
+      }
+      &.open:before {
+        border-top-color: @color-babyui;
+        top: 4px;
+      }
+    }
+    .baby-color {
+      overflow: hidden;
+      position: relative;
+      span:first-child {
+        width: 40%;
+        float: left;
+      }
+      .baby-color-box {
+        position: absolute;
+        width: 20px;
+        margin-right: 10px;
+        height: 80%;
+        left: 40%;
+        top: 10%;
+        border-radius: 50%;
+        text-align: center;
+        letter-spacing: .2em;
+        box-shadow: 0 0 30px rgba(102, 175, 233, 1);
+        cursor: pointer;
+
+      }
+      &:before {
+        background: @color-success;
+      }
+    }
+    .baby-slider {
+      overflow: hidden;
+      height: 2em;
+      .range {
+        background: @color-babyui-input;
+        float: left;
+        width: 38%;
+        height: 80%;
+        position: relative;
+        top: 10%;
+        cursor: w-resize;
+      }
+      input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        height: 100px;
+        width: 5px;
+        margin-top: -5px; /*使滑块超出轨道部分的偏移量相等*/
+        background: @color-babyui;
+        box-shadow: @blue-shadow; /*添加底部阴影*/
+      }
+      .number {
+        background: @color-babyui-input;
+        color: @color-babyui;
+        float: right;
+        width: 20%;
+        height: 80%;
+        position: relative;
+        top: 10%;
+      }
+    }
+    .baby-select {
+
+    }
+    .baby-message {
+      &:before {
+        background: @color-success;
+      }
+      .baby-message-box {
+        background: @color-babyui-input;
+        padding-left: 5px;
+        color: @color-warn;
+        cursor: pointer;
+      }
+    }
+  }
+  > div {
+    margin-left: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    &:before {
+      content: none !important;
+    }
+  }
+  .baby-folder > span:first-child {
+    cursor: pointer !important;
+    width: 100% !important;
+    border: 1px solid #333;
+  }
+  > .baby-folder:first-child > span:first-child {
+    cursor: move !important;
+  }
+  .baby-folder {
+    padding-left: 1px !important;
+    background: none !important;
+    cursor: w-resize;
+    &:before {
+      content: none !important;
+    }
+  }
+}

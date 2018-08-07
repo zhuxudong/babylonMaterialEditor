@@ -12,8 +12,8 @@ const base = require('./base')
 let config = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    client: "./src/client.ts",
-    "demo/demo": "./src/demo/demo.ts"
+    client: "./src/client.js",
+    "demo/demo": "./src/demo/demo.js"
   },
   output: {
     path: path.resolve(__dirname, "../dist"),
@@ -24,9 +24,9 @@ let config = {
     libraryTarget: "umd"
   },
   resolve: {
-    extensions: ['ts', '.js', '.json'],
+    extensions: ['.js', '.json'],
     alias: {
-      '@': path.resolve(__dirname, '../src')
+      '@': path.resolve(__dirname, '../src/components')
     }
   },
   externals: {
@@ -40,7 +40,6 @@ let config = {
   module: {
     rules: [
       {test: /\.js$/, exclude: /node_modules/, loader: "babel-loader"},
-      {test: /\.ts$/, loader: "ts-loader"},
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader", "postcss-loader"]

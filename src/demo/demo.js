@@ -1,14 +1,5 @@
-import * as BABYLON from "babylonjs"
-import "../client.ts"
-
-
+import "../client.js"
 class Demo {
-  canvas: any
-  engine: any
-  scene: any
-  camera: any
-
-
   constructor() {
     this.canvas = document.getElementById("renderCanvas");
     this.engine = new BABYLON.Engine(this.canvas, true, {
@@ -63,7 +54,7 @@ class Demo {
   }
 
   loadMesh() {
-    BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes: any) => {
+    BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes) => {
       // console.log(meshes)
     })
   }
