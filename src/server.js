@@ -1,22 +1,24 @@
 /**
  * @author zhuxudong <callzhuxudong@163.com>
  */
+/***/
 const fs = require('fs-extra');
 const path = require('path');
-const portfinder = require('portfinder')
-const io = require("socket.io")()
+const portfinder = require('portfinder');
+const io = require("socket.io")();
 
+/** 默认配置*/
 const config = {
-  // create public material library
+  // 公共材质库相关配置
   public: {
-    context: "./static",
+    context: "../static",
     materialLibPath: "materialLib",
     skyboxPath: "skyboxs",
     texturePath: "textures"
   },
-  // create private material library
+  // 项目相关配置
   app: {
-    context: "./static/model",
+    context: "../static/model",
     // finalPath = private.app+private.app.appName
     appName: "demo",
     materialLibPath: "materialLib",
@@ -25,12 +27,12 @@ const config = {
     // data contanis version and log
     dataPath: 'editorData'
   },
-  // save userInfo on config.userInfoPath
-  // userInfo contains account,password,userImg
-  userInfoPath: "./static/users",
+  // 用户账号密码头像
+  userInfoPath: "../static/users",
   // socket port
   port: 3000
-}
+};
+/** 最终路径*/
 const finalPath = {
   appPath: '',
   appSkyboxPath: '',
@@ -40,11 +42,11 @@ const finalPath = {
   publicSkyboxPath: '',
   publicTexturePath: '',
   userInfoPath: ''
-}
+};
 
 /**
- * change default config by node's args...
- * node server.js -p 3000 -a demo
+ * 通过node args 覆盖默认配置
+ * 如: node server.js -p 3000 -a demo
  * */
 function checkArgs() {
   return new Promise((resolve, reject) => {
@@ -88,22 +90,22 @@ function checkArgs() {
 }
 
 /**
- * ensure the valid socket port
+ * 生成一个可用的端口
  * */
 function checkPort(port) {
   return new Promise((resolve, reject) => {
     portfinder.basePort = port;
     portfinder.getPortPromise().then((port) => {
-      // `port` is guaranteed to be a free port
       config.port = port;
       resolve()
     }).catch((err) => {
-      // Could not get a free port, `err` contains the reason.
       reject(err)
     })
   })
 }
 
+/** 初始化所有最终路径
+ * */
 function initFinalPath() {
   finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
   finalPath.appSkyboxPath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.skyboxPath);
@@ -112,37 +114,64 @@ function initFinalPath() {
   finalPath.publicPath = path.resolve(__dirname, config.public.context, config.public.materialLibPath);
   finalPath.publicSkyboxPath = path.resolve(finalPath.publicPath, config.public.skyboxPath);
   finalPath.publicTexturePath = path.resolve(finalPath.publicPath, config.public.texturePath);
-  finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath)
+  finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath);
 }
 
-/**socket events*/
-function listen(port) {
-  io.listen(port)
-  io.on('connection', (socket) => {
-    console.log("连接成功!")
-    socket.on("test", (msg) => {
-      console.log(msg)
-    })
+/** 生成所有最终路径*/
+function createFinalPath() {
+  return new Promise((resolve, reject) => {
+    let promises = [];
+    for (let item in finalPath) {
+      let path = finalPath[item];
+      promises.push(fs.mkdirs(path))
+    }
+    Promise.all(promises).then(resolve).catch(reject)
   })
 }
 
+/** 打印所有路径*/
 function consolePath() {
-  console.log("----------------------start--------------------------")
+  console.log("----------------------start--------------------------");
   for (let item in finalPath) {
     let path = finalPath[item];
-    console.log("*** " + item + ": [" + path + "]")
+    console.log("*** " + item + ": [" + path + "]");
   }
-  console.log("\n*** socket is listening " + config.port + "......")
+  console.log("\n*** socket is listening " + config.port + "......");
 
-  // console.log("------------------------------------------------")
+  console.log("------------------------------------------------");
+}
+
+/** 监听最终端口*/
+function listen(port) {
+  let socketList = [];
+  io.listen(port);
+  io.on('connection', (socket) => {
+    socketList.push(socket);
+    socket.on('disconnect', () => {
+      socketList = socketList.filter((s) => socket.id !== s.id);
+    });
+    on(socket);
+  })
+}
+
+/**************************************************************************/
+/**************************************************************************/
+
+/**************************************************************************/
+/** socket监听事件*/
+function on(socket) {
 
 }
 
+/**************************************************************************/
+/**************************************************************************/
+/**************************************************************************/
 checkArgs()
   .then(() => checkPort(config.port))
   .then(() => initFinalPath())
-  .then(() => listen(config.port))
+  .then(() => createFinalPath())
   .then(() => consolePath())
+  .then(() => listen(config.port))
   .catch((err) => {
     console.log("*** something unexpected happened,exit......")
     console.log(err)

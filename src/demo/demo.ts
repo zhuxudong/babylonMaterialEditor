@@ -1,7 +1,6 @@
 import * as BABYLON from "babylonjs"
-// import "./client.ts"
+import "../client.ts"
 
-declare let window: any
 
 class Demo {
   canvas: any
@@ -65,10 +64,9 @@ class Demo {
 
   loadMesh() {
     BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes: any) => {
-      console.log(meshes)
+      // console.log(meshes)
     })
   }
 }
 
 let demo = new Demo()
-window.demo = demo
