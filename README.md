@@ -1,3 +1,4 @@
+(旧版本支持功能)[https://github.com/zhuxudong/BABYLON-MUL]
 # 支持功能
 * mesh
 	* 隐藏物体
