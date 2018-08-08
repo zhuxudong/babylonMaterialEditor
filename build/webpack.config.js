@@ -19,7 +19,7 @@ let config = {
     path: path.resolve(__dirname, "../dist"),
     filename: "[name].js",
     publicPath: base.publicPath,
-    chunkFilename: path.join('js/[id].[chunkhash].js'),
+    chunkFilename: path.join('js/[id].[chunkhash:7].js'),
     library: "babylonjsMaterialEditor",
     libraryTarget: "umd"
   },

@@ -1,4 +1,5 @@
 import "../client.js"
+
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");

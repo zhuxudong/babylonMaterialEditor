@@ -10,8 +10,8 @@
 @color-babyui: #eee;
 @color-babyui-row: #1A1A1A;
 @color-babyui-input: #303030;
-.shadow {
-  box-shadow: -5px 0 7px @color-shadow;
+.shadow() {
+  box-shadow: 0 11px 18px -6px @color-shadow;
 }
 
 .baby-dragbar {
@@ -19,7 +19,7 @@
   right: 100%;
   top: 0;
   height: 0;
-  width: 5px;
+  width: 10px;
   cursor: w-resize;
   transition-property: box-shadow, height, left;
   transition-duration: .2s;
@@ -45,20 +45,24 @@
   white-space: nowrap;
   font-size: 11px;
   line-height: 2;
-  box-sizing: border-box;
   letter-spacing: .1em;
   color: @color-babyui;
-  //box-shadow: -5px 0 7px @color-shadow;
   z-index: 65536;
   max-height: 100%;
   background: rgba(0, 0, 0, .1);
+  user-select: none;
+  min-width: 200px;
+  .shadow;
   .alert {
     animation: alert 1s linear 0s infinite alternate;
+  }
+  *{
+    box-sizing: border-box;
   }
   div:not(.baby-folder) {
     border-bottom: 1px solid @color-shadow;
     border-radius: 2px;
-    cursor:auto;
+    cursor: auto;
   }
 
   .baby-folder, & {
@@ -209,9 +213,18 @@
   .baby-folder {
     padding-left: 1px !important;
     background: none !important;
-    cursor: w-resize;
+    //cursor: w-resize;
     &:before {
       content: none !important;
     }
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    outline: none;
+    resize: none;
+  }
+  input {
+    border: none;
+    margin: 0;
   }
 }
