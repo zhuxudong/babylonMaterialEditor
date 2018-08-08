@@ -152,11 +152,6 @@ else {
       from: path.resolve(__dirname, '../src/server.js'),
       to: ""
     }
-    ]),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: "common",
-      minChunks: 2,
-      minSize: 1
-    }))
+    ]))
   module.exports = config;
 }

@@ -1,5 +1,4 @@
 import "./colorPicker.less";
-
 (function ($) {
   let ColorPicker = function () {
     let
@@ -323,9 +322,9 @@ import "./colorPicker.less";
         }
         hsb.s *= 100 / 255;
         hsb.b *= 100 / 255;
-        hsb.h=hsb.h.toFixed(0)
-        hsb.s=hsb.s.toFixed(0)
-        hsb.b=hsb.b.toFixed(0)
+        hsb.h = hsb.h.toFixed(0)
+        hsb.s = hsb.s.toFixed(0)
+        hsb.b = hsb.b.toFixed(0)
         return hsb;
       },
       HSBToRGB = function (hsb) {

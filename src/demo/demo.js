@@ -1,5 +1,5 @@
 import "../client.js"
-
+import createJSON from "@/tool/createJSON"
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");
@@ -57,6 +57,7 @@ class Demo {
   loadMesh() {
     BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes) => {
       // console.log(meshes)
+      createJSON(this.scene)
     })
   }
 }

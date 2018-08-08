@@ -452,5 +452,14 @@ let BABYUI = {
   }
 };
 
+function demo() {
+  let folder = new BABYUI.Folder("123");
+  new BABYUI.Color("颜色", "#123", function (value) {
+  }, folder)
+  new BABYUI.Slider("滑动条", 10, 1, 100, 1, () => {
+  }, folder)
+  new BABYUI.Select("选择", 1, [1, 2], null, folder)
+  new BABYUI.Message("message", 123, folder)
+}
 
 export default BABYUI;
