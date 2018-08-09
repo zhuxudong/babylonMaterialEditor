@@ -1,7 +1,8 @@
 /**
  * @author zhuxudong <callzhuxudong@163.com>
  */
-/***/
+/**@module server*/
+
 const fs = require('fs-extra');
 const path = require('path');
 const portfinder = require('portfinder');

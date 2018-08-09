@@ -1,4 +1,32 @@
-/** @module*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/tool/initSceneByJSON.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/tool/initSceneByJSON.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @module*/
 
 import {basePro, texturePro} from "../lang/en";
 
@@ -66,7 +94,7 @@ function initSceneByJSON(scene, json, material = null, light = null) {
     if (material.getClassName() !== json.materialType) {
       let newMaterial = new BABYLON[json.materialType](material.name, scene);
       scene.meshes.forEach(function (mesh) {
-        if (mesh.material && mesh.material === material) {
+        if (mesh.material &amp;&amp; mesh.material === material) {
           mesh.material = newMaterial;
         }
       })
@@ -81,7 +109,7 @@ function initSceneByJSON(scene, json, material = null, light = null) {
       }
       let value = json[key];
       //颜色
-      if (material[key] && material[key].copyFrom) {
+      if (material[key] &amp;&amp; material[key].copyFrom) {
         material[key].copyFrom(value)
       } else {
         material[key] = value;
@@ -191,42 +219,64 @@ function initSceneByJSON(scene, json, material = null, light = null) {
           light.intensity = jsonValue;
           break;
         case "diffuse":
-          light.diffuse && light.diffuse.copyFrom && light.diffuse.copyFrom(jsonValue);
+          light.diffuse &amp;&amp; light.diffuse.copyFrom &amp;&amp; light.diffuse.copyFrom(jsonValue);
           break;
         case "specular":
-          light.specular && light.specular.copyFrom && light.specular.copyFrom(jsonValue);
+          light.specular &amp;&amp; light.specular.copyFrom &amp;&amp; light.specular.copyFrom(jsonValue);
           break;
         case "groundColor":
-          light.groundColor && light.groundColor.copyFrom && light.groundColor.copyFrom(jsonValue);
+          light.groundColor &amp;&amp; light.groundColor.copyFrom &amp;&amp; light.groundColor.copyFrom(jsonValue);
           break;
         case "position":
-          light.position && light.position.copyFrom && light.position.copyFrom(jsonValue);
+          light.position &amp;&amp; light.position.copyFrom &amp;&amp; light.position.copyFrom(jsonValue);
           break;
         case "direction":
-          light.direction && light.direction.copyFrom && light.direction.copyFrom(jsonValue);
+          light.direction &amp;&amp; light.direction.copyFrom &amp;&amp; light.direction.copyFrom(jsonValue);
           break;
         //case "lightBallRotation":
         //    let lightBall = light.lightBall;
         //    if (lightBall) {
-        //        lightBall.rotation && lightBall.rotation.copyFrom(jsonValue);
+        //        lightBall.rotation &amp;&amp; lightBall.rotation.copyFrom(jsonValue);
         //    }
         //    break;
       }
     })
   }
 
-  json.lights && json.lights.forEach(function (lightJSON, lightName) {
+  json.lights &amp;&amp; json.lights.forEach(function (lightJSON, lightName) {
     let _light = scene.getLightByName(lightName);
-    if ((light && light === _light) || (!light && _light)) {
+    if ((light &amp;&amp; light === _light) || (!light &amp;&amp; _light)) {
       initLight(lightJSON, _light);
     }
   })
-  json.materials && json.materials.forEach(function (materialJSON, materialName) {
+  json.materials &amp;&amp; json.materials.forEach(function (materialJSON, materialName) {
     let _material = scene.getMaterialByName(materialName);
-    if ((material && material === _material) || (!material && _material)) {
+    if ((material &amp;&amp; material === _material) || (!material &amp;&amp; _material)) {
       initMaterial(materialJSON, _material, json.publicPath, json.appPath);
     }
   })
 }
 
-export default initSceneByJSON
+export default initSceneByJSON</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-server.html">server</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li></ul><h3>Global</h3><ul><li><a href="global.html#editMaterial">editMaterial</a></li><li><a href="global.html#editMesh">editMesh</a></li><li><a href="global.html#openDebug">openDebug</a></li><li><a href="global.html#unEditMaterial">unEditMaterial</a></li><li><a href="global.html#unEditMesh">unEditMesh</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Aug 09 2018 14:58:13 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
