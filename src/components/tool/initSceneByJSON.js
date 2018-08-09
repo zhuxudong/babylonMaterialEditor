@@ -222,7 +222,7 @@ function initSceneByJSON(scene, json, material = null, light = null) {
   json.materials && json.materials.forEach(function (materialJSON, materialName) {
     let _material = scene.getMaterialByName(materialName);
     if ((material && material === _material) || (!material && _material)) {
-      initMaterial(materialJSON, material, json.publicPath, json.appPath);
+      initMaterial(materialJSON, _material, json.publicPath, json.appPath);
     }
   })
 }
