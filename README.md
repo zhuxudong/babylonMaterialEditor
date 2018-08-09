@@ -36,3 +36,7 @@ npm run dev
 ```
 npm run build
 ``` 
+# 更新文档
+```
+npm run doc
+``` 

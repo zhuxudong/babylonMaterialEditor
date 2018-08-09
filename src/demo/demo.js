@@ -2,8 +2,8 @@ import "../client.js"
 // import createJSON from "@/tool/createJSON"
 // import initSceneByJSON from "@/tool/initSceneByJSON"
 import * as test from '../client';
-console.log(test)
 
+console.log(test)
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");
@@ -69,3 +69,4 @@ class Demo {
 }
 
 let demo = new Demo()
+window.d=demo;
