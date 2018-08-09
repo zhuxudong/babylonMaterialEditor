@@ -1,14 +1,16 @@
 import {basePro, texturePro} from "../lang/en";
 
-/** 生成JSON,用于initSceneByJSON
+/** 生成经过editMaterial()的材质的JSON,用于initSceneByJSON
  * @param {Object} scene - 对应的BABYLON场景
  * @param {Object} option - 默认生成场景中所有灯光和材质的JSON，修改参数可以定制生成的JSON
- * @param {Object|Object[]} option.meshes - materials中只生成相应物体的材质JSON
- * @param {String|String[]} option.meshNames - materials中只根据物体名字生成这些物体的材质JSON
+ * @param {Object|Object[]} option.materials - materials中只生成相应的材质JSON
+ * @param {String|String[]} option.materialNames - materials中只根据材质名字生成这些物体的材质JSON
  * @param {Object|Object[]} option.lights - lights中只生成相应灯光的灯光JSON
  * @param {String|String[]} option.lightNames - lights中只根据灯光名字生成这些灯光的灯光JSON
- * @param {Object} option.material - materials只制生成这个材质的JSON
+ * @param {String|String[]} option.publicPath - 公有材质库根路径
+ * @param {String|String[]} option.appPath - 私有材质库根路径
  * @param {boolean} option.console - 是否打印JSON数据到控制台
+ * @param {boolean} option.warn - 是否打印警告信息
  * @param {boolean} option.window - 是否打印JSON数据到新窗口
  * @param {boolean} option.mini - 是否生成缩减版JSON，默认false,用于上线，删除了调试用到的JSON
  * @return {string} str - 调试生成的JSON数据
@@ -16,19 +18,21 @@ import {basePro, texturePro} from "../lang/en";
 function createJSON(scene, option) {
   //默认生成场景中所有材质/灯光JSON，打印，并打开新窗口
   let defaultOption = {
-    meshes: null,
-    meshNames: null,
+    materials: null,
+    materialNames: null,
     lights: null,
     lightNames: null,
-    material: null,
+    publicPath: "",
+    appPath: "",
     console: true,
+    warn: true,
     window: true,
     mini: false//最终版本设置mini为true，可以删除大量调试JSON
   }
   let opt = Object.assign(defaultOption, option);
   let json = {
-    publicPath: "",
-    appPath: "",
+    publicPath: opt.publicPath,
+    appPath: opt.appPath,
     lights: {},
     materials: {}
   };
@@ -53,9 +57,8 @@ function createJSON(scene, option) {
         keyValue.materialType = "PBRBaseMaterial"
       }
     }
-
     basePro.forEach(function (key) {
-      if (material[key] != undefined) {
+      if (material[key] != null) {
         keyValue[key] = material[key]
       }
     })
@@ -67,16 +70,21 @@ function createJSON(scene, option) {
       let other = json.other;
       //纹理
       if (material[texture]) {
+        //texture
         keyValue[texture] = material[texture].name;
+        //level
         keyValue[simple + "Level"] = material[texture].level;
+        //uScale,vScale
         if (!cube) {
           keyValue[simple + "US"] = material[texture].uScale;
           keyValue[simple + "VS"] = material[texture].vScale;
         }
-        //bumpTexture
+        //bumpTexture ...
         if (other) {
           other.forEach(function (key) {
-            keyValue[key] = material[key]
+            if (material[key] != null) {
+              keyValue[key] = material[key]
+            }
           })
         }
         //通道
@@ -84,6 +92,7 @@ function createJSON(scene, option) {
       } else {
         //mini版JSON不需要调试JSON
         if (!opt.mini) {
+          //为了某些纹理后来的取消，需要no来进行覆盖操作
           keyValue["no" + simple] = true
         }
       }
@@ -130,62 +139,35 @@ function createJSON(scene, option) {
       return true;
     }
   })
+  let materials = scene.materials.filter((material) => {
+    if (!opt.materials && !opt.materialNames) {
+      return true;
+    }
+    if (opt.materialNames && [].concat.call(opt.materialNames).indexOf(material.name) !== -1) {
+      return true;
+    }
+    if (opt.materials && [].concat.call(opt.materials).indexOf(material) !== -1) {
+      return true;
+    }
+  })
   lights.forEach(function (light) {
     initLightJSON(light);
   });
-  if (opt.material) {
-    initMaterialJSON(opt.material);
-  } else {
-    //生成锁定的meshNames对应材质的JSON
-    scene.materials.forEach(function (material) {
-      if (material._debug) {
-        return;
-      }
-      if (opt.meshNames) {
-        [].concat(opt.meshNames).forEach(function (meshName) {
-          let mesh = scene.getMeshByName(meshName);
-          //确保有这个物体
-          if (!mesh || mesh._debug) {
-            //console.warn("未找到" + meshName + "这个物体")
-            return;
-          }
-          //确保mesh一定有material
-          if (!mesh.material) {
-            console.warn(meshName + "没有被赋予材质");
-            return;
-          }
-          if (mesh.material && mesh.material == material) {
-            initMaterialJSON(material);
-          }
-        })
-      } else if (opt.meshes) {
-        [].concat(opt.meshes).forEach(function (mesh) {
-          let meshName = mesh.name;
-          //确保有这个物体
-          if (!mesh || mesh._debug) {
-            //console.warn("未找到" + meshName + "这个物体")
-            return;
-          }
-          //确保mesh一定有material
-          if (!mesh.material) {
-            console.warn(meshName + "没有被赋予材质");
-            return;
-          }
-          if (mesh.material && mesh.material == material) {
-            initMaterialJSON(material);
-          }
-        })
-      }
-      else {
-        initMaterialJSON(material);
-      }
-    });
-  }
+  materials.forEach(function (material) {
+    if (material._babylonMaterialEditor) {
+      initMaterialJSON(material);
+    } else if (opt.warn) {
+      console.warn("如果你想调试[" + material.name + "]材质,请先进行editMaterial(material)")
+    }
+  });
   let str = JSON.stringify(json);
   if (opt.window) {
+    //浏览器不允许自动触发，要通过用户手动触发
     let w = window.open();
-    w.document.title = "JSON";
-    w.document.body.innerHTML = str;
+    if (w) {
+      w.document.title = "JSON";
+      w.document.body.innerHTML = str;
+    }
   }
   if (opt.console) {
     console.log(str)

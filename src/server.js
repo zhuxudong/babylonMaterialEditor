@@ -6,15 +6,12 @@ const fs = require('fs-extra');
 const path = require('path');
 const portfinder = require('portfinder');
 const io = require("socket.io")();
-
 /** 默认配置*/
 const config = {
   // 公共材质库相关配置
   public: {
     context: "../static",
     materialLibPath: "materialLib",
-    skyboxPath: "skyboxs",
-    texturePath: "textures"
   },
   // 项目相关配置
   app: {
@@ -22,13 +19,13 @@ const config = {
     // finalPath = private.app+private.app.appName
     appName: "demo",
     materialLibPath: "materialLib",
-    skyboxPath: "skyboxs",
-    texturePath: "textures",
     // data contanis version and log
     dataPath: 'editorData'
   },
   // 用户账号密码头像
   userInfoPath: "../static/users",
+  // 根路径,用于项目上线后根据服务器或者CDN的根路径去寻找公有库和私有库的图片资源
+  root: "./",
   // socket port
   port: 3000
 };
@@ -108,12 +105,12 @@ function checkPort(port) {
  * */
 function initFinalPath() {
   finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
-  finalPath.appSkyboxPath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.skyboxPath);
-  finalPath.appTexturePath = path.resolve(finalPath.appPath, config.app.materialLibPath, config.app.texturePath);
+  finalPath.appSkyboxPath = path.resolve(finalPath.appPath, config.app.materialLibPath, "skyboxes");
+  finalPath.appTexturePath = path.resolve(finalPath.appPath, config.app.materialLibPath, "textures");
   finalPath.appDataPath = path.resolve(finalPath.appPath, config.app.dataPath);
   finalPath.publicPath = path.resolve(__dirname, config.public.context, config.public.materialLibPath);
-  finalPath.publicSkyboxPath = path.resolve(finalPath.publicPath, config.public.skyboxPath);
-  finalPath.publicTexturePath = path.resolve(finalPath.publicPath, config.public.texturePath);
+  finalPath.publicSkyboxPath = path.resolve(finalPath.publicPath, "skyboxes");
+  finalPath.publicTexturePath = path.resolve(finalPath.publicPath, "textures");
   finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath);
 }
 
@@ -139,6 +136,7 @@ function consolePath() {
   console.log("\n*** socket is listening " + config.port + "......");
 
   console.log("------------------------------------------------");
+  // console.log(path.relative(config.root,finalPath.appPath))
 }
 
 /** 监听最终端口*/

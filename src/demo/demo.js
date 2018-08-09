@@ -1,5 +1,7 @@
 import "../client.js"
 import createJSON from "@/tool/createJSON"
+import initSceneByJSON from "@/tool/initSceneByJSON"
+
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");
@@ -14,7 +16,7 @@ class Demo {
     this.camera = new BABYLON.ArcRotateCamera("cameraArc", Math.PI / 2, 1.3, 50, new BABYLON.Vector3(0, 5, 0), this.scene);
     this.camera.wheelPrecision = 0.05;
     this.camera.lowerBetaLimit = 0.1;
-    this.camera.upperBetaLimit = Math.PI / 2
+    this.camera.upperBetaLimit = Math.PI / 2;
     this.camera.lowerRadiusLimit = 5;
     this.camera.upperRadiusLimit = 100;
     this.camera.wheelPrecision = 10;
@@ -44,7 +46,7 @@ class Demo {
     skyboxMaterial.reflectionTexture = hdrTexture;
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
     skyboxMaterial.disableLighting = true;
-    skyboxMaterial.microSurface = .5;
+    skyboxMaterial.microSurface = .65;
     /**ground*/
     let ground = BABYLON.Mesh.CreateGround("ground", 250, 250, 30, this.scene)
     let grdMat = new BABYLON.StandardMaterial("ground_mat", this.scene);
@@ -57,7 +59,8 @@ class Demo {
   loadMesh() {
     BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes) => {
       // console.log(meshes)
-      createJSON(this.scene)
+      let test = createJSON(this.scene)
+      initSceneByJSON(this.scene, test)
     })
   }
 }
