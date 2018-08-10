@@ -6,6 +6,7 @@
 @import "lan.less";
 @import "pic.less";
 @import "chat.less";
+@import "tool.less";
 
 .babylon-material-editor {
   position: fixed;
@@ -18,6 +19,10 @@
   pointer-events: none;
   z-index: 65535;
   user-select: none;
+  * {
+    box-sizing: border-box;
+  }
+
   .nav-lan-dragbar, .nav-pic-dragbar {
     position: absolute;
     pointer-events: auto;

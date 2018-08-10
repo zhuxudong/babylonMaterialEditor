@@ -39,20 +39,22 @@ let Tool = {
    * @param {boolean} noCancel - true:没有取消键，强制输入
    */
   showPrompt: function (text, callback, noCancel) {
+    let parent = $(".babylon-material-editor");
+    let $document = $(document);
+    let cover = $("<div class='z-cover'>");
+    let dialog = $(`<div class='z-prompt'><span class='text'>${text}</span><input> <div class='button-group'><button class='btn color-success'>确定</button><button  class='btn color-danger'>取消</button></div></div>`)
     $(".z-prompt").remove();
     $(".z-cover").remove();
-    let cover = $("<div class='z-cover'>");
-    let dialog = $("<div class='z-prompt'><span class='text'>" + text + "</span><input> <div class='button-group'><button class='btn color-success'>确定</button><button  class='btn color-danger'>取消</button></div></div>")
-    $(".babylon-material-editor").append(cover);
-    $(".babylon-material-editor").append(dialog);
+    parent.append(cover);
+    parent.append(dialog);
     if (noCancel) {
       $(".z-prompt .color-danger").remove();
     }
     let input = $(".z-prompt input");
 
     function clear() {
-      $(document).off("keydown", enter);
-      $(document).off("keydown", exit);
+      $document.off("keydown", enter);
+      $document.off("keydown", exit);
     }
 
     function enter(e) {
@@ -68,8 +70,8 @@ let Tool = {
       }
     }
 
-    $(document).on("keydown", enter)
-    $(document).on("keydown", exit)
+    $document.on("keydown", enter)
+    $document.on("keydown", exit)
 
     function success() {
       if (!input.val()) {
@@ -309,6 +311,7 @@ let Tool = {
 
     fileDom.on("change", function () {
       let file = fileDom[0].files[0];
+      console.log(file)
       Tool.loadFile(file, function (data) {
         upload.css("background-image", "url(" + data + ")");
         upload.removeClass("iconfont");

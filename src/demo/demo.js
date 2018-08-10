@@ -37,7 +37,6 @@ class Demo {
     this.initBg();
     this.loadMesh();
     // this.test();
-    this.test2();
   }
 
   initBg() {
@@ -98,76 +97,11 @@ class Demo {
       })
     }
 
-    start(()=>{
+    start(() => {
       console.log(1)
     });
   }
-  test2(){
-    let scene = this.scene;
-    let camera = this.camera;
-    var startX,
-      endX,
-      startY,
-      endY,
-      startAlpha,
-      endAlpha,
-      startBeta,
-      endBeta,
-      timeStart,
-      dir,
-      oriAlpha,
-      timeEnd;
-    scene.onPointerObservable.add(function(e){
-      e = window.event || event;
-      startX = e.clientX;
-      startY = e.clientY;
-      startAlpha = camera.alpha;
-      startBeta = camera.beta;
-      oriAlpha = 0;
-      timeStart = new Date().getTime();
-    }, BABYLON.PointerEventTypes.POINTERDOWN);
 
-    scene.onPointerObservable.add(function (e) {
-      e = window.event || event;
-      endX = e.clientX;
-      endY = e.clientY;
-      endAlpha = camera.alpha;
-      endBeta = camera.beta;
-      timeEnd = new Date().getTime();
-      if(timeEnd - timeStart >500){
-        camera.onViewMatrixChangedObservable.add(function () {
-          var alphaDif = camera.alpha- oriAlpha;
-          dir = alphaDif>0?1:-1;
-          oriAlpha = camera.alpha;
-          if(dir>0){
-            console.log("左滑")
-          } else if (dir < 0) {
-            console.log("右滑")
-          }else{
-            console.log("没动")
-          }
-        })
-        return
-      }
-      if (Math.abs((endY - startY) / (endX - startX)) <= 1.732){
-        if (endAlpha - startAlpha < 0){
-          console.log("右滑："+ (180 / Math.PI * Math.abs((endAlpha - startAlpha))).toFixed(0) + "°")
-        }else{
-          console.log("左滑：" + (180 / Math.PI * (endAlpha - startAlpha)).toFixed(0) + "°")
-        }
-      }else{
-        if (endBeta - startBeta > 0){
-          console.log("上滑：" + (180 / Math.PI * (endBeta - startBeta)).toFixed(0) + "°")
-        } else if (endBeta - startBeta < 0) {
-          console.log("下滑：" + (180 / Math.PI * Math.abs((endBeta - startBeta))).toFixed(0) + "°")
-        }else{
-          console.log("相机被限制了，傻逼")
-        }
-      }
-      console.log("旋转时长：" + (timeEnd-timeStart)/1000 + "秒")
-
-    }, BABYLON.PointerEventTypes.POINTERUP);
-  }
 }
 
 let demo = new Demo()
