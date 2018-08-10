@@ -1,0 +1,116 @@
+@import "variables.less";
+.babylon-material-editor .nav-top {
+  position: absolute;
+  width: 100%;
+  background: @color-gray;
+  text-align: center;
+  pointer-events: auto;
+  z-index: 1;
+  background: @color-gray;
+  box-shadow: 0 2px 20px @color-shadow;
+  transition: opacity .6s linear;
+  &.opacity {
+    opacity: 0;
+  }
+  &:hover {
+    opacity: 1;
+  }
+  .nav-top-toggle {
+    padding-top: 5px;
+    font-size: 1.5em;
+    cursor: pointer;
+  }
+  .section {
+    width: 100%;
+    padding: 2px 10px;
+    font-size: 1.3em;
+    text-align: left;
+    span {
+      margin: 0 3px;
+      pointer-events: none;
+      font-size: .92em;
+      line-height: 1.5em;
+    }
+    .iconfont {
+      font-size: .8em;
+    }
+    .iconfont.down {
+      color: #aaa;
+    }
+    .z-menu {
+
+      position: relative;
+      float: left;
+      margin-right: 10px;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 4px;
+      cursor: pointer;
+      &:hover {
+        border-top-color: rgba(100, 100, 100, .6);
+        border-right-color: rgba(100, 100, 100, .6);
+      }
+      &:after {
+        content: "";
+        height: 1em;
+        position: absolute;
+        top: .1em;
+        right: -6px;
+        width: 3px;
+        background: #fff;
+      }
+      ul {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 5%;
+        white-space: nowrap;
+        margin-top: 10px;
+        background: #fff;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+        pointer-events: none;
+        border-radius: 2px;
+        &:before {
+          content: "";
+          position: absolute;
+          left: 5px;
+          bottom: 100%;
+          border: 8px solid transparent;
+          border-bottom-color: rgba(102, 175, 233, .2);
+          z-index: -1;
+        }
+        &:after {
+          content: "";
+          position: absolute;
+          left: 5px;
+          bottom: 100%;
+          margin-bottom: -3px;
+          border: 8px solid transparent;
+          border-bottom-color: #fff;
+          z-index: -1;
+        }
+        li {
+          padding: 5px 14px;
+          position: relative;
+          font-size: .95em;
+          color: #444;
+          pointer-events: auto;
+          &:hover {
+            background: @color-hover;
+            color: #fff;
+          }
+          &.border:after {
+            content: "";
+            position: absolute;
+            width: 70%;
+            height: .05em;
+            left: 15%;
+            top: 0;
+            background: silver;
+          }
+        }
+      }
+    }
+
+  }
+}

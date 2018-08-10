@@ -1,3 +1,5 @@
+/** @module*/
+
 /**为了防止调试不想调试的物体,所以必须先editMesh(mesh)才能进行调试这个物体*/
 function editMesh(mesh) {
   mesh && [].concat(mesh).forEach((mesh) => {

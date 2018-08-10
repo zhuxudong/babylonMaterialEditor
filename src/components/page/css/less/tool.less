@@ -1,0 +1,107 @@
+@import "variables.less";
+@import "global.less";
+
+.z-cover {
+  position: absolute;
+  z-index: 65537;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, .3);
+  pointer-events: auto;
+}
+
+.button-group {
+  margin-top: 10px;
+  float: right;
+  button {
+    margin-left: 10px;
+  }
+}
+
+.z-prompt, .z-select, .z-prompt-file {
+  position: absolute;
+  width: 50%;
+  min-width: 300px;
+  top: 2rem;
+  left: 50%;
+  margin-left: -25%;
+  padding: 20px;
+  color: #333;
+  background: #FBFBFB;
+  border-radius: 5px;
+  z-index: 65538;
+  pointer-events: auto;
+  span {
+    font-size: 14px;
+  }
+  input, select, .upload {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 1px rgba(0, 0, 0, .075);
+    margin: 10px 0;
+    color: #555;
+    padding: 6px 12px;
+    transition: box-shadow .2s linear;
+    &:focus {
+      border-color: @color-blue;
+      outline: 0;
+      box-shadow: @blue-shadow;
+    }
+    &.alert {
+      box-shadow: inset 0 1px 10px rgba(0, 0, 0, 0.075), 0 0 8px rgba(255, 0, 0, 0.6);
+      border-color: rgba(255, 0, 0, .5);
+    }
+  }
+  .wrapper {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    margin: 20px auto;
+    &:hover .upload {
+      border-color: @color-blue;
+      outline: 0;
+      box-shadow: @blue-shadow;
+    }
+  }
+  .upload, input[type=file] {
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+    font-size: 25px;
+    line-height: 100px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+
+  }
+  input[type=file] {
+    opacity: 0;
+    cursor: pointer;
+    font-size: 0;
+  }
+  .upload {
+    background: none center/cover no-repeat;
+    border-radius: 50%;
+  }
+}
+
+.z-message {
+  padding: 8px 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px #333;
+  position: absolute;
+  top: 100px;
+  left: 200px;
+  z-index: 65560;
+  word-break: break-all;
+  word-wrap: break-word;
+  opacity: .8;
+  pointer-events: auto;
+  font-size: 14px;
+}

@@ -6,8 +6,9 @@ import initSceneByJSON from './components/tool/initSceneByJSON';
  *  不开启的时候文档不会加载相关文件,节省线上资源*/
 function openDebug() {
   require.ensure([], (require) => {
-    require("@/babyui/babyui").default;
+    require("@/page/main").default();
   })
 }
 
+openDebug()
 export {openDebug, editMesh, unEditMesh, editMaterial, unEditMaterial, initSceneByJSON};
