@@ -4,6 +4,7 @@ import "../client.js"
 import * as test from '../client';
 
 console.log(test)
+
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");
@@ -34,7 +35,8 @@ class Demo {
       this.engine.resize();
     });
     this.initBg();
-    this.loadMesh()
+    this.loadMesh();
+    this.test();
   }
 
   initBg() {
@@ -66,7 +68,40 @@ class Demo {
       // initSceneByJSON(this.scene, test)
     })
   }
+
+  test() {
+    let scene = this.scene;
+    let camera = this.camera;
+
+    function start(onChange) {
+      let two = false;
+      let oriAlpha = 0;
+      let oriDir = 0;
+      scene.onPointerObservable.add(() => {
+        two = false;
+      }, 1)
+      camera.onViewMatrixChangedObservable.add(() => {
+        let alphaDif = camera.alpha - oriAlpha;
+        oriAlpha = camera.alpha;
+        if (Math.abs(alphaDif) < 0.00001)
+          return;
+        let dir = alphaDif > 0 ? 1 : -1;
+        if (oriDir !== dir) {
+          if (two) {
+            onChange && onChange();
+          } else {
+            two = true;
+          }
+        }
+        oriDir = dir;
+      })
+    }
+
+    start(()=>{
+      console.log(1)
+    });
+  }
 }
 
 let demo = new Demo()
-window.d=demo;
+window.d = demo;
