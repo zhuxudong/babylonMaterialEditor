@@ -36,7 +36,7 @@ class Demo {
     });
     this.initBg();
     this.loadMesh();
-    // this.test();
+    this.test();
   }
 
   initBg() {
@@ -73,33 +73,96 @@ class Demo {
     let scene = this.scene;
     let camera = this.camera;
 
-    function start(onChange) {
-      let two = false;
+    function start() {
+      //相机视图矩阵发生变化时重置original值
       let oriAlpha = 0;
-      let oriDir = 0;
+      let oriBeta = 0;
+      let oriDirAlpha = 0;
+      let oriDirBeta = 0;
+      //因为要记录旋转角度,所以需要用变量来保存上次拐点的值
+      let turnAlpha = 0;
+      let turnBeta = 0;
+      //从down时开始记录,每次将变向信息保存进数组,up的时候打印信息
+      let infoAlpha = [];
+      let infoBeta = [];
+      //记录时间
+      let timeStart = null;
       scene.onPointerObservable.add(() => {
-        two = false;
+        //每次down的时候清空所有信息,重新开始记录
+        oriAlpha = turnAlpha = camera.alpha;
+        oriBeta = turnBeta = camera.beta;
+        oriDirAlpha = 0;
+        oriDirBeta = 0;
+        infoAlpha = [];
+        infoBeta = [];
+        timeStart = new Date().getTime();
       }, 1)
+      scene.onPointerObservable.add(() => {
+        infoAlpha.push({
+          dir: (camera.alpha - turnAlpha) > 0 ? 1 : -1,
+          angle: camera.alpha - turnAlpha
+        })
+        infoBeta.push({
+          dir: (camera.beta - turnBeta) > 0 ? 1 : -1,
+          angle: camera.beta - turnBeta
+        })
+        if (infoAlpha.length === 1) {
+          console.log("alpha单向", infoAlpha)
+        } else {
+          console.log("alpha多向:", infoAlpha)
+        }
+        if (infoBeta.length === 1) {
+          console.log("beta单向:", infoBeta)
+        } else {
+          console.log("beta多向:", infoBeta)
+        }
+        console.log("耗时:" + (new Date().getTime() - timeStart) + "毫秒");
+      }, 2)
       camera.onViewMatrixChangedObservable.add(() => {
         let alphaDif = camera.alpha - oriAlpha;
+        let betaDif = camera.beta - oriBeta;
         oriAlpha = camera.alpha;
-        if (Math.abs(alphaDif) < 0.00001)
-          return;
-        let dir = alphaDif > 0 ? 1 : -1;
-        if (oriDir !== dir) {
-          if (two) {
-            onChange && onChange();
+        oriBeta = camera.beta;
+        //当alpha发生变化
+        if (alphaDif) {
+          let dir = alphaDif > 0 ? 1 : -1;
+          //如果oriDirAlpha为0,代表刚按下,此次不记录转向，而是以它作为一个初始方向
+          if (!oriDirAlpha) {
+            oriDirAlpha = dir;
           } else {
-            two = true;
+            //这里发生了转向了
+            if (oriDirAlpha !== dir) {
+              infoAlpha.push({
+                dir: oriDirAlpha,
+                angle: camera.alpha - turnAlpha
+              })
+              oriDirAlpha = dir;
+              turnAlpha = camera.alpha;
+            }
           }
         }
-        oriDir = dir;
+        //当beta发生变化，同上
+        if (betaDif) {
+          let dir = betaDif > 0 ? 1 : -1;
+          //如果oriDirAlpha为0,代表刚按下,此次不记录转向，而是以它作为一个初始方向
+          if (!oriDirBeta) {
+            oriDirBeta = dir;
+          } else {
+            //这里发生了转向了
+            if (oriDirBeta !== dir) {
+              infoBeta.push({
+                dir: oriDirBeta,
+                angle: camera.beta - turnBeta
+              })
+              oriDirBeta = dir;
+              turnBeta = camera.beta;
+            }
+          }
+        }
       })
     }
 
-    start(() => {
-      console.log(1)
-    });
+    start();
   }
 
 }
