@@ -1,11 +1,9 @@
 /**@module*/
-// import App from './app'
 import io from 'socket.io-client';
 
 let scene = window.scene;
 let multiDebugDom = $(".babylon-material-editor");
 
-/**@Class */
 function MultiDebug2(opt) {
   let _this = this;
   let socket = null;
@@ -2025,8 +2023,24 @@ function MultiDebug2(opt) {
 
 }
 
+/**@Class */
 class MultiDebug {
-  //jQueryEasing
+  constructor(opt) {
+    this.socket = null;
+    //模块实例对象
+    this.menuModule = null;
+    this.lanModule = null;
+    this.picModule = null;
+    this.chatModule = null;
+    this.debugModule = null;
+    this.socketModule = null;
+    this.opt = opt;
+    scene = opt.scene;
+    //easeOutQuad
+    this.expandJquery();
+  }
+
+  //easeOutQuad
   expandJquery() {
     jQuery.easing['jswing'] = jQuery.easing['swing'];
     jQuery.extend(jQuery.easing,
@@ -2038,20 +2052,6 @@ class MultiDebug {
           return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
         }
       });
-  }
-
-  constructor(opt) {
-    this.socket = null;
-    /**模块实例对象*/
-    this.menuModule = null;
-    this.lanModule = null;
-    this.picModule = null;
-    this.chatModule = null;
-    this.debugModule = null;
-    this.socketModule = null;
-    this.expandJquery();
-    scene = opt.scene;
-
   }
 }
 

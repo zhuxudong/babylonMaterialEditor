@@ -9,7 +9,8 @@ function openDebug(opt) {
     //导入页面
     require("@/page/main");
     //client入口文件
-    require("@/index").default(Object.assign({
+    let MultiDebug = require("@/index").default;
+    new MultiDebug(Object.assign({
       scene: window.scene,
       ip: window.location.hostname,
       port: 3000,
