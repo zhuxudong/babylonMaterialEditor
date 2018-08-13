@@ -2,7 +2,6 @@ import "../client.js"
 // import createJSON from "@/tool/createJSON"
 // import initSceneByJSON from "@/tool/initSceneByJSON"
 import * as client from '../client';
-
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");

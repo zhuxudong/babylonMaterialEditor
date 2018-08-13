@@ -1,5 +1,10 @@
 /**@module*/
 import io from 'socket.io-client';
+import EditControl from './tool/EditControl.min.js'
+import BABYUI from './babyui/babyui';
+import createJSON from './tool/createJSON';
+import initSceneByJSON from './tool/initSceneByJSON';
+import Tool from './tool/tool'
 
 let scene = window.scene;
 let multiDebugDom = $(".babylon-material-editor");
@@ -2025,33 +2030,113 @@ function MultiDebug2(opt) {
 
 /**@Class */
 class MultiDebug {
+  menuModule = null;
+  lanModule = null;
+  picModule = null;
+  chatModule = null;
+  debugModule = null;
+  socketModule = null;
+  socket = null;
+  opt = null;
+
   constructor(opt) {
-    this.socket = null;
-    //模块实例对象
-    this.menuModule = null;
-    this.lanModule = null;
-    this.picModule = null;
-    this.chatModule = null;
-    this.debugModule = null;
-    this.socketModule = null;
-    this.opt = opt;
     scene = opt.scene;
-    //easeOutQuad
-    this.expandJquery();
+    this.opt = opt;
+    this.menuModule = new this.MenuModule();
   }
 
-  //easeOutQuad
-  expandJquery() {
-    jQuery.easing['jswing'] = jQuery.easing['swing'];
-    jQuery.extend(jQuery.easing,
-      {
-        def: 'easeOutQuad',
-        easeInOutBack: function (x, t, b, c, d, s) {
-          if (s == undefined) s = 1.70158;
-          if ((t /= d / 2) < 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
-          return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+  /**开启菜单模块
+   * @class*/
+  MenuModule() {
+    let navTop = multiDebugDom.find(".nav-top");
+    this.navTop = navTop;
+    let menus = multiDebugDom.find(".nav-top .section .z-menu");
+    //ul
+    let debugMenu = $("#z_debugMode");
+    let mainMenu = $("#z_mainMenu");
+    //span
+    let debugMenuName = debugMenu.parent().children().eq(1)
+    //ul
+    let chatMenu = $("#z_online");
+
+    function init() {
+      //上拉下拉
+      function pull() {
+        menus.blur(function (e) {
+          let $dom = $(e.srcElement || e.target).children("ul");
+          $dom.slideUp({
+            duration: 300,
+            easing: "easeInOutBack"
+          });
+          return false;
+        }).click(function (e) {
+          let $dom = $(e.srcElement || e.target).children("ul");
+          $dom.slideToggle({
+            duration: 300,
+            easing: "easeInOutBack"
+          });
+          return false;
+        }).find("ul").click(function (e) {
+          let $dom = $(e.srcElement || e.target);
+          if ($dom[0].nodeName.toUpperCase() == "LI") {
+            $dom.parent().slideUp({
+              duration: 300,
+              easing: "easeInOutBack"
+            });
+          }
+          return false;
+        })
+      }
+
+      pull();
+      //禁止右键默认事件
+      window.oncontextmenu = function () {
+        return false;
+      }
+      //切换调试模式;
+      debugMenu.children("li").click(function (e) {
+        let $dom = $(e.srcElement || e.target);
+        debugMenuName.html($dom.html());
+        if ($dom.index() === 0) {
+          EXEI("menuModule", "onDebugMode");
+        } else if ($dom.index() === 1) {
+          EXEI("menuModule", "onViewMode");
         }
-      });
+      })
+      //切换聊天列表
+      chatMenu.click(function (e) {
+        let $dom = $(e.srcElement || e.target);
+        if ($dom[0].nodeName.toUpperCase() == "LI") {
+          EXEI("menuModule", "onClickChatMenu", $dom.html());
+        }
+      })
+      //工具选项
+      mainMenu.children("li").click(function (e) {
+        let $dom = $(e.srcElement || e.target);
+        let itemName = $dom.html();
+        EXEI("menuModule", "onClickMainMenu", itemName)
+      })
+    }
+
+    init();
+    /**更新菜单栏用户列表
+     * @param {Object[]} names - 名字数组*/
+    this.updateUserList = function (names) {
+      chatMenu.html("");
+      names.forEach(function (name, i) {
+        let li = $("<li " + ((i == 0) ? " " : "class=\"border\" ") + ">" + name + "</li>");
+        chatMenu.append(li)
+      })
+    }
+    /**显示模块*/
+    this.show = function () {
+      navTop.show();
+    }
+    /**隐藏模块*/
+    this.hide = function () {
+      navTop.hide();
+    }
+
   }
 }
 
