@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: components/tool/createJSON</title>
+    <title>JSDoc: Namespace: picModule</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: components/tool/createJSON</h1>
+    <h1 class="page-title">Namespace: picModule</h1>
 
     
 
@@ -28,6 +28,8 @@
 
 <header>
     
+        <h2>
+            <span class="ancestors"><a href="module-components_index.html">components/index</a><a href="module-components_index-MultiDebug.html">~MultiDebug</a><a href="module-components_index-MultiDebug.Interface.html">.Interface</a>.</span>picModule</h2>
         
     
 </header>
@@ -36,6 +38,50 @@
     <div class="container-overview">
     
         
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2232">line 2232</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
 
         
     
@@ -64,7 +110,7 @@
     
 
     
-    <h4 class="name" id="~createJSON"><span class="type-signature">(inner) </span>createJSON<span class="signature">(scene, option)</span><span class="type-signature"> &rarr; {string}</span></h4>
+    <h4 class="name" id=".onClickPic"><span class="type-signature">(static) </span>onClickPic<span class="signature">(data)</span><span class="type-signature"></span></h4>
     
 
     
@@ -72,7 +118,7 @@
 
 
 <div class="description">
-    生成经过editMaterial()的材质的JSON,用于initSceneByJSON
+    点击picPanel中的图片触发的事件
 </div>
 
 
@@ -108,7 +154,7 @@
 
         <tr>
             
-                <td class="name"><code>scene</code></td>
+                <td class="name"><code>data</code></td>
             
 
             <td class="type">
@@ -124,30 +170,7 @@
 
             
 
-            <td class="description last">对应的BABYLON场景</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>option</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">默认生成场景中所有灯光和材质的JSON，修改参数可以定制生成的JSON
+            <td class="description last">触发事件对象
                 <h6>Properties</h6>
                 
 
@@ -173,16 +196,13 @@
 
         <tr>
             
-                <td class="name"><code>materials</code></td>
+                <td class="name"><code>button</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">Array.&lt;Object></span>
+<span class="param-type">number</span>
 
 
             
@@ -192,23 +212,20 @@
 
             
 
-            <td class="description last">materials中只生成相应的材质JSON</td>
+            <td class="description last">触发方式:0:左键，1：中键，2：右键</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>materialNames</code></td>
+                <td class="name"><code>fileName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array.&lt;String></span>
+<span class="param-type">number</span>
 
 
             
@@ -218,23 +235,20 @@
 
             
 
-            <td class="description last">materials中只根据材质名字生成这些物体的材质JSON</td>
+            <td class="description last">文件名字</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>lights</code></td>
+                <td class="name"><code>picName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">Array.&lt;Object></span>
+<span class="param-type">number</span>
 
 
             
@@ -244,23 +258,20 @@
 
             
 
-            <td class="description last">lights中只生成相应灯光的灯光JSON</td>
+            <td class="description last">点击的具体图片的名字</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>lightNames</code></td>
+                <td class="name"><code>path</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array.&lt;String></span>
+<span class="param-type">number</span>
 
 
             
@@ -270,23 +281,20 @@
 
             
 
-            <td class="description last">lights中只根据灯光名字生成这些灯光的灯光JSON</td>
+            <td class="description last">存放图片的文件夹路径，</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>publicPath</code></td>
+                <td class="name"><code>type</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array.&lt;String></span>
+<span class="param-type">number</span>
 
 
             
@@ -296,125 +304,7 @@
 
             
 
-            <td class="description last">公有材质库根路径</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>appPath</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array.&lt;String></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">私有材质库根路径</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>console</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">是否打印JSON数据到控制台</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>warn</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">是否打印警告信息</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>window</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">是否打印JSON数据到新窗口</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mini</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">是否生成缩减版JSON，默认false,用于上线，删除了调试用到的JSON</td>
+            <td class="description last">skybox||texture</td>
         </tr>
 
     
@@ -462,7 +352,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_createJSON.js.html">components/tool/createJSON.js</a>, <a href="components_tool_createJSON.js.html#line21">line 21</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2251">line 2251</a>
     </li></ul></dd>
     
 
@@ -485,28 +375,417 @@
 
 
 
-<h5>Returns:</h5>
+
+
+
+
 
         
-<div class="param-desc">
-    str - 调试生成的JSON数据
+            
+
+    
+
+    
+    <h4 class="name" id=".onDragPic"><span class="type-signature">(static) </span>onDragPic<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    拖动图片触发的事件
 </div>
 
 
 
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
         
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">信息
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fileName</code></td>
+            
+
+            <td class="type">
+            
+                
 <span class="param-type">string</span>
 
 
-    </dd>
-</dl>
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">文件名</td>
+        </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">文件路径</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">"skybox||texture"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>panel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">1,2,3,4</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2260">line 2260</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onTogglePicPanel"><span class="type-signature">(static) </span>onTogglePicPanel<span class="signature">(button, panel)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    切换图片板块触发的事件
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>button</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">点击的按钮,jqueryDom</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>panel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">点击的按钮对应的picPanel,jqueryDom</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2237">line 2237</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: components/tool/initSceneByJSON</title>
+    <title>JSDoc: Namespace: socketModule</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: components/tool/initSceneByJSON</h1>
+    <h1 class="page-title">Namespace: socketModule</h1>
 
     
 
@@ -28,6 +28,8 @@
 
 <header>
     
+        <h2>
+            <span class="ancestors"><a href="module-components_index.html">components/index</a><a href="module-components_index-MultiDebug.html">~MultiDebug</a><a href="module-components_index-MultiDebug.Application.html">.Application</a>.</span>socketModule</h2>
         
     
 </header>
@@ -36,6 +38,50 @@
     <div class="container-overview">
     
         
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2980">line 2980</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
 
         
     
@@ -64,7 +110,7 @@
     
 
     
-    <h4 class="name" id="~initSceneByJSON"><span class="type-signature">(inner) </span>initSceneByJSON<span class="signature">(scene, json, material, light)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onLoginSuccess"><span class="type-signature">(static) </span>onLoginSuccess<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -72,7 +118,93 @@
 
 
 <div class="description">
-    根据JSON初始化场景
+    登陆成功的事件
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2982">line 2982</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onReceiveDebugChange"><span class="type-signature">(static) </span>onReceiveDebugChange<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    收到debug信息
 </div>
 
 
@@ -98,8 +230,6 @@
         
 
         
-        <th>Default</th>
-        
 
         <th class="last">Description</th>
     </tr>
@@ -110,13 +240,13 @@
 
         <tr>
             
-                <td class="name"><code>scene</code></td>
+                <td class="name"><code>data.lightName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
             
@@ -125,28 +255,21 @@
             
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last">需要初始化的场景</td>
+            <td class="description last"></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>json</code></td>
+                <td class="name"><code>data.materialId</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">String</span>
+<span class="param-type">string</span>
 
 
             
@@ -155,25 +278,21 @@
             
 
             
-                <td class="default">
-                
-                </td>
-            
 
-            <td class="description last">全部数据</td>
+            <td class="description last"></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>material</code></td>
+                <td class="name"><code>data.json</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
             
@@ -182,43 +301,8 @@
             
 
             
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
 
-            <td class="description last">如果有此参数,材质中只初始化这个材质球</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>light</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">如果有此参数,灯光中只初始化这个灯光</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -259,7 +343,279 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_initSceneByJSON.js.html">components/tool/initSceneByJSON.js</a>, <a href="components_tool_initSceneByJSON.js.html#line12">line 12</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line3023">line 3023</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onReceiveLanListChange"><span class="type-signature">(static) </span>onReceiveLanListChange<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">点击的那个选项的信息
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stat</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">选项状态 -"danger"||"warn"||"success"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">选项名字</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>meshId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">ID</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>config</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">是否显示配置图标</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>title</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">替换的title</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line3015">line 3015</a>
     </li></ul></dd>
     
 

@@ -12,7 +12,8 @@
       "src/client.js",
       "src/server.js",
       "src/components/babyui",
-      "src/components/tool"
+      "src/components/tool",
+      "src/components/index.js"
     ]
   },
   "plugins": [],

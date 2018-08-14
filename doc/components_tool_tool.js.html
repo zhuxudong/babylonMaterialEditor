@@ -67,21 +67,22 @@ let Tool = {
    * @param {boolean} noCancel - true:没有取消键，强制输入
    */
   showPrompt: function (text, callback, noCancel) {
-    Tool.loadCSS();
+    let parent = $(".babylon-material-editor");
+    let $document = $(document);
+    let cover = $("&lt;div class='z-cover'>");
+    let dialog = $(`&lt;div class='z-prompt'>&lt;span class='text'>${text}&lt;/span>&lt;input> &lt;div class='button-group'>&lt;button class='btn color-success'>确定&lt;/button>&lt;button  class='btn color-danger'>取消&lt;/button>&lt;/div>&lt;/div>`)
     $(".z-prompt").remove();
     $(".z-cover").remove();
-    let cover = $("&lt;div class='z-cover'>");
-    let dialog = $("&lt;div class='z-prompt'>&lt;span class='text'>" + text + "&lt;/span>&lt;input> &lt;div class='button-group'>&lt;button class='btn color-success'>确定&lt;/button>&lt;button  class='btn color-danger'>取消&lt;/button>&lt;/div>&lt;/div>")
-    $(document.body).append(cover);
-    $(document.body).append(dialog);
+    parent.append(cover);
+    parent.append(dialog);
     if (noCancel) {
       $(".z-prompt .color-danger").remove();
     }
     let input = $(".z-prompt input");
 
     function clear() {
-      $(document).off("keydown", enter);
-      $(document).off("keydown", exit);
+      $document.off("keydown", enter);
+      $document.off("keydown", exit);
     }
 
     function enter(e) {
@@ -97,8 +98,8 @@ let Tool = {
       }
     }
 
-    $(document).on("keydown", enter)
-    $(document).on("keydown", exit)
+    $document.on("keydown", enter)
+    $document.on("keydown", exit)
 
     function success() {
       if (!input.val()) {
@@ -137,11 +138,10 @@ let Tool = {
    * @param {Array} disable2 - 禁止输入框2输入的内容
    */
   showDoublePrompt: function (text1, text2, callback, onCancel, noCancel, disable1, disable2) {
-    Tool.loadCSS();
     $(".z-prompt").remove();
     $(".z-cover").remove();
     let dialog = $("&lt;div class='z-prompt'>&lt;span class='text'>" + text1 + "&lt;/span>&lt;input>&lt;span class='text'>" + text2 + "&lt;/span>&lt;input> &lt;div class='button-group'>&lt;button class='btn color-success'>确定&lt;/button>&lt;button  class='btn color-danger'>取消&lt;/button>&lt;/div>&lt;/div>")
-    $(document.body).append(dialog);
+    $(".babylon-material-editor").append(dialog);
     if (noCancel) {
       $(".z-prompt .color-danger").remove();
     }
@@ -199,13 +199,12 @@ let Tool = {
    * @param {function} callback - (text::输入框内的文字)
    */
   showConfirm: function (text, callback) {
-    Tool.loadCSS();
     $(".z-prompt").remove();
     $(".z-cover").remove();
     let cover = $("&lt;div class='z-cover'>");
     let dialog = $("&lt;div class='z-prompt'>&lt;span class='text'>" + text + "&lt;/span>&lt;br>&lt;div class='button-group'>&lt;button class='btn color-success'>确定&lt;/button>&lt;button  class='btn color-danger'>取消&lt;/button>&lt;/div>&lt;/div>")
-    $(document.body).append(cover);
-    $(document.body).append(dialog);
+    $(".babylon-material-editor").append(cover);
+    $(".babylon-material-editor").append(dialog);
 
     function clear() {
       $(document).off("keydown", enter);
@@ -252,13 +251,12 @@ let Tool = {
    * @param {showSelect~test} callback - (text::选中的下拉框内的文字,index::索引，0~)
    */
   showSelect: function (text, data, callback) {
-    Tool.loadCSS();
     $(".z-cover").remove();
     $(".z-select").remove();
     let cover = $("&lt;div class='z-cover'>");
     let dialog = $("&lt;div class='z-select'>&lt;span class='text'>" + text + "&lt;/span>&lt;select>&lt;/select> &lt;div class='button-group'>&lt;button class='btn color-success'>确定&lt;/button>&lt;button  class='btn color-danger'>取消&lt;/button>&lt;/div>&lt;/div>")
-    $(document.body).append(cover);
-    $(document.body).append(dialog);
+    $(".babylon-material-editor").append(cover);
+    $(".babylon-material-editor").append(dialog);
     [].slice.call(data).forEach(function (text) {
       $(".z-select select").append($("&lt;option value='" + text + "'>" + text + "&lt;/option>"))
     })
@@ -311,13 +309,12 @@ let Tool = {
    * @param {boolean} canValid - 输入框可以为空
    */
   showPromptWithFile: function (text1, text2, callback, noCancel, filePath, canValid) {
-    Tool.loadCSS();
     $(".z-prompt-file").remove();
     $(".z-cover").remove();
     let cover = $("&lt;div class='z-cover'>");
     let dialog = $("&lt;div class='z-prompt-file'>&lt;span class='text'>" + text1 + "&lt;/span>&lt;input type='text'>&lt;span>" + text2 + "&lt;/span>&lt;div class='wrapper'>&lt;div class='iconfont upload'>&lt;/div>&lt;input type='file'>&lt;/div>&lt;div class='button-group'>&lt;button class='btn color-success'>确定&lt;/button>&lt;button  class='btn color-danger'>取消&lt;/button>")
-    $(document.body).append(cover);
-    $(document.body).append(dialog);
+    $(".babylon-material-editor").append(cover);
+    $(".babylon-material-editor").append(dialog);
     if (noCancel) {
       $(".z-prompt-file .color-danger").remove();
     }
@@ -342,6 +339,7 @@ let Tool = {
 
     fileDom.on("change", function () {
       let file = fileDom[0].files[0];
+      console.log(file)
       Tool.loadFile(file, function (data) {
         upload.css("background-image", "url(" + data + ")");
         upload.removeClass("iconfont");
@@ -443,15 +441,6 @@ let Tool = {
 
   }
   ,
-  loadCSS: function () {
-    let PREFIX = "../../js/multi_debugV1.0/";
-    let toolPrefix = PREFIX + "css/tool.css";
-    if (!$("[data-tool=MultiDebug]")[0]) {
-      let toolCss = $('&lt;link rel="stylesheet" data-tool="MultiDebug" type="text/css" href="' + toolPrefix + '">');
-      $(document.head).append(toolCss);
-    }
-  }
-  ,
   /**根据time获取标准格式,如13:23 PM
    * @param {number}time  - new Date().getTime*(*/
   getDayTime: function (time, full) {
@@ -484,13 +473,13 @@ export default Tool;</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_edit.html">components/tool/edit</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-components_tool_tool.html">components/tool/tool</a></li><li><a href="module-server.html">server</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li><li><a href="module-components_tool_tool-Tool.html">Tool</a></li></ul><h3>Global</h3><ul><li><a href="global.html#openDebug">openDebug</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_app.html">components/app</a></li><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_index.html">components/index</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_edit.html">components/tool/edit</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-components_tool_tool.html">components/tool/tool</a></li><li><a href="module-server.html">server</a></li></ul><h3>Classes</h3><ul><li><a href="module-components_index-MultiDebug.html">MultiDebug</a></li><li><a href="module-components_index-MultiDebug_ChatModule.html">ChatModule</a></li><li><a href="module-components_index-MultiDebug_DebugModule.html">DebugModule</a></li><li><a href="module-components_index-MultiDebug_LanModule.html">LanModule</a></li><li><a href="module-components_index-MultiDebug_MenuModule.html">MenuModule</a></li><li><a href="module-components_index-MultiDebug_PicModule.html">PicModule</a></li><li><a href="module-components_index-MultiDebug_SocketModule.html">SocketModule</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li><li><a href="module-components_index-MultiDebug.Application.html">Application</a></li><li><a href="module-components_index-MultiDebug.Application.debugModule.html">debugModule</a></li><li><a href="module-components_index-MultiDebug.Application.lanModule.html">lanModule</a></li><li><a href="module-components_index-MultiDebug.Application.menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug.Application.socketModule.html">socketModule</a></li><li><a href="module-components_index-MultiDebug.Interface.html">Interface</a></li><li><a href="module-components_index-MultiDebug.Interface.chatModule.html">chatModule</a></li><li><a href="module-components_index-MultiDebug.Interface.debugModule.html">debugModule</a></li><li><a href="module-components_index-MultiDebug.Interface.lanModule.html">lanModule</a></li><li><a href="module-components_index-MultiDebug.Interface.menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug.Interface.picModule.html">picModule</a></li><li><a href="module-components_index-MultiDebug.Interface.socketModule.html">socketModule</a></li><li><a href="module-components_tool_tool-Tool.html">Tool</a></li></ul><h3>Global</h3><ul><li><a href="global.html#openDebug">openDebug</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Aug 10 2018 15:02:44 GMT+0800 (中国标准时间)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Aug 14 2018 10:23:36 GMT+0800 (中国标准时间)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,12 +1,41 @@
-/**@module*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**@module*/
 // import App from './app'
 import io from 'socket.io-client';
 
 let scene = window.scene;
 let multiDebugDom = $(".babylon-material-editor");
+let app = null;
 
 /**@Class */
-function MultiDebug2(opt) {
+function MultiDebug(opt) {
   let _this = this;
   let socket = null;
   let EXE = MultiDebug.exe;
@@ -15,6 +44,8 @@ function MultiDebug2(opt) {
   let EXEI = MultiDebug.exeI;
   MultiDebug.modules = this;
   scene = opt.scene;
+  // app = new App();
+  /**socket*/
   this.socket = null;
   /**模块实例对象*/
   this.menuModule = null;
@@ -31,8 +62,8 @@ function MultiDebug2(opt) {
   /**开启菜单模块
    * @class*/
   this.MenuModule = function () {
-    let navTop = multiDebugDom.find(".nav-top");
     this.navTop = navTop;
+    let navTop = multiDebugDom.find(".nav-top");
     let menus = multiDebugDom.find(".nav-top .section .z-menu");
     //ul
     let debugMenu = $("#z_debugMode");
@@ -107,7 +138,7 @@ function MultiDebug2(opt) {
     this.updateUserList = function (names) {
       chatMenu.html("");
       names.forEach(function (name, i) {
-        let li = $("<li " + ((i == 0) ? " " : "class=\"border\" ") + ">" + name + "</li>");
+        let li = $("&lt;li " + ((i == 0) ? " " : "class=\"border\" ") + ">" + name + "&lt;/li>");
         chatMenu.append(li)
       })
     }
@@ -153,15 +184,15 @@ function MultiDebug2(opt) {
             return;
           let stat = info.stat;
           let name = info.name;
-          let dom = $("<li>");
-          let statSpan = $("<span class=stat>");
-          let nameSpan = $("<span>");
+          let dom = $("&lt;li>");
+          let statSpan = $("&lt;span class=stat>");
+          let nameSpan = $("&lt;span>");
           statSpan.addClass("color-" + stat);
           nameSpan.html(name);
           dom.append(statSpan).append(nameSpan);
           //配置按钮点击事件
           if (info.config) {
-            let config = $("<span class='iconfont config'>")
+            let config = $("&lt;span class='iconfont config'>")
             dom.append(config);
             //配置按钮点击事件
             dom[0].config = true;
@@ -203,7 +234,7 @@ function MultiDebug2(opt) {
      * @param {string} json.data - li元素的额外数据
      */
     this.refreshSingleLan = function (json, dom, data) {
-      if (dom && json) {
+      if (dom &amp;&amp; json) {
         if (typeof dom == "string") {
           lanList.children().each(function (i, lan) {
             lan = $(lan);
@@ -233,7 +264,7 @@ function MultiDebug2(opt) {
         }
         if (json.config) {
           if (config.length == 0) {
-            let config = $("<span class='iconfont config'>");
+            let config = $("&lt;span class='iconfont config'>");
             dom.append(config);
           }
           //配置按钮点击事件
@@ -356,7 +387,7 @@ function MultiDebug2(opt) {
         })
         $(document).on("mouseup", function () {
           canDrag = false;
-          if (window.parseInt(bar.css("left")) <= 30) {
+          if (window.parseInt(bar.css("left")) &lt;= 30) {
             nav.width(0);
             bar.css("left", nav.innerWidth());
             bar.addClass("hide")
@@ -517,11 +548,11 @@ function MultiDebug2(opt) {
       if (currentPanel.hasClass("pic-panel-cube")) {
         currentPanel.html("");
         [].concat(data).forEach(function (fileName) {
-          let file = $("<div class=file draggable=true>");
-          let name = $("<span class=name>");
+          let file = $("&lt;div class=file draggable=true>");
+          let name = $("&lt;span class=name>");
           name.html(fileName);
-          for (let i = 0; i < 6; i++) {
-            let img = $("<img class=mini title=" + (fileName + extend[i]) + ">")
+          for (let i = 0; i &lt; 6; i++) {
+            let img = $("&lt;img class=mini title=" + (fileName + extend[i]) + ">")
             img[0].src = path + fileName + "/" + fileName + extend[i];
             file.append(img);
           }
@@ -570,10 +601,10 @@ function MultiDebug2(opt) {
         [].concat(data).forEach(function (fileName) {
           if (fileName == "Thumbs.db")
             return;
-          let file = $("<div class=file draggable=true>");
-          let name = $("<span class=name>");
+          let file = $("&lt;div class=file draggable=true>");
+          let name = $("&lt;span class=name>");
           name.html(fileName);
-          let img = $("<img class=mini title=" + fileName + ">");
+          let img = $("&lt;img class=mini title=" + fileName + ">");
           img[0].src = path + fileName;
           file.append(img).append(name);
           currentPanel.append(file);
@@ -659,7 +690,7 @@ function MultiDebug2(opt) {
           }
         })
         $(document).on("mouseup", function () {
-          if (window.parseInt(bar.css("bottom")) <= 30) {
+          if (window.parseInt(bar.css("bottom")) &lt;= 30) {
             navPic.height(0);
             bar.css("bottom", navPic.innerHeight());
             picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight())
@@ -764,8 +795,8 @@ function MultiDebug2(opt) {
       if (!imgPath) {
         return
       }
-      if (!force && imgBuffer.hasOwnProperty(imgPath)) {
-        onsuccess && onsuccess(imgBuffer[imgPath]);
+      if (!force &amp;&amp; imgBuffer.hasOwnProperty(imgPath)) {
+        onsuccess &amp;&amp; onsuccess(imgBuffer[imgPath]);
       } else {
         //如果已经有请求正在发送，则只需要等待请求，最多等待5s.
         if (ajaxing[imgPath]) {
@@ -775,10 +806,10 @@ function MultiDebug2(opt) {
             if (!ajaxing[imgPath]) {
               onsuccess(imgBuffer[imgPath])
             } else {
-              if (time++ < 10) {
+              if (time++ &lt; 10) {
                 window.setTimeout(arguments.callee, 500)
               } else {
-                onsuccess && onsuccess(null);
+                onsuccess &amp;&amp; onsuccess(null);
               }
             }
           })();
@@ -787,12 +818,12 @@ function MultiDebug2(opt) {
           $.ajax(SERVERFIX + imgPath, {
             error: function () {
               ajaxing[imgPath] = false;
-              onsuccess && onsuccess(null);
+              onsuccess &amp;&amp; onsuccess(null);
             },
             success: function (base64) {
               setImgBuffer(imgPath, base64);
               ajaxing[imgPath] = false;
-              onsuccess && onsuccess(base64);
+              onsuccess &amp;&amp; onsuccess(base64);
             }
           })
         }
@@ -862,7 +893,7 @@ function MultiDebug2(opt) {
      * */
     this.showDesktopMessage = function (title, message, imgURL, time) {
       if (Notification.permission == "default") {
-        Notification.requestPermission && Notification.requestPermission()
+        Notification.requestPermission &amp;&amp; Notification.requestPermission()
       }
       let notification = new Notification(title, {
         body: message,
@@ -878,7 +909,7 @@ function MultiDebug2(opt) {
      * @param {object} notification - 消息对象，通过showDesktopMessage返回*/
     this.hideDesktopMessage = function (notification) {
       try {
-        notification.close && notification.close();
+        notification.close &amp;&amp; notification.close();
       } catch (e) {
         console.warn(e)
       }
@@ -895,7 +926,7 @@ function MultiDebug2(opt) {
      * @param {string} data[].time - 聊天历史时间
      * */
     this.initLogContentBuffer = function (data) {
-      if (data && data instanceof Array) {
+      if (data &amp;&amp; data instanceof Array) {
         logContentBuffer = data;
       }
     }
@@ -936,9 +967,9 @@ function MultiDebug2(opt) {
       })
       let one = true;
       users.forEach(function (userInfo) {
-        let user = $("<div class=user>");
-        let img = $("<div class=user-img>");
-        let name = $("<div class=user-name >" + userInfo.userName + "</div>");
+        let user = $("&lt;div class=user>");
+        let img = $("&lt;div class=user-img>");
+        let name = $("&lt;div class=user-name >" + userInfo.userName + "&lt;/div>");
         if (userInfo.userImg) {
           module.getServerImg(userInfo.userImg, function (base64) {
             img.css("background-image", "url(" + base64 + ")");
@@ -998,7 +1029,7 @@ function MultiDebug2(opt) {
      * @param {string} data[].time - 聊天历史时间
      * */
     this.initChatContentBuffer = function (data) {
-      if (data && data instanceof Array) {
+      if (data &amp;&amp; data instanceof Array) {
         chatContentBuffer = data;
       }
     }
@@ -1042,24 +1073,24 @@ function MultiDebug2(opt) {
       [].concat(data).forEach(function (data) {
         let myName = GET("socketModule", "myName");
         let isPublic = module.currentChannel == module.publicRoom;
-        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
-        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
-        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
-        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        let isPublicMe = isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.publicRoom;
+        let isPublicOther = isPublic &amp;&amp; data.from != myName &amp;&amp; data.to == module.publicRoom;
+        let isMe = !isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.currentChannel;
+        let isOther = !isPublic &amp;&amp; data.from == module.currentChannel &amp;&amp; data.to == myName;
         //过滤其他频道信息
-        if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
+        if (!isMe &amp;&amp; !isOther &amp;&amp; !isPublicMe &amp;&amp; !isPublicOther) {
           return;
         }
         //start
-        let wrapper = $("<div class=chat-content>");
-        let imgWrapper = $("<div class=user-img-wrapper>");
-        let userImg = $("<div class=user-img>");
+        let wrapper = $("&lt;div class=chat-content>");
+        let imgWrapper = $("&lt;div class=user-img-wrapper>");
+        let userImg = $("&lt;div class=user-img>");
         imgWrapper.append(userImg);
-        let contentWrapper = $("<div class=content-wrapper>");
-        let name = $("<span class=username>");
-        let content = $("<div class=content>");
+        let contentWrapper = $("&lt;div class=content-wrapper>");
+        let name = $("&lt;span class=username>");
+        let content = $("&lt;div class=content>");
         contentWrapper.append(name).append(content);
-        let time = $("<div class=time>");
+        let time = $("&lt;div class=time>");
         wrapper.append(imgWrapper).append(contentWrapper).append(time);
         content.html(data.content);
         name.html(data.from);
@@ -1078,7 +1109,7 @@ function MultiDebug2(opt) {
         }
         chatBody.append(wrapper);
       })
-      onsuccess && onsuccess();
+      onsuccess &amp;&amp; onsuccess();
       let children = null;
       if ((children = chatBody.children()).length > 0) {
         chatBody.scrollTop(children.last().position().top - children.first().position().top)
@@ -1101,24 +1132,24 @@ function MultiDebug2(opt) {
       [].concat(data).forEach(function (data) {
         let myName = GET("socketModule", "myName");
         let isPublic = module.currentChannel == module.publicRoom;
-        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
-        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
-        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
-        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        let isPublicMe = isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.publicRoom;
+        let isPublicOther = isPublic &amp;&amp; data.from != myName &amp;&amp; data.to == module.publicRoom;
+        let isMe = !isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.currentChannel;
+        let isOther = !isPublic &amp;&amp; data.from == module.currentChannel &amp;&amp; data.to == myName;
         //过滤其他频道信息
-        if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
+        if (!isMe &amp;&amp; !isOther &amp;&amp; !isPublicMe &amp;&amp; !isPublicOther) {
           return;
         }
         //start
-        let wrapper = $("<div class=chat-content>");
-        let imgWrapper = $("<div class=user-img-wrapper>");
-        let userImg = $("<div class=user-img>");
+        let wrapper = $("&lt;div class=chat-content>");
+        let imgWrapper = $("&lt;div class=user-img-wrapper>");
+        let userImg = $("&lt;div class=user-img>");
         imgWrapper.append(userImg);
-        let contentWrapper = $("<div class=content-wrapper>");
-        let name = $("<span class=username>");
-        let content = $("<div class=content>");
+        let contentWrapper = $("&lt;div class=content-wrapper>");
+        let name = $("&lt;span class=username>");
+        let content = $("&lt;div class=content>");
         contentWrapper.append(name).append(content);
-        let time = $("<div class=time>");
+        let time = $("&lt;div class=time>");
         wrapper.append(imgWrapper).append(contentWrapper).append(time);
         content.html(data.content);
         name.html(data.from);
@@ -1137,7 +1168,7 @@ function MultiDebug2(opt) {
         }
         chatBody.append(wrapper);
       })
-      onsuccess && onsuccess();
+      onsuccess &amp;&amp; onsuccess();
       let children = null;
       if ((children = chatBody.children()).length > 0) {
         chatBody.scrollTop(children.last().position().top - children.first().position().top)
@@ -1239,7 +1270,7 @@ function MultiDebug2(opt) {
           canDrag = false;
           let offset = navChat.offset();
           let dif = 50;
-          if (offset.top < -20 || offset.top > window.innerHeight - 20 || offset.left > window.innerWidth - dif || offset.left < -chatTop.innerWidth() + dif) {
+          if (offset.top &lt; -20 || offset.top > window.innerHeight - 20 || offset.left > window.innerWidth - dif || offset.left &lt; -chatTop.innerWidth() + dif) {
             //navChat.css("margin-left", marginLeft).css("margin-top", marginTop);
             navChat.fadeOut(600);
           }
@@ -1283,7 +1314,7 @@ function MultiDebug2(opt) {
 
       submit.click(submitEvent);
       chatInput.on("keydown", function (e) {
-        if ((e.key == "Enter" || e.keyCode == 13) && !e.shiftKey) {
+        if ((e.key == "Enter" || e.keyCode == 13) &amp;&amp; !e.shiftKey) {
           submitEvent();
           return false;
         }
@@ -1291,7 +1322,7 @@ function MultiDebug2(opt) {
       //桌边提醒
       $(document.body).one("click", function () {
         //请求打开桌边提醒服务
-        Notification.requestPermission && Notification.requestPermission()
+        Notification.requestPermission &amp;&amp; Notification.requestPermission()
       })
       //判断桌边是否隐藏
       $(window).on("blur", function () {
@@ -1341,7 +1372,7 @@ function MultiDebug2(opt) {
         Object.defineProperty(this, "parent", {
           set: function (val) {
             parent = val;
-            if (parent && parent.dom) {
+            if (parent &amp;&amp; parent.dom) {
               parent.dom.append(_this.dom)
             }
           },
@@ -1400,9 +1431,9 @@ function MultiDebug2(opt) {
       onChange: function () {
       },
       initBox: function () {
-        let box = $("<div class='baby-box'>")
+        let box = $("&lt;div class='baby-box'>")
         box.css("max-height", window.innerHeight - 200);
-        let bar = $("<div class='baby-dragbar'>");
+        let bar = $("&lt;div class='baby-dragbar'>");
         $("body").append(box).append(bar);
         bar.css("right", box.innerWidth() + "px");
         let px = null;
@@ -1428,7 +1459,7 @@ function MultiDebug2(opt) {
           }
         }).on("mouseup", function () {
           canDrag = false;
-          if (box.width() < 20) {
+          if (box.width() &lt; 20) {
             box.width(0);
             bar.css("right", box.innerWidth() + "px");
           }
@@ -1475,7 +1506,7 @@ function MultiDebug2(opt) {
       },
       Folder: function (title, parent, canDrag, onDrop) {
         let _this = this;
-        this.dom = $("<div class='baby-folder '><span class='open' title=\"" + title + "\">" + title + "</span></div>");
+        this.dom = $("&lt;div class='baby-folder '>&lt;span class='open' title=\"" + title + "\">" + title + "&lt;/span>&lt;/div>");
         BABYUI.Base.call(this, title, parent);
         //默认关闭
         let span = this.dom.children().eq(0);
@@ -1550,10 +1581,10 @@ function MultiDebug2(opt) {
       Color: function (title, value, onChange, parent) {
         let _this = this;
         let strVar = "";
-        strVar += " <div class=\"baby-color\" title=\"" + title + "\">\n";
-        strVar += "<span>" + title + "<\/span>\n";
-        strVar += "<span class=\"baby-color-box\"> <\/span>\n";
-        strVar += "        <\/div>\n";
+        strVar += " &lt;div class=\"baby-color\" title=\"" + title + "\">\n";
+        strVar += "&lt;span>" + title + "&lt;\/span>\n";
+        strVar += "&lt;span class=\"baby-color-box\"> &lt;\/span>\n";
+        strVar += "        &lt;\/div>\n";
         this.dom = $(strVar);
         BABYUI.Base.call(this, title, parent);
         this.value = value;
@@ -1592,7 +1623,7 @@ function MultiDebug2(opt) {
             return false;
           },
           onSetNewColor: function (hsb, hex, rgb) {
-            onChange && onChange(rgb, hex, hsb);
+            onChange &amp;&amp; onChange(rgb, hex, hsb);
             colorBox.css('backgroundColor', '#' + hex);
           }
         });
@@ -1607,11 +1638,11 @@ function MultiDebug2(opt) {
         this.onChange = onChange;
 
         let strVar = "";
-        strVar += " <div class=\"baby-slider\" title=\"" + title + "\">\n";
-        strVar += "            <span \">" + title + "<\/span>\n";
-        strVar += "            <input type=\"range\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\"  value=\"" + value + "\" class=\"range\" />\n";
-        strVar += "            <input type=\"number\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\"  value=\"" + value + "\" class=\"number\"/>\n";
-        strVar += "        <\/div>";
+        strVar += " &lt;div class=\"baby-slider\" title=\"" + title + "\">\n";
+        strVar += "            &lt;span \">" + title + "&lt;\/span>\n";
+        strVar += "            &lt;input type=\"range\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\"  value=\"" + value + "\" class=\"range\" />\n";
+        strVar += "            &lt;input type=\"number\" min=\"" + min + "\" max=\"" + max + "\" step=\"" + step + "\"  value=\"" + value + "\" class=\"number\"/>\n";
+        strVar += "        &lt;\/div>";
         this.dom = $(strVar);
 
         BABYUI.Base.call(this, title, parent)
@@ -1634,7 +1665,7 @@ function MultiDebug2(opt) {
         sliderRange.add(sliderNumber).on("input", function (e) {
           let $dom = $(e.srcElement || e.target);
           _this.value = $dom.val();
-          onChange && onChange(Number(value))
+          onChange &amp;&amp; onChange(Number(value))
         }).on("change", function () {
           if (BABYUI.onChange) {
             BABYUI.onChange();
@@ -1648,17 +1679,17 @@ function MultiDebug2(opt) {
         this.value = value;
         this.onChange = onChange;
         let strVar = "";
-        strVar += "<div class=\"baby-select\" title=\"" + title + "\">\n";
-        strVar += "            <span>" + title + "<\/span>\n";
-        strVar += "            <select></select></div>";
+        strVar += "&lt;div class=\"baby-select\" title=\"" + title + "\">\n";
+        strVar += "            &lt;span>" + title + "&lt;\/span>\n";
+        strVar += "            &lt;select>&lt;/select>&lt;/div>";
 
         this.dom = $(strVar);
         BABYUI.Base.call(this, title, parent)
 
         let select = this.dom.children().eq(1);
 
-        for (let i = 0; i < values.length; i++) {
-          select.append("<option>" + values[i] + "<\/option>");
+        for (let i = 0; i &lt; values.length; i++) {
+          select.append("&lt;option>" + values[i] + "&lt;\/option>");
         }
 
         Object.defineProperty(this, "value", {
@@ -1684,18 +1715,18 @@ function MultiDebug2(opt) {
         }
 
         select.on("change", function () {
-          onChange && onChange(select[0].value);
-          BABYUI.onChange && BABYUI.onChange();
+          onChange &amp;&amp; onChange(select[0].value);
+          BABYUI.onChange &amp;&amp; BABYUI.onChange();
         })
 
       },
       Message: function (title, value, parent, canDrag, onDrop, onclick, ondblclick, ontribleclick) {
         let _this = this;
         let strVar = "";
-        strVar += " <div class=\"baby-message\" title=\"" + title + "\">\n";
-        strVar += "<span>" + title + "<\/span>\n";
-        strVar += "<span class=\"baby-message-box\">" + value + "<\/span>\n";
-        strVar += "        <\/div>\n";
+        strVar += " &lt;div class=\"baby-message\" title=\"" + title + "\">\n";
+        strVar += "&lt;span>" + title + "&lt;\/span>\n";
+        strVar += "&lt;span class=\"baby-message-box\">" + value + "&lt;\/span>\n";
+        strVar += "        &lt;\/div>\n";
         this.dom = $(strVar);
         BABYUI.Base.call(this, title, parent);
         this.value = value;
@@ -1704,7 +1735,7 @@ function MultiDebug2(opt) {
           set: function (val) {
             value = val;
             messageBox.html(value)
-            BABYUI.onChange && BABYUI.onChange();
+            BABYUI.onChange &amp;&amp; BABYUI.onChange();
           },
           get: function () {
             return value;
@@ -1738,14 +1769,14 @@ function MultiDebug2(opt) {
         let gap = 300;//300ms;
         //1,2,3点击事件
         this.dom.click(function () {
-          if (!timeout1 && !timeout2 && !timeout3) {
+          if (!timeout1 &amp;&amp; !timeout2 &amp;&amp; !timeout3) {
             timeout1 = window.setTimeout(function () {
               timeout1 = null;
               if (typeof onclick == "function") {
                 onclick(_this);
               }
             }, gap)
-          } else if (timeout1 && !timeout2 && !timeout3) {
+          } else if (timeout1 &amp;&amp; !timeout2 &amp;&amp; !timeout3) {
             window.clearTimeout(timeout1);
             timeout1 = null;
             timeout2 = window.setTimeout(function () {
@@ -1754,7 +1785,7 @@ function MultiDebug2(opt) {
                 ondblclick(_this);
               }
             }, gap)
-          } else if (!timeout1 && timeout2 && !timeout3) {
+          } else if (!timeout1 &amp;&amp; timeout2 &amp;&amp; !timeout3) {
             window.clearTimeout(timeout2);
             timeout2 = null;
             timeout3 = window.setTimeout(function () {
@@ -1833,7 +1864,7 @@ function MultiDebug2(opt) {
      * */
     this.registerEvents = function (events, socket) {
       events.forEach(function (func, eventName) {
-        if (typeof eventName == "string" && typeof func == "function") {
+        if (typeof eventName == "string" &amp;&amp; typeof func == "function") {
           socket.on(eventName, func);
           try {
             if (MultiDebug.Application.socketModule[eventName]) {
@@ -1861,7 +1892,7 @@ function MultiDebug2(opt) {
      *@param {string} data.myImg - 本人图片路径
      */
     this.showRename = function (data) {
-      MultiDebug.Tool.showPromptWithFile("当前昵称:【" + data.myName + "】<br><br>新昵称:", "您可以重新上传头像<br>", function (text, file, base64) {
+      MultiDebug.Tool.showPromptWithFile("当前昵称:【" + data.myName + "】&lt;br>&lt;br>新昵称:", "您可以重新上传头像&lt;br>", function (text, file, base64) {
         socket.emit("onSaveUserInfo", {
           userName: text,
           userImg: base64,
@@ -1890,7 +1921,7 @@ function MultiDebug2(opt) {
       socket.off(eventName)
       socket.on(eventName, function (data) {
         socket.off(eventName);
-        typeof onsuccess == "function" && onsuccess(data);
+        typeof onsuccess == "function" &amp;&amp; onsuccess(data);
       })
       socket.emit("onGetServerData", key);
     }
@@ -1905,7 +1936,7 @@ function MultiDebug2(opt) {
       socket.off(eventName);
       socket.on(eventName, function (ori, overwrite) {
         socket.off(eventName);
-        typeof onsuccess == "function" && onsuccess(ori, overwrite);
+        typeof onsuccess == "function" &amp;&amp; onsuccess(ori, overwrite);
       })
       socket.emit("onSetServerData", key, data);
     }
@@ -1929,7 +1960,7 @@ function MultiDebug2(opt) {
             img: myImg
           })
         } else {
-          if (times++ < 10) {
+          if (times++ &lt; 10) {
             window.setTimeout(arguments.callee, 500);
           }
         }
@@ -1943,7 +1974,7 @@ function MultiDebug2(opt) {
       socket.emit("onGetPicFileList");
       socket.on("onGetPicFileList", function (data) {
         socket.off("onGetPicFileList");
-        onsuccess && onsuccess(data);
+        onsuccess &amp;&amp; onsuccess(data);
       })
     }
     /**获取APP相对路径下的文件列表数组
@@ -1952,7 +1983,7 @@ function MultiDebug2(opt) {
       socket.emit("onGetAppFileList", path);
       socket.on("onGetAppFileList", function (data) {
         socket.off("onGetAppFileList");
-        onsuccess && onsuccess(data);
+        onsuccess &amp;&amp; onsuccess(data);
       })
     }
     /**删除APP相对路径下的文件
@@ -1971,7 +2002,7 @@ function MultiDebug2(opt) {
       socket.emit("onGetMaterialLibFileList", path);
       socket.on("onGetMaterialLibFileList", function (data) {
         socket.off("onGetMaterialLibFileList");
-        onsuccess && onsuccess(data);
+        onsuccess &amp;&amp; onsuccess(data);
       })
     }
     /**写文件到材质库路径下
@@ -1987,7 +2018,7 @@ function MultiDebug2(opt) {
 
       function wait() {
         if (!socket.connected) {
-          if (times++ < 50) {
+          if (times++ &lt; 50) {
             console.log("正在连接socket:" + hostname + "...请耐心等待");
             window.setTimeout(wait, 100)
           } else {
@@ -2025,36 +2056,6 @@ function MultiDebug2(opt) {
 
 }
 
-class MultiDebug {
-  //jQueryEasing
-  expandJquery() {
-    jQuery.easing['jswing'] = jQuery.easing['swing'];
-    jQuery.extend(jQuery.easing,
-      {
-        def: 'easeOutQuad',
-        easeInOutBack: function (x, t, b, c, d, s) {
-          if (s == undefined) s = 1.70158;
-          if ((t /= d / 2) < 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
-          return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
-        }
-      });
-  }
-
-  constructor(opt) {
-    this.socket = null;
-    /**模块实例对象*/
-    this.menuModule = null;
-    this.lanModule = null;
-    this.picModule = null;
-    this.chatModule = null;
-    this.debugModule = null;
-    this.socketModule = null;
-    this.expandJquery();
-    scene = opt.scene;
-
-  }
-}
-
 /**暴露的Applicationcent层接口*/
 MultiDebug.exportAPI = {
   "menuModule": ["onDebugMode", "onViewMode", "onClickMainMenu"],
@@ -2074,9 +2075,9 @@ MultiDebug.exe = function (module, func, argv1, argv2) {
     console.warn("需要先实例化MultiDebug,才能调用模块");
     return;
   }
-  if (modules[module] && modules[module][func] && modules[module][func].apply) {
+  if (modules[module] &amp;&amp; modules[module][func] &amp;&amp; modules[module][func].apply) {
     let arg = [];
-    for (let i = 2; i <= arguments.length; i++) {
+    for (let i = 2; i &lt;= arguments.length; i++) {
       arg.push(arguments[i])
     }
     return modules[module][func].apply(modules[module], arg);
@@ -2092,7 +2093,7 @@ MultiDebug.get = function (module, pro) {
     console.warn("需要先实例化MultiDebug,才能调用模块");
     return;
   }
-  if (modules[module] && modules[module].hasOwnProperty && modules[module].hasOwnProperty(pro)) {
+  if (modules[module] &amp;&amp; modules[module].hasOwnProperty &amp;&amp; modules[module].hasOwnProperty(pro)) {
     return modules[module][pro];
   }
   return null;
@@ -2126,13 +2127,13 @@ MultiDebug.exeI = function (module, func, argv1, argv2) {
     if ((_module = MultiDebug.Interface[module]).hasOwnProperty(func)) {
       _func = _module[func];
       let arg = [];
-      for (let i = 2; i < arguments.length; i++) {
+      for (let i = 2; i &lt; arguments.length; i++) {
         arg.push(arguments[i])
       }
-      let returnValue = _func.apply && _func.apply(window, arg);
+      let returnValue = _func.apply &amp;&amp; _func.apply(window, arg);
       let api = MultiDebug.exportAPI;
       try {
-        if (api && api[module] && api[module].indexOf && api[module].indexOf(func) != -1) {
+        if (api &amp;&amp; api[module] &amp;&amp; api[module].indexOf &amp;&amp; api[module].indexOf(func) != -1) {
           MultiDebug.exeA.apply(window, [].concat.call([], module, func, arg))
         }
       } catch (e) {
@@ -2160,10 +2161,10 @@ MultiDebug.exeA = function (module, func, argv1, argv2) {
     if ((_module = MultiDebug.Application[module]).hasOwnProperty(func)) {
       _func = _module[func];
       let arg = [];
-      for (let i = 2; i < arguments.length; i++) {
+      for (let i = 2; i &lt; arguments.length; i++) {
         arg.push(arguments[i])
       }
-      return _func.apply && _func.apply(window, arg)
+      return _func.apply &amp;&amp; _func.apply(window, arg)
     } else {
       console.warn("没有MultiDebug.Application." + module + "." + func)
     }
@@ -2466,7 +2467,7 @@ MultiDebug.Interface = {
         })
       }
       //更新用户信息数据
-      if (data.userList && data.userList.length > 0) {
+      if (data.userList &amp;&amp; data.userList.length > 0) {
         MultiDebug.set("socketModule", "userList", data.userList);
       }
       //更新菜单栏在线列表,自己在最上面
@@ -2502,7 +2503,7 @@ MultiDebug.Interface = {
       let currentChannel = MultiDebug.get("chatModule", "currentChannel");
       let publicRoom = MultiDebug.get("chatModule", "publicRoom");
       //根据信息来源决定是否刷新聊天窗口
-      if ((currentChannel == publicRoom && data.to == publicRoom) || (data.from == currentChannel && data.to == myName)) {
+      if ((currentChannel == publicRoom &amp;&amp; data.to == publicRoom) || (data.from == currentChannel &amp;&amp; data.to == myName)) {
         MultiDebug.exe("chatModule", "appendChatBody", data);
       }
       //桌面提示
@@ -2513,14 +2514,14 @@ MultiDebug.Interface = {
         })
       }
       //长短提示
-      if (currentChannel == publicRoom && data.to == publicRoom) {
+      if (currentChannel == publicRoom &amp;&amp; data.to == publicRoom) {
         MultiDebug.exe("chatModule", "showContentReminder", data.to, true)
-      } else if (currentChannel != publicRoom && data.to == publicRoom) {
+      } else if (currentChannel != publicRoom &amp;&amp; data.to == publicRoom) {
         MultiDebug.exe("chatModule", "showContentReminder", data.to, false)
       }
-      if (currentChannel == data.from && data.to == myName) {
+      if (currentChannel == data.from &amp;&amp; data.to == myName) {
         MultiDebug.exe("chatModule", "showContentReminder", data.from, true)
-      } else if (currentChannel != data.from && data.to == myName) {
+      } else if (currentChannel != data.from &amp;&amp; data.to == myName) {
         MultiDebug.exe("chatModule", "showContentReminder", data.from, false)
       }
 
@@ -2604,8 +2605,8 @@ MultiDebug.Application = {
           }
         });
 
-        !noMessage && MultiDebug.Tool.showMessage("一键锁定成功......", 1);
-        !noMessage && MultiDebug.exe("chatModule", "appendLogContentBuffer", "一键锁定成功......");
+        !noMessage &amp;&amp; MultiDebug.Tool.showMessage("一键锁定成功......", 1);
+        !noMessage &amp;&amp; MultiDebug.exe("chatModule", "appendLogContentBuffer", "一键锁定成功......");
       }
 
       function unlock() {
@@ -2662,7 +2663,7 @@ MultiDebug.Application = {
             let date = RegExp.$1;
             let versionName = RegExp.$2;
             let showName = versionName;
-            for (let i = 0; i < 20 - versionName.length; i++) {
+            for (let i = 0; i &lt; 20 - versionName.length; i++) {
               showName += " - ";
             }
             showName += MultiDebug.Tool.getDayTime(date, true);
@@ -2714,8 +2715,8 @@ MultiDebug.Application = {
             let date = RegExp.$1;
             let versionName = RegExp.$2;
             let showName = versionName;
-            for (let i = 0; i < 20 - versionName.length; i++) {
-              //showName += "&nbsp;&nbsp;";
+            for (let i = 0; i &lt; 20 - versionName.length; i++) {
+              //showName += "&amp;nbsp;&amp;nbsp;";
               showName += " - ";
             }
             showName += MultiDebug.Tool.getDayTime(date, true);
@@ -2739,7 +2740,7 @@ MultiDebug.Application = {
       }
 
       function setOutlineWidth() {
-        MultiDebug.Tool.showPrompt("设置描边粗细<br>当前:" + app.getOutlineWidth(), function (num) {
+        MultiDebug.Tool.showPrompt("设置描边粗细&lt;br>当前:" + app.getOutlineWidth(), function (num) {
           num = Number(num);
           if (typeof num == "number") {
             app.setOutlineWidth(num);
@@ -2758,7 +2759,7 @@ MultiDebug.Application = {
       }
 
       function setLightBallSize() {
-        MultiDebug.Tool.showPrompt("设置光球大小<br>当前:" + app.getLightBallSize(), function (num) {
+        MultiDebug.Tool.showPrompt("设置光球大小&lt;br>当前:" + app.getLightBallSize(), function (num) {
           num = Number(num);
           if (typeof num == "number") {
             app.setLightBallSize(num);
@@ -2988,7 +2989,7 @@ MultiDebug.Application = {
               let canToggleList = materiaTypeList.filter(function (kind) {
                 return kind != myMaterialType;
               })
-              MultiDebug.Tool.showSelect("您当前的材质类型为:<br>" + myMaterialType + "<br>请选择您要转换的材质类型", canToggleList, function (type) {
+              MultiDebug.Tool.showSelect("您当前的材质类型为:&lt;br>" + myMaterialType + "&lt;br>请选择您要转换的材质类型", canToggleList, function (type) {
                 app.toggleMaterialType(data.mesh, type)
               })
             } else {
@@ -3075,7 +3076,7 @@ MultiDebug.Application = {
     /**当调试值发生变化时候触发的事件
      * @param {object} mesh -当前正在调试的物体或灯光*/
     onChange: function (mesh) {
-      if (mesh && mesh.material) {
+      if (mesh &amp;&amp; mesh.material) {
         //获取调试的JSON
         let json = createJSON({meshes: mesh, console: false});
         json = JSON.parse(json);
@@ -3088,7 +3089,7 @@ MultiDebug.Application = {
           json: json
         })
       }
-      if (mesh && mesh instanceof BABYLON.Light) {
+      if (mesh &amp;&amp; mesh instanceof BABYLON.Light) {
         //获取调试的JSON
         let lightName = mesh.name;
         let json = createJSON({lights: mesh, console: false});
@@ -3108,4 +3109,42 @@ MultiDebug.Application = {
   }
 }
 
+function expandJquery() {
+  jQuery.easing['jswing'] = jQuery.easing['swing'];
+  jQuery.extend(jQuery.easing,
+    {
+      def: 'easeOutQuad',
+      easeInOutBack: function (x, t, b, c, d, s) {
+        if (s == undefined) s = 1.70158;
+        if ((t /= d / 2) &lt; 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+        return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+      }
+    });
+}
+
+expandJquery();
 export default MultiDebug;
+export {multiDebugDom, scene}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_app.html">components/app</a></li><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_index.html">components/index</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_edit.html">components/tool/edit</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-components_tool_tool.html">components/tool/tool</a></li><li><a href="module-server.html">server</a></li></ul><h3>Classes</h3><ul><li><a href="module-components_index-MultiDebug.html">MultiDebug</a></li><li><a href="module-components_index-MultiDebug_ChatModule.html">ChatModule</a></li><li><a href="module-components_index-MultiDebug_DebugModule.html">DebugModule</a></li><li><a href="module-components_index-MultiDebug_LanModule.html">LanModule</a></li><li><a href="module-components_index-MultiDebug_MenuModule.html">MenuModule</a></li><li><a href="module-components_index-MultiDebug_PicModule.html">PicModule</a></li><li><a href="module-components_index-MultiDebug_SocketModule.html">SocketModule</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li><li><a href="module-components_index-MultiDebug.Application.html">Application</a></li><li><a href="module-components_index-MultiDebug.Application.debugModule.html">debugModule</a></li><li><a href="module-components_index-MultiDebug.Application.lanModule.html">lanModule</a></li><li><a href="module-components_index-MultiDebug.Application.menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug.Application.socketModule.html">socketModule</a></li><li><a href="module-components_index-MultiDebug.Interface.html">Interface</a></li><li><a href="module-components_index-MultiDebug.Interface.chatModule.html">chatModule</a></li><li><a href="module-components_index-MultiDebug.Interface.debugModule.html">debugModule</a></li><li><a href="module-components_index-MultiDebug.Interface.lanModule.html">lanModule</a></li><li><a href="module-components_index-MultiDebug.Interface.menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug.Interface.picModule.html">picModule</a></li><li><a href="module-components_index-MultiDebug.Interface.socketModule.html">socketModule</a></li><li><a href="module-components_tool_tool-Tool.html">Tool</a></li></ul><h3>Global</h3><ul><li><a href="global.html#openDebug">openDebug</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Aug 14 2018 10:23:36 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

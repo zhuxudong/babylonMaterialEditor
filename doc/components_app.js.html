@@ -1,9 +1,37 @@
-/**@module*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/app.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/app.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**@module*/
 import MultiDebug from './index.js'
-import {multiDebugDom, scene} from './index.js'
+import {multiDebugDom,scene} from './index.js'
 import EditControl from './tool/EditControl.min.js'
 
-function App2() {
+function App() {
   var _this = this;
   var initialTexture = {};
   var canvas = scene.getEngine().getRenderingCanvas();
@@ -94,7 +122,7 @@ function App2() {
     MultiDebug.exe("socketModule", "getServerData", "lockInfo", function (data) {
       lockInfo = data;
       //获取BABYLON当前mesh，刷新lanList
-      if (BABYLON && scene) {
+      if (BABYLON &amp;&amp; scene) {
         MultiDebug.exe("lanModule", "refreshLanList", scene.meshes.map(function (mesh) {
           if (mesh._debug) {
             return null;
@@ -130,7 +158,7 @@ function App2() {
             }
           }
         }))
-        !noMessage && MultiDebug.Tool.showMessage("refresh success......", 1);
+        !noMessage &amp;&amp; MultiDebug.Tool.showMessage("refresh success......", 1);
       }
       if (typeof onsuccess == "function") {
         onsuccess();
@@ -171,7 +199,7 @@ function App2() {
       MultiDebug.exe("picModule", "createCubePanel", publicSkybox, publicSkyboxFix, panel2);
       MultiDebug.exe("picModule", "createTexturePanel", privateTexture, privateTextureFix, panel3);
       MultiDebug.exe("picModule", "createCubePanel", privateSkybox, privateSkyboxFix, panel4);
-      !noMessage && MultiDebug.Tool.showMessage("更新图库成功...", 1)
+      !noMessage &amp;&amp; MultiDebug.Tool.showMessage("更新图库成功...", 1)
     })
   }
   //更新BABYUI界面,默认更新所有，如果有current参数，则只更新current调试界面
@@ -180,12 +208,12 @@ function App2() {
     if (currentDebugMesh) {
       var light = currentDebugMesh instanceof BABYLON.Light;
       if (light) {
-        if (!current || (current && current == currentDebugMesh)) {
+        if (!current || (current &amp;&amp; current == currentDebugMesh)) {
           MultiDebug.exe("debugModule", "showLightDebug", currentDebugMesh);
           _this.showLightDebug(currentDebugMesh);
         }
       } else {
-        if (!current || (current && current == currentDebugMesh)) {
+        if (!current || (current &amp;&amp; current == currentDebugMesh)) {
           MultiDebug.exe("debugModule", "showDebug", currentDebugMesh)
           _this.showDebug(currentDebugMesh);
         }
@@ -224,7 +252,7 @@ function App2() {
       var pickInfo = scene.pick(scene.pointerX, scene.pointerY);
 
       var pickedMesh = pickInfo.pickedMesh;
-      if (!pickedMesh && currentOutlineMesh) {
+      if (!pickedMesh &amp;&amp; currentOutlineMesh) {
         _this.unrenderMesh(currentOutlineMesh);
       }
       if (pickedMesh) {
@@ -276,7 +304,7 @@ function App2() {
       //还原
       MultiDebug.exe("lanModule", "scale1");
       MultiDebug.exe("picModule", "scale1");
-      MultiDebug.get("menuModule", "navTop") && MultiDebug.get("menuModule", "navTop").removeClass("opacity");
+      MultiDebug.get("menuModule", "navTop") &amp;&amp; MultiDebug.get("menuModule", "navTop").removeClass("opacity");
       debugMode = true;
     }
     _this.viewMode = function () {
@@ -332,16 +360,16 @@ function App2() {
     if (!str) {
       return {};
     }
-    //var path = str.match(/(?<=path:).*(?=,)/g);
-    //var picName = str.match(/(?<=name:).*$/g);
+    //var path = str.match(/(?&lt;=path:).*(?=,)/g);
+    //var picName = str.match(/(?&lt;=name:).*$/g);
     var path = str.match(/path:.*?(?=,)/g);
     var picName = str.match(/name:.*?$/g);
-    if (path && path.length == 1) {
+    if (path &amp;&amp; path.length == 1) {
       path = path[0].slice(5);
     } else {
       path = null;
     }
-    if (picName && picName.length == 1) {
+    if (picName &amp;&amp; picName.length == 1) {
       picName = picName[0].slice(5);
     } else {
       picName = null;
@@ -450,7 +478,7 @@ function App2() {
         var vsOri = material[info.name] ? material[info.name].vScale : 0;
         var indexOri = material[info.name] ? material[info.name].coordinatesIndex : 0;
         var indexSelect = [0, 1, 2].filter(function (cor, index) {
-          return index < uvNum;
+          return index &lt; uvNum;
         })
         var fresnelOri = material[fresnel] ? (material[fresnel].isEnabled ? "开" : "关") : "关";
         var biasOri = material[fresnel] ? material[fresnel].bias : 0;
@@ -560,7 +588,7 @@ function App2() {
           //BABYLON当UVscale为1时候切换通道没反应
           var utemp = material[info.name].uScale;
           var vtemp = material[info.name].vScale;
-          if (utemp == 1 && vtemp == 1) {
+          if (utemp == 1 &amp;&amp; vtemp == 1) {
             material[info.name].uScale = 2;
             window.setTimeout(function () {
               material[info.name].coordinatesIndex = value - 0;
@@ -655,13 +683,13 @@ function App2() {
         }
 
         function hideFresnel() {
-          biasControl && biasControl.hide();
-          powerControl && powerControl.hide();
+          biasControl &amp;&amp; biasControl.hide();
+          powerControl &amp;&amp; powerControl.hide();
         }
 
         function showFresnel() {
-          biasControl && biasControl.show(material[fresnel].bias);
-          powerControl && powerControl.show(material[fresnel].power);
+          biasControl &amp;&amp; biasControl.show(material[fresnel].bias);
+          powerControl &amp;&amp; powerControl.show(material[fresnel].power);
         }
 
         //如果没有贴图
@@ -746,7 +774,7 @@ function App2() {
       metallicControl.hide();
       roughnessControl.hide();
       microSurfaceControl.show(material.microSurface);
-      reflectivityColorControl.show(material.reflectivityColor && material.reflectivityColor.toHexString());
+      reflectivityColorControl.show(material.reflectivityColor &amp;&amp; material.reflectivityColor.toHexString());
       modeControl.value = "高光/光泽度 模式";
     }
 
@@ -755,10 +783,10 @@ function App2() {
       if (materialType != "PBRMaterial") {
         return;
       }
-      if (material.metallic == null && material.roughness == null) {
+      if (material.metallic == null &amp;&amp; material.roughness == null) {
         material.metallic = currentMetallic;
         material.roughness = currentRoughness;
-        if (currentMetallic == null && currentRoughness == null) {
+        if (currentMetallic == null &amp;&amp; currentRoughness == null) {
           material.metallic = 0;
         }
       }
@@ -814,43 +842,43 @@ function App2() {
       var PBRFolder = new BABYUI.Folder(materialType, folderTop);
       PBRFolder.open();
       //颜色
-      if (material.diffuseColor && material.diffuseColor.toHexString) {
+      if (material.diffuseColor &amp;&amp; material.diffuseColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.diffuseColor.cn, material.diffuseColor.toHexString(), function (value) {
           material.diffuseColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.diffuseColor.par, baseProCN.diffuseColor.exp);
       }
-      if (material.specularColor && material.specularColor.toHexString) {
+      if (material.specularColor &amp;&amp; material.specularColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.specularColor.cn, material.specularColor.toHexString(), function (value) {
           material.specularColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.specularColor.par, baseProCN.specularColor.exp);
       }
-      if (material.baseColor && material.baseColor.toHexString) {
+      if (material.baseColor &amp;&amp; material.baseColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.baseColor.cn, material.baseColor.toHexString(), function (value) {
           material.baseColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.baseColor.par, baseProCN.baseColor.exp);
       }
-      if (material.albedoColor && material.albedoColor.toHexString) {
+      if (material.albedoColor &amp;&amp; material.albedoColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.albedoColor.cn, material.albedoColor.toHexString(), function (value) {
           material.albedoColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.albedoColor.par, baseProCN.albedoColor.exp);
       }
-      if (material.reflectivityColor && material.reflectivityColor.toHexString) {
+      if (material.reflectivityColor &amp;&amp; material.reflectivityColor.toHexString) {
         reflectivityColorControl = new BABYUI.Color(baseProCN.reflectivityColor.cn, material.reflectivityColor.toHexString(), function (value) {
           material.reflectivityColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder);
         showTitle(reflectivityColorControl, baseProCN.reflectivityColor.par, baseProCN.reflectivityColor.exp)
       }
-      if (material.reflectionColor && material.reflectionColor.toHexString) {
+      if (material.reflectionColor &amp;&amp; material.reflectionColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.reflectionColor.cn, material.reflectionColor.toHexString(), function (value) {
           material.reflectionColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.reflectionColor.par, baseProCN.reflectionColor.exp);
       }
-      if (material.emissiveColor && material.emissiveColor.toHexString) {
+      if (material.emissiveColor &amp;&amp; material.emissiveColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.emissiveColor.cn, material.emissiveColor.toHexString(), function (value) {
           material.emissiveColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.emissiveColor.par, baseProCN.emissiveColor.exp);
       }
-      if (material.ambientColor && material.ambientColor.toHexString) {
+      if (material.ambientColor &amp;&amp; material.ambientColor.toHexString) {
         showTitle(new BABYUI.Color(baseProCN.ambientColor.cn, material.ambientColor.toHexString(), function (value) {
           material.ambientColor = new BABYLON.Color3.FromInts(value.r, value.g, value.b);
         }, PBRFolder), baseProCN.ambientColor.par, baseProCN.ambientColor.exp);
@@ -910,7 +938,7 @@ function App2() {
         var vsOri = material[textureName] ? material[textureName].vScale : 0;
         var indexOri = material[textureName] ? material[textureName].coordinatesIndex : 0;
         var indexSelect = [0, 1, 2].filter(function (cor, index) {
-          return index < uvNum;
+          return index &lt; uvNum;
         })
         var fresnelOri = material[fresnel] ? (material[fresnel].isEnabled ? "开" : "关") : "关";
         var biasOri = material[fresnel] ? material[fresnel].bias : 0;
@@ -1016,7 +1044,7 @@ function App2() {
           }
           var utemp = material[textureName].uScale;
           var vtemp = material[textureName].vScale;
-          if (utemp == 1 && vtemp == 1) {
+          if (utemp == 1 &amp;&amp; vtemp == 1) {
             material[textureName].uScale = 2;
             window.setTimeout(function () {
               material[textureName].coordinatesIndex = value - 0;
@@ -1111,13 +1139,13 @@ function App2() {
         }
 
         function hideFresnel() {
-          biasControl && biasControl.hide();
-          powerControl && powerControl.hide();
+          biasControl &amp;&amp; biasControl.hide();
+          powerControl &amp;&amp; powerControl.hide();
         }
 
         function showFresnel() {
-          biasControl && biasControl.show(material[fresnel].bias);
-          powerControl && powerControl.show(material[fresnel].power);
+          biasControl &amp;&amp; biasControl.show(material[fresnel].bias);
+          powerControl &amp;&amp; powerControl.show(material[fresnel].power);
         }
 
         //如果没有贴图
@@ -1216,7 +1244,7 @@ function App2() {
       var currentMaterial = mesh.material;
       //删除原来的材质
       scene.meshes.forEach(function (mesh) {
-        if (mesh.material && mesh.material == oriMaterial) {
+        if (mesh.material &amp;&amp; mesh.material == oriMaterial) {
           mesh.material = currentMaterial;
           return true;
         }
@@ -1481,7 +1509,7 @@ function App2() {
         tagBalls["全部"].push(ball);
         balls.push(ball);
         ballMaterials.push(ball.material);
-        ball.dom = $("<div style=\"position:fixed;padding:3px 10px;background:rgba(1,1,1,.4);color:#fff;border-radius:5px;transform:translate(-50%,50%);font-size:16px;cursor:pointer;z-index:10000\">")
+        ball.dom = $("&lt;div style=\"position:fixed;padding:3px 10px;background:rgba(1,1,1,.4);color:#fff;border-radius:5px;transform:translate(-50%,50%);font-size:16px;cursor:pointer;z-index:10000\">")
         ball.dom.html(name);
         $(document.body).append(ball.dom);
         doms.push(ball.dom);
@@ -1517,12 +1545,12 @@ function App2() {
     }
 
     function showList() {
-      var div = $("<div class=z-select>");
+      var div = $("&lt;div class=z-select>");
       div.css("margin-left", "0").css("left", "0").css("top", "0").css("padding", "10px")
-      var select = $("<select>");
+      var select = $("&lt;select>");
       //排序
       tagBalls.forEach(function (balls, name) {
-        var option = $("<option value=" + name + ">" + name + " : " + balls.length + "</option>");
+        var option = $("&lt;option value=" + name + ">" + name + " : " + balls.length + "&lt;/option>");
         select.append(option);
       })
       select.val("全部");
@@ -1577,7 +1605,7 @@ function App2() {
       scene.unregisterBeforeRender(adjustDom);
       resize();
       //删除球
-      ballParent.dispose && ballParent.dispose()
+      ballParent.dispose &amp;&amp; ballParent.dispose()
       balls.forEach(function (mesh) {
         mesh.dispose()
       })
@@ -1636,7 +1664,7 @@ function App2() {
   }
 
   this.refreshLightBall = function (light) {
-    if (currentLightBall && currentLightBall._light == light) {
+    if (currentLightBall &amp;&amp; currentLightBall._light == light) {
       var type = light.getClassName();
       //if (type == "HemisphericLight") {
       //    currentLightBall.rotation = dirToEular(light.direction.negate())
@@ -1673,7 +1701,7 @@ function App2() {
       var deltaZ = Math.acos(xy.x);
       var deltaY = Math.acos(xz.x);
       rotation.z = xy.length() == 0 ? 0 : (xy.y > 0 ? deltaZ : -deltaZ);
-      rotation.y = xz.length() == 0 ? 0 : (xz.z < 0 ? deltaY : -deltaY);
+      rotation.y = xz.length() == 0 ? 0 : (xz.z &lt; 0 ? deltaY : -deltaY);
       return rotation;
     } catch (e) {
       console.warn(e);
@@ -1718,7 +1746,7 @@ function App2() {
 
   //关闭调试灯光
   function disposeLightDebug() {
-    editControl && editControl.detach();
+    editControl &amp;&amp; editControl.detach();
     unregisterLightEvent();
     removeLightBall();
     //隐藏当前正在调试的物体，准备开始调试灯光
@@ -1772,17 +1800,17 @@ function App2() {
     //点击切换调试光源
     function toggle(mesh) {
       if (mesh != currentLightBall) {
-        editControl && editControl.detach();
+        editControl &amp;&amp; editControl.detach();
         detachDirDebug();
         var EditControl = org.ssatguru.babylonjs.component.EditControl;
         editControl = new EditControl(mesh, scene.activeCamera, canvas, .75, true);
         editControl.enableTranslation();
         editControl.setRotGuideFull(false);
         editControl.setLocal(true);
-        editControl && editControl.addActionListener(actionMove);
-        editControl && editControl.addActionEndListener(actionEnd);
+        editControl &amp;&amp; editControl.addActionListener(actionMove);
+        editControl &amp;&amp; editControl.addActionEndListener(actionEnd);
         var currentDebugMesh = MultiDebug.get("debugModule", "currentDebugMesh");
-        var hasShow = currentDebugMesh && currentDebugMesh instanceof BABYLON.Light;
+        var hasShow = currentDebugMesh &amp;&amp; currentDebugMesh instanceof BABYLON.Light;
         if (hasShow) {
           MultiDebug.set("debugModule", "currentDebugMesh", mesh._light);
         } else {
@@ -1795,13 +1823,13 @@ function App2() {
 
     //如果已经有调试窗口不会重新生成
     var onmousedown = function (lightBall) {
-      if (lightBall && lightBall._light) {
+      if (lightBall &amp;&amp; lightBall._light) {
         toggle(lightBall);
       } else {
         var pickInfos = scene.multiPick(scene.pointerX, scene.pointerY);
         pickInfos.some(function (pickInfo) {
           var mesh = pickInfo.pickedMesh;
-          if (mesh && lightBalls.indexOf(mesh) != -1) {
+          if (mesh &amp;&amp; lightBalls.indexOf(mesh) != -1) {
             toggle(mesh);
             return true;
           }
@@ -1812,12 +1840,12 @@ function App2() {
     //w调试位置，E调试旋转角度
     var onkeydown = function (e) {
       if (e.code == "KeyW" || e.keyCode == 87) {
-        //editControl && editControl.enableTranslation()
-        editControl && editControl.show();
+        //editControl &amp;&amp; editControl.enableTranslation()
+        editControl &amp;&amp; editControl.show();
         detachDirDebug();
       } else if (e.code == "KeyE" || e.keyCode == 69) {
-        //editControl && editControl.enableRotation();
-        editControl && editControl.hide();
+        //editControl &amp;&amp; editControl.enableRotation();
+        editControl &amp;&amp; editControl.hide();
         dirDebug(editControl.mesh)
       }
     }
@@ -1862,14 +1890,14 @@ function App2() {
       MultiDebug.exeA("debugModule", "onChange", light);
     }
 
-    editControl && editControl.addActionListener(actionMove);
-    editControl && editControl.addActionEndListener(actionEnd);
+    editControl &amp;&amp; editControl.addActionListener(actionMove);
+    editControl &amp;&amp; editControl.addActionEndListener(actionEnd);
 
     //注销事件
     unregisterLightEvent = function () {
       scene.onPointerObservable.removeCallback(onmousedown);
       document.body.removeEventListener("keydown", onkeydown);
-      editControl && editControl.removeAllActionListeners()
+      editControl &amp;&amp; editControl.removeAllActionListeners()
       detachDirDebug();
     }
   }
@@ -1920,7 +1948,7 @@ function App2() {
       //调整滚动条
       var babybox = $(".baby-box");
       var dif = currentLightDebugFolder.dom.offset().top - babybox.offset().top
-      if (dif > babybox.innerHeight() || dif < 0) {
+      if (dif > babybox.innerHeight() || dif &lt; 0) {
         babybox.scrollTop(currentLightDebugFolder.dom.position().top)
       }
     }
@@ -1928,7 +1956,7 @@ function App2() {
     if (hasShow) {
       try {
         currentLightDebugFolder = lightDebugFolders[currentLight.name];
-        currentLightDebugFolder && currentLightDebugFolder.alert();
+        currentLightDebugFolder &amp;&amp; currentLightDebugFolder.alert();
         adjustPosition();
         return;
       } catch (e) {
@@ -2113,17 +2141,26 @@ function App2() {
   }
 }
 
-class App {
-  constructor() {
-    /**模块实例对象*/
-    this.menuModule = null;
-    this.lanModule = null;
-    this.picModule = null;
-    this.chatModule = null;
-    this.debugModule = null;
-    this.socketModule = null;
-  }
+export default App;</code></pre>
+        </article>
+    </section>
 
-}
 
-export default App;
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-components_app.html">components/app</a></li><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_index.html">components/index</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_edit.html">components/tool/edit</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-components_tool_tool.html">components/tool/tool</a></li><li><a href="module-server.html">server</a></li></ul><h3>Classes</h3><ul><li><a href="module-components_index-MultiDebug.html">MultiDebug</a></li><li><a href="module-components_index-MultiDebug_ChatModule.html">ChatModule</a></li><li><a href="module-components_index-MultiDebug_DebugModule.html">DebugModule</a></li><li><a href="module-components_index-MultiDebug_LanModule.html">LanModule</a></li><li><a href="module-components_index-MultiDebug_MenuModule.html">MenuModule</a></li><li><a href="module-components_index-MultiDebug_PicModule.html">PicModule</a></li><li><a href="module-components_index-MultiDebug_SocketModule.html">SocketModule</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li><li><a href="module-components_index-MultiDebug.Application.html">Application</a></li><li><a href="module-components_index-MultiDebug.Application.debugModule.html">debugModule</a></li><li><a href="module-components_index-MultiDebug.Application.lanModule.html">lanModule</a></li><li><a href="module-components_index-MultiDebug.Application.menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug.Application.socketModule.html">socketModule</a></li><li><a href="module-components_index-MultiDebug.Interface.html">Interface</a></li><li><a href="module-components_index-MultiDebug.Interface.chatModule.html">chatModule</a></li><li><a href="module-components_index-MultiDebug.Interface.debugModule.html">debugModule</a></li><li><a href="module-components_index-MultiDebug.Interface.lanModule.html">lanModule</a></li><li><a href="module-components_index-MultiDebug.Interface.menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug.Interface.picModule.html">picModule</a></li><li><a href="module-components_index-MultiDebug.Interface.socketModule.html">socketModule</a></li><li><a href="module-components_tool_tool-Tool.html">Tool</a></li></ul><h3>Global</h3><ul><li><a href="global.html#openDebug">openDebug</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Aug 14 2018 10:23:36 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

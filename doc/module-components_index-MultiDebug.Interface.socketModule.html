@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: Tool</title>
+    <title>JSDoc: Namespace: socketModule</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: Tool</h1>
+    <h1 class="page-title">Namespace: socketModule</h1>
 
     
 
@@ -29,7 +29,7 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-components_tool_tool.html">components/tool/tool</a>~</span>Tool</h2>
+            <span class="ancestors"><a href="module-components_index.html">components/index</a><a href="module-components_index-MultiDebug.html">~MultiDebug</a><a href="module-components_index-MultiDebug.Interface.html">.Interface</a>.</span>socketModule</h2>
         
     
 </header>
@@ -71,7 +71,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line3">line 3</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2360">line 2360</a>
     </li></ul></dd>
     
 
@@ -110,7 +110,7 @@
     
 
     
-    <h4 class="name" id=".createURL"><span class="type-signature">(static) </span>createURL<span class="signature">(obj)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onLoginSuccess"><span class="type-signature">(static) </span>onLoginSuccess<span class="signature">(userName, userImg)</span><span class="type-signature"></span></h4>
     
 
     
@@ -118,7 +118,7 @@
 
 
 <div class="description">
-    生成临时URL
+    成功登陆触发的事件
 </div>
 
 
@@ -154,16 +154,13 @@
 
         <tr>
             
-                <td class="name"><code>obj</code></td>
+                <td class="name"><code>userName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Object</span>
+<span class="param-type">string</span>
 
 
             
@@ -173,7 +170,30 @@
 
             
 
-            <td class="description last">要转化成临时URL的对象</td>
+            <td class="description last">用户姓名</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userImg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">用户头像路径</td>
         </tr>
 
     
@@ -214,7 +234,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line27">line 27</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2365">line 2365</a>
     </li></ul></dd>
     
 
@@ -248,7 +268,7 @@
     
 
     
-    <h4 class="name" id=".getDayTime"><span class="type-signature">(static) </span>getDayTime<span class="signature">(time)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onNameRepeat"><span class="type-signature">(static) </span>onNameRepeat<span class="signature">(userName)</span><span class="type-signature"></span></h4>
     
 
     
@@ -256,7 +276,7 @@
 
 
 <div class="description">
-    根据time获取标准格式,如13:23 PM
+    用户昵称重名触发的事件
 </div>
 
 
@@ -292,13 +312,13 @@
 
         <tr>
             
-                <td class="name"><code>time</code></td>
+                <td class="name"><code>userName</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">number</span>
+<span class="param-type">string</span>
 
 
             
@@ -308,7 +328,7 @@
 
             
 
-            <td class="description last">new Date().getTime*(</td>
+            <td class="description last">重复的名字</td>
         </tr>
 
     
@@ -349,7 +369,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line418">line 418</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2420">line 2420</a>
     </li></ul></dd>
     
 
@@ -383,7 +403,7 @@
     
 
     
-    <h4 class="name" id=".loadFile"><span class="type-signature">(static) </span>loadFile<span class="signature">(file, onsuccess)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onOtherPeopleLogin"><span class="type-signature">(static) </span>onOtherPeopleLogin<span class="signature">(data)</span><span class="type-signature"></span></h4>
     
 
     
@@ -391,7 +411,7 @@
 
 
 <div class="description">
-    加载文件，返回base64
+    有其他用户登触发的事件
 </div>
 
 
@@ -423,1253 +443,6 @@
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>file</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">file</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">input[type=file].files[0,1,2]</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>onsuccess</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(data::base64数据)</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line9">line 9</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".showConfirm"><span class="type-signature">(static) </span>showConfirm<span class="signature">(text, callback)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    弹出模态确认框
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>text</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">文字</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(text::输入框内的文字)</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line173">line 173</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".showDoublePrompt"><span class="type-signature">(static) </span>showDoublePrompt<span class="signature">(text1, text2, callback, noCancel, disable1, disable2)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    弹出双输入框
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>text1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">文字</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>text2</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">文字</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(text1,text2)</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>noCancel</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">true:没有取消键，强制输入</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>disable1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">禁止输入框1输入的内容</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>disable2</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">禁止输入框2输入的内容</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line112">line 112</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".showMessage"><span class="type-signature">(static) </span>showMessage<span class="signature">(text, second, type, bgColor, color)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    以队列形式弹出提示框，second秒后会消失,鼠标悬浮时候不会消失
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>text</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">提示的信息</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>second</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">几秒后消失,默认2s</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">内置类型,"success","warn","danger" 默认success</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>bgColor</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">CSS格式的背景颜色,默认#5FB95F</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>color</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">CSS格式的字体颜色，默认#fff</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line346">line 346</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".showPrompt"><span class="type-signature">(static) </span>showPrompt<span class="signature">(text, callback, noCancel)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    弹出模态输入框
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>text</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">文字</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(text::输入框内的文字)</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>noCancel</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">true:没有取消键，强制输入</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line41">line 41</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".showPromptWithFile"><span class="type-signature">(static) </span>showPromptWithFile<span class="signature">(text1, text2, callback, noCancel, filePath, canValid)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    弹出模态输入框和图片上传框
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>text1</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">prompt文字</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>text2</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">file文字</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(text::输入框内的文字,file:input[type=file].files[0],base64:图片数据)</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>noCancel</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">true:没有取消键，强制输入</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>filePath</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">如果设置可以初始化显示img</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>canValid</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">输入框可以为空</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line283">line 283</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id=".showSelect"><span class="type-signature">(static) </span>showSelect<span class="signature">(text, data, callback)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    弹出模态下拉框
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>text</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">文字</td>
-        </tr>
-
     
 
         <tr>
@@ -1680,7 +453,7 @@
             <td class="type">
             
                 
-<span class="param-type">Array.&lt;string></span>
+<span class="param-type">Object</span>
 
 
             
@@ -1690,20 +463,62 @@
 
             
 
-            <td class="description last">文字数组，用于下拉框</td>
+            <td class="description last">登陆人信息
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">登陆人姓名</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>img</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">showSelect~test</span>
+<span class="param-type">string</span>
 
 
             
@@ -1713,7 +528,14 @@
 
             
 
-            <td class="description last">(text::选中的下拉框内的文字,index::索引，0~)</td>
+            <td class="description last">登陆人头像</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
         </tr>
 
     
@@ -1754,7 +576,1227 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_tool.js.html">components/tool/tool.js</a>, <a href="components_tool_tool.js.html#line225">line 225</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2390">line 2390</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onOtherPeopleLogOut"><span class="type-signature">(static) </span>onOtherPeopleLogOut<span class="signature">(userName, userImg)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    其他用户离开房间触发的事件
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>userName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">登陆人姓名</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userImg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">登陆人头像</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2405">line 2405</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onReceiveChatContent"><span class="type-signature">(static) </span>onReceiveChatContent<span class="signature">(data[)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    有人发送聊天信息触发的事件
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data[</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">聊天数据包</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">发送者名字</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.fromImg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">发送者头像</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.to</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">发送对象名字</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.toImg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">发送对象头像</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.content</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">聊天内容</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">聊天历史时间</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2471">line 2471</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onReceiveDebugChange"><span class="type-signature">(static) </span>onReceiveDebugChange<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    收到debug信息
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data.lightName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.materialId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.json</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2517">line 2517</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onReceiveLanListChange"><span class="type-signature">(static) </span>onReceiveLanListChange<span class="signature">(data, dom)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">点击的那个选项的信息</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dom</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">dom名字</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.stat</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">选项状态 -"danger"||"warn"||"success"</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">选项名字</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.button</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">选项触发的方式 0:左键，1：中键，2：右键</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.config</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">是否是点击配置按钮触发的事件</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.dom</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">触发的选项DOM元素，jQuery对象</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2509">line 2509</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onRegister"><span class="type-signature">(static) </span>onRegister<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    用户需要注册时 触发的事件，此事件发生在服务器找不到客户端IP信息时
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2415">line 2415</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".onUserInfoChange"><span class="type-signature">(static) </span>onUserInfoChange<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    用户信息发生变化触发的事件,如登陆，登出，改名，改头像...
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data.myName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">用户名字,如果有此参数代表事件是由当前客户端触发的，否则是他人触发</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.myImg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">用户头像路径</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data.userList</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;Object></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">当前在线用户列表
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>userName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">用户名字</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>userImg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">用户头像路径</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2430">line 2430</a>
     </li></ul></dd>
     
 

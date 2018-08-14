@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: components/tool/edit</title>
+    <title>JSDoc: Namespace: menuModule</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: components/tool/edit</h1>
+    <h1 class="page-title">Namespace: menuModule</h1>
 
     
 
@@ -28,6 +28,8 @@
 
 <header>
     
+        <h2>
+            <span class="ancestors"><a href="module-components_index.html">components/index</a><a href="module-components_index-MultiDebug.html">~MultiDebug</a><a href="module-components_index-MultiDebug.Interface.html">.Interface</a>.</span>menuModule</h2>
         
     
 </header>
@@ -36,6 +38,50 @@
     <div class="container-overview">
     
         
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2155">line 2155</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
 
         
     
@@ -64,7 +110,7 @@
     
 
     
-    <h4 class="name" id="~editMaterial"><span class="type-signature">(inner) </span>editMaterial<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onClickChatMenu"><span class="type-signature">(static) </span>onClickChatMenu<span class="signature">(userName)</span><span class="type-signature"></span></h4>
     
 
     
@@ -72,7 +118,7 @@
 
 
 <div class="description">
-    为了防止生成不想要的材质JSON,所以必须editMaterial(material)才会生成相应的材质JSON
+    点击聊天菜单触发的事件,并触发切换频道事件
 </div>
 
 
@@ -81,6 +127,55 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>userName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">点击的名字</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -116,7 +211,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_edit.js.html">components/tool/edit.js</a>, <a href="components_tool_edit.js.html#line18">line 18</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2166">line 2166</a>
     </li></ul></dd>
     
 
@@ -150,7 +245,7 @@
     
 
     
-    <h4 class="name" id="~editMesh"><span class="type-signature">(inner) </span>editMesh<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onClickMainMenu"><span class="type-signature">(static) </span>onClickMainMenu<span class="signature">(itemName)</span><span class="type-signature"></span></h4>
     
 
     
@@ -158,7 +253,7 @@
 
 
 <div class="description">
-    为了防止调试不想调试的物体,所以必须先editMesh(mesh)才能进行调试这个物体
+    点击主菜单触发的事件
 </div>
 
 
@@ -167,6 +262,55 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>itemName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">选项名字</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -202,7 +346,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_edit.js.html">components/tool/edit.js</a>, <a href="components_tool_edit.js.html#line4">line 4</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2175">line 2175</a>
     </li></ul></dd>
     
 
@@ -236,7 +380,7 @@
     
 
     
-    <h4 class="name" id="~unEditMaterial"><span class="type-signature">(inner) </span>unEditMaterial<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onDebugMode"><span class="type-signature">(static) </span>onDebugMode<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -244,7 +388,7 @@
 
 
 <div class="description">
-    取消调试物体
+    调试模式触发的事件
 </div>
 
 
@@ -288,7 +432,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_edit.js.html">components/tool/edit.js</a>, <a href="components_tool_edit.js.html#line25">line 25</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2157">line 2157</a>
     </li></ul></dd>
     
 
@@ -322,7 +466,7 @@
     
 
     
-    <h4 class="name" id="~unEditMesh"><span class="type-signature">(inner) </span>unEditMesh<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".onViewMode"><span class="type-signature">(static) </span>onViewMode<span class="signature">()</span><span class="type-signature"></span></h4>
     
 
     
@@ -330,7 +474,7 @@
 
 
 <div class="description">
-    取消调试物体
+    浏览模式触发的事件
 </div>
 
 
@@ -374,7 +518,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_tool_edit.js.html">components/tool/edit.js</a>, <a href="components_tool_edit.js.html#line11">line 11</a>
+        <a href="components_index.js.html">components/index.js</a>, <a href="components_index.js.html#line2161">line 2161</a>
     </li></ul></dd>
     
 
