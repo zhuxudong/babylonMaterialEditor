@@ -1,4 +1,6 @@
-import {org, MultiDebug} from './client.js'
+import MultiDebug from './index.js'
+import {multiDebugDom,scene} from './index.js'
+import EditControl from './tool/EditControl.min.js'
 
 function App() {
   var _this = this;
@@ -10,7 +12,7 @@ function App() {
     var existMesh = {};
     var existMaterial = {};
     var existLights = {};
-    window.scene.meshes.forEach(function (mesh) {
+    scene.meshes.forEach(function (mesh) {
       if (mesh._debug) {
         if (mesh.material) {
           mesh.material._debug = true;
@@ -23,7 +25,7 @@ function App() {
         existMesh[mesh.name] = 1
       }
     })
-    window.scene.materials.forEach(function (material) {
+    scene.materials.forEach(function (material) {
       if (material._debug) {
         return;
       }
@@ -33,7 +35,7 @@ function App() {
         existMaterial[material.name] = 1
       }
     })
-    window.scene.lights.forEach(function (light) {
+    scene.lights.forEach(function (light) {
       if (existLights.hasOwnProperty(light.name)) {
         existLights[light.name]++;
       } else {
@@ -65,10 +67,10 @@ function App() {
 
   //保存初始纹理
   this.storeInitialTexture = function () {
-    if (!window.scene || !window.scene.materials) {
+    if (!scene || !scene.materials) {
       return;
     }
-    window.scene.materials.forEach(function (material) {
+    scene.materials.forEach(function (material) {
       texturePro.forEach(function (info) {
         var textureName = info.name;
         if (material[textureName]) {
@@ -91,8 +93,8 @@ function App() {
     MultiDebug.exe("socketModule", "getServerData", "lockInfo", function (data) {
       lockInfo = data;
       //获取BABYLON当前mesh，刷新lanList
-      if (BABYLON && window.scene) {
-        MultiDebug.exe("lanModule", "refreshLanList", window.scene.meshes.map(function (mesh) {
+      if (BABYLON && scene) {
+        MultiDebug.exe("lanModule", "refreshLanList", scene.meshes.map(function (mesh) {
           if (mesh._debug) {
             return null;
           }
@@ -195,7 +197,7 @@ function App() {
   }
 
   function resize() {
-    window.scene.getEngine().resize();
+    scene.getEngine().resize();
   }
 
   //浏览模式，调试模式
@@ -210,7 +212,7 @@ function App() {
   function debugModeModule() {
     var press = false;
     var currentOutlineMesh = null;
-    var hightlight = new BABYLON.HighlightLayer("debug", window.scene);
+    var hightlight = new BABYLON.HighlightLayer("debug", scene);
     var outlineColor = new BABYLON.Color3.FromHexString("#ff254c");
     var outlineWidth = 1;
 
@@ -218,7 +220,7 @@ function App() {
       if (press) {
         return;
       }
-      var pickInfo = window.scene.pick(window.scene.pointerX, window.scene.pointerY);
+      var pickInfo = scene.pick(scene.pointerX, scene.pointerY);
 
       var pickedMesh = pickInfo.pickedMesh;
       if (!pickedMesh && currentOutlineMesh) {
@@ -259,17 +261,17 @@ function App() {
     }
 
     function unregisterEvents() {
-      window.scene.onPointerObservable.removeCallback(onmousemove);
-      window.scene.onPointerObservable.removeCallback(onmousedown);
-      window.scene.onPointerObservable.removeCallback(onmouseup);
+      scene.onPointerObservable.removeCallback(onmousemove);
+      scene.onPointerObservable.removeCallback(onmousedown);
+      scene.onPointerObservable.removeCallback(onmouseup);
     }
 
     _this.debugMode = function () {
       resize();
       unregisterEvents();
-      window.scene.onPointerObservable.add(onmousemove, 4);
-      window.scene.onPointerObservable.add(onmousedown, 1);
-      window.scene.onPointerObservable.add(onmouseup, 2);
+      scene.onPointerObservable.add(onmousemove, 4);
+      scene.onPointerObservable.add(onmousedown, 1);
+      scene.onPointerObservable.add(onmouseup, 2);
       //还原
       MultiDebug.exe("lanModule", "scale1");
       MultiDebug.exe("picModule", "scale1");
@@ -358,11 +360,11 @@ function App() {
       type = picName.slice(index + 1);
     }
     if (type == "skybox") {
-      texture = new BABYLON.CubeTexture(path + picName + "/" + picName, window.scene);
+      texture = new BABYLON.CubeTexture(path + picName + "/" + picName, scene);
     } else if (type == "dds") {
       try {
         if (BABYLON.CubeTexture.CreateFromPrefilteredData) {
-          texture = BABYLON.CubeTexture.CreateFromPrefilteredData(path + picName, window.scene);
+          texture = BABYLON.CubeTexture.CreateFromPrefilteredData(path + picName, scene);
         } else {
           MultiDebug.Tool.showMessage("您当前的BABYLON版本并不支持DDS格式，请更换最新版本的BABYLON", 2, "danger");
         }
@@ -370,7 +372,7 @@ function App() {
         console.warn(e);
       }
     } else if (type == "hdr") {
-      texture = new BABYLON.HDRCubeTexture(path + picName, window.scene, 256)
+      texture = new BABYLON.HDRCubeTexture(path + picName, scene, 256)
     } else {
       MultiDebug.Tool.showMessage(picName + ":立方体纹理不支持这种格式", 2, "warn");
     }
@@ -382,7 +384,7 @@ function App() {
 
   //平面纹理
   function createTexture(path, picName, textureName) {
-    var texture = new BABYLON.Texture(path + picName, window.scene);
+    var texture = new BABYLON.Texture(path + picName, scene);
     if (texture) {
       texture.name = textureName;
     }
@@ -1209,10 +1211,10 @@ function App() {
   this.toggleMaterialType = function (mesh, materialType) {
     if (BABYLON[materialType]) {
       var oriMaterial = mesh.material;
-      mesh.material = new BABYLON[materialType](mesh.material.name, window.scene);
+      mesh.material = new BABYLON[materialType](mesh.material.name, scene);
       var currentMaterial = mesh.material;
       //删除原来的材质
-      window.scene.meshes.forEach(function (mesh) {
+      scene.meshes.forEach(function (mesh) {
         if (mesh.material && mesh.material == oriMaterial) {
           mesh.material = currentMaterial;
           return true;
@@ -1261,8 +1263,8 @@ function App() {
       MultiDebug.exe("chatModule", "appendLogContentBuffer", "成功导出材质库 [" + name + "] 分类: [" + tag + "]");
     }
 
-    var oriCamera = window.scene.activeCamera;
-    var oriActiveCameras = window.scene.activeCameras;
+    var oriCamera = scene.activeCamera;
+    var oriActiveCameras = scene.activeCameras;
     var camera = null;
     var matBall = null;
     var light = null;
@@ -1270,37 +1272,37 @@ function App() {
 
     function start() {
       //隐藏multidebug
-      multiDebug.hideModules();
+      multiDebugDom.hide();
       resize();
       //天空盒
-      //skybox = BABYLON.Mesh.CreateBox("debugMatSkybox", 10000000, window.scene);
+      //skybox = BABYLON.Mesh.CreateBox("debugMatSkybox", 10000000, scene);
       //skybox.isPickable = false;
       //skybox.infiniteDistance = false;
-      //skybox.material = new BABYLON.StandardMaterial("debugMatSkyboxMat", window.scene);
+      //skybox.material = new BABYLON.StandardMaterial("debugMatSkyboxMat", scene);
       //skybox.material.backFaceCulling = false;
-      //skybox.material.reflectionTexture = new BABYLON.CubeTexture(MATERIALLIBFIX + "skyboxs/rainbow/rainbow", window.scene);
+      //skybox.material.reflectionTexture = new BABYLON.CubeTexture(MATERIALLIBFIX + "skyboxs/rainbow/rainbow", scene);
       //skybox.material.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
       //skybox.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
       //skybox.material.specularColor = new BABYLON.Color3(0, 0, 0);
       //skybox.material.disableLighting = true;
-      matBall = BABYLON.Mesh.CreateSphere("debugMatBall", 32, 500, window.scene);
+      matBall = BABYLON.Mesh.CreateSphere("debugMatBall", 32, 500, scene);
       matBall.setVerticesData("uv2", matBall.getVerticesData("uv"));
       matBall.setVerticesData("uv3", matBall.getVerticesData("uv"));
       matBall.material = material;
       matBall.position = new BABYLON.Vector3(100000, 100000, 100000);
-      camera = new BABYLON.ArcRotateCamera("exportMaterialCamera", 0, Math.PI / 2, 2000, matBall.position, window.scene);
+      camera = new BABYLON.ArcRotateCamera("exportMaterialCamera", 0, Math.PI / 2, 2000, matBall.position, scene);
       camera.lowerBetaLimit = .1;
       camera.upperBetaLimit = Math.PI - .1;
       camera.maxZ = 1000000000;
       camera.wheelPrecision = 1;
-      window.scene.activeCameras = [];
-      window.scene.activeCamera = camera;
+      scene.activeCameras = [];
+      scene.activeCamera = camera;
       camera.attachControl(canvas, false);
       //排除光影响
-      window.scene.lights.forEach(function (light) {
+      scene.lights.forEach(function (light) {
         light.excludedMeshes.push(matBall);
       })
-      light = new BABYLON.HemisphericLight("testLight", new BABYLON.Vector3(0, 1, 0), window.scene);
+      light = new BABYLON.HemisphericLight("testLight", new BABYLON.Vector3(0, 1, 0), scene);
       light.intensity = .5;
       //只照亮材质球
       light.includedOnlyMeshes.push(matBall);
@@ -1309,15 +1311,15 @@ function App() {
     start();
 
     function end() {
-      window.scene.activeCameras = oriActiveCameras;
-      window.scene.activeCamera = oriCamera;
+      scene.activeCameras = oriActiveCameras;
+      scene.activeCamera = oriCamera;
       matBall.dispose();
       camera.dispose();
       light.setEnabled(false);
       light.dispose();
       //skybox.dispose();
       //skybox.material.dispose();
-      multiDebug.showModules();
+      multiDebugDom.show();
       resize();
     }
   }
@@ -1338,10 +1340,10 @@ function App() {
     var row = 5;//每行显示的列数
     var gap = 100;
     //初始化场景
-    var oriCamera = window.scene.activeCamera;
-    var oriActiveCameras = window.scene.activeCameras;
+    var oriCamera = scene.activeCamera;
+    var oriActiveCameras = scene.activeCameras;
     var oriViewport = oriCamera.viewport;
-    var engine = window.scene.getEngine();
+    var engine = scene.getEngine();
     var canvas = engine.getRenderingCanvas();
     var camera = null;
     var light = null;
@@ -1370,7 +1372,7 @@ function App() {
           mesh.dom.show();
           var mesh2d = BABYLON.Vector3.Project(mesh.position.add(difPosition),
             BABYLON.Matrix.Identity(),
-            window.scene.getTransformMatrix(),
+            scene.getTransformMatrix(),
             camera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight()));
           mesh.dom.css("left", mesh2d.x / width + "%").css("top", mesh2d.y / height + "%")
         } else {
@@ -1409,27 +1411,27 @@ function App() {
     //材质球加载完毕，开始初始化,并且可以双击退出
     function start() {
       //天空盒
-      //skybox = BABYLON.Mesh.CreateBox("debugMatSkybox", 10000000, window.scene);
+      //skybox = BABYLON.Mesh.CreateBox("debugMatSkybox", 10000000, scene);
       //skybox.isPickable = false;
       //skybox.infiniteDistance = false;
-      //skybox.material = new BABYLON.StandardMaterial("debugMatSkyboxMat", window.scene);
+      //skybox.material = new BABYLON.StandardMaterial("debugMatSkyboxMat", scene);
       //skybox.material.backFaceCulling = false;
-      //skybox.material.reflectionTexture = new BABYLON.CubeTexture(MATERIALLIBFIX + "skyboxs/rainbow/rainbow", window.scene);
+      //skybox.material.reflectionTexture = new BABYLON.CubeTexture(MATERIALLIBFIX + "skyboxs/rainbow/rainbow", scene);
       //skybox.material.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
       //skybox.material.diffuseColor = new BABYLON.Color3(0, 0, 0);
       //skybox.material.specularColor = new BABYLON.Color3(0, 0, 0);
       //skybox.material.disableLighting = true;
-      camera = new BABYLON.ArcRotateCamera("importMaterialCamera", Math.PI / 2, Math.PI / 2, 1100, difPosition, window.scene);
+      camera = new BABYLON.ArcRotateCamera("importMaterialCamera", Math.PI / 2, Math.PI / 2, 1100, difPosition, scene);
       camera.lowerBetaLimit = .1;
       camera.upperBetaLimit = Math.PI - .1;
       camera.lowerRadiusLimit = 1;
       camera.maxZ = 1000000000;
       camera.wheelPrecision = 1;
-      window.scene.activeCameras = [oriCamera, camera];
+      scene.activeCameras = [oriCamera, camera];
       //viewport
       oriCamera.viewport = new BABYLON.Viewport(0, 0, .5, 1);
       camera.viewport = new BABYLON.Viewport(0.5, 0, .5, 1);
-      light = new BABYLON.HemisphericLight("testLight", new BABYLON.Vector3(1, 1, 0), window.scene);
+      light = new BABYLON.HemisphericLight("testLight", new BABYLON.Vector3(1, 1, 0), scene);
       light.groundColor = new BABYLON.Color3(.5, .5, .5);
       light.intensity = .7;
       _this.showLightDebug(light, false, true);
@@ -1437,16 +1439,16 @@ function App() {
       //显示材质球
       showMaterialLib();
       //相机分别控制
-      window.scene.onPointerObservable.add(onmousedown, 1);
+      scene.onPointerObservable.add(onmousedown, 1);
       //双击取消材质库
       $(document.body).on("dblclick", end);
       //调整位置
-      window.scene.registerBeforeRender(adjustDom);
+      scene.registerBeforeRender(adjustDom);
     }
 
     //显示材质球
     function showMaterialLib() {
-      ballParent = new BABYLON.Mesh("z_debugParent", window.scene);
+      ballParent = new BABYLON.Mesh("z_debugParent", scene);
       ballParent.position = difPosition;
       materialLib.forEach(function (json, materialLibName) {
         json = JSON.parse(json);
@@ -1454,14 +1456,14 @@ function App() {
         var tag = json.tag;
         var materialLibType = json.materialType;
         //生成球球
-        var ball = BABYLON.Mesh.CreateSphere("z_" + materialLibName, 32, 50, window.scene);
+        var ball = BABYLON.Mesh.CreateSphere("z_" + materialLibName, 32, 50, scene);
         ball.parent = ballParent;
         ball.position = new BABYLON.Vector3(Math.random() * 200, Math.random() * 200, 0)
         ball.setVerticesData("uv2", ball.getVerticesData("uv"));
         ball.setVerticesData("uv3", ball.getVerticesData("uv"));
         //赋予材质
         try {
-          ball.material = new BABYLON[materialLibType]("zm_" + materialLibName, window.scene);
+          ball.material = new BABYLON[materialLibType]("zm_" + materialLibName, scene);
           initSceneByJSON(json, ball.material);
         } catch (e) {
           console.warn(e)
@@ -1499,7 +1501,7 @@ function App() {
         })
 
         //排除光影响
-        window.scene.lights.forEach(function (l) {
+        scene.lights.forEach(function (l) {
           if (l != light) {
             l.excludedMeshes.push(ball);
           }
@@ -1533,10 +1535,10 @@ function App() {
 
     function showBalls(shows) {
       balls.forEach(function (ball) {
-        window.scene.removeMesh(ball);
+        scene.removeMesh(ball);
       })
       shows.forEach(function (mesh, i) {
-        window.scene.addMesh(mesh);
+        scene.addMesh(mesh);
         var currentRow = window.parseInt(i / row);
         var currentCol = i % row;
         mesh.position = new BABYLON.Vector3(-gap * currentCol, -gap * currentRow, 0);
@@ -1558,20 +1560,20 @@ function App() {
         "全部": [],
         "未定义": []
       }
-      window.scene.activeCameras = oriActiveCameras;
+      scene.activeCameras = oriActiveCameras;
       camera.dispose();
       light.setEnabled(false);
       light.dispose();
       //skybox.dispose();
       //skybox.material.dispose();
-      window.scene.activeCamera = oriCamera;
+      scene.activeCamera = oriCamera;
       oriCamera.attachControl(canvas, false);
       oriCamera.viewport = oriViewport;
-      multiDebug.showModules();
+      multiDebugDom.show();
       //删除事件
-      window.scene.onPointerObservable.removeCallback(onmousedown);
+      scene.onPointerObservable.removeCallback(onmousedown);
       $(document.body).off("dblclick", end);
-      window.scene.unregisterBeforeRender(adjustDom);
+      scene.unregisterBeforeRender(adjustDom);
       resize();
       //删除球
       ballParent.dispose && ballParent.dispose()
@@ -1593,7 +1595,7 @@ function App() {
       }
     }
 
-    multiDebug.hideModules();
+    multiDebugDom.hide();
     //获取材质库文件列表
     MultiDebug.exe("socketModule", "getMaterialLibFileList", "lib", function (fileList) {
       console.log("材质库：", fileList)
@@ -1680,7 +1682,7 @@ function App() {
 
   //创建光源球,初始化位置和方向light._lightBall,lightBall._light
   function showLightBall(light) {
-    var lightBall = BABYLON.Mesh.CreateSphere(light.name, 32, lightBallSize, window.scene);
+    var lightBall = BABYLON.Mesh.CreateSphere(light.name, 32, lightBallSize, scene);
     //lightBall不会生成调试JSON
     lightBall._debug = true;
     lightBall._light = light;
@@ -1739,7 +1741,7 @@ function App() {
     } else {
       return;
     }
-    var dirLine = BABYLON.Mesh.CreateDashedLines(lightBall.name + "DirLine", [lightBall.position, lightBall.position.add(dir.scale(lightBallSize * 3))], 3, 1, 10, window.scene);
+    var dirLine = BABYLON.Mesh.CreateDashedLines(lightBall.name + "DirLine", [lightBall.position, lightBall.position.add(dir.scale(lightBallSize * 3))], 3, 1, 10, scene);
     dirLine._debug = true;
     dirLine.color = new BABYLON.Color3(1, 0, 0);
     currentDirDebug = dirLine;
@@ -1749,14 +1751,14 @@ function App() {
         dirDebug(lightBall);
       }
     }
-    window.scene.registerBeforeRender(currentDirEvent)
+    scene.registerBeforeRender(currentDirEvent)
   }
 
   function detachDirDebug() {
     if (currentDirDebug) {
       currentDirDebug.dispose();
     }
-    window.scene.unregisterBeforeRender(currentDirEvent)
+    scene.unregisterBeforeRender(currentDirEvent)
   }
 
   var pX = {}, pY = {}, pZ = {}, axisX = {}, axisY = {}, axisZ = {};
@@ -1772,7 +1774,7 @@ function App() {
         editControl && editControl.detach();
         detachDirDebug();
         var EditControl = org.ssatguru.babylonjs.component.EditControl;
-        editControl = new EditControl(mesh, window.scene.activeCamera, canvas, .75, true);
+        editControl = new EditControl(mesh, scene.activeCamera, canvas, .75, true);
         editControl.enableTranslation();
         editControl.setRotGuideFull(false);
         editControl.setLocal(true);
@@ -1795,7 +1797,7 @@ function App() {
       if (lightBall && lightBall._light) {
         toggle(lightBall);
       } else {
-        var pickInfos = window.scene.multiPick(window.scene.pointerX, window.scene.pointerY);
+        var pickInfos = scene.multiPick(scene.pointerX, scene.pointerY);
         pickInfos.some(function (pickInfo) {
           var mesh = pickInfo.pickedMesh;
           if (mesh && lightBalls.indexOf(mesh) != -1) {
@@ -1818,7 +1820,7 @@ function App() {
         dirDebug(editControl.mesh)
       }
     }
-    window.scene.onPointerObservable.add(onmousedown, 1);
+    scene.onPointerObservable.add(onmousedown, 1);
     document.body.addEventListener("keydown", onkeydown);
 
     function actionMove() {
@@ -1864,7 +1866,7 @@ function App() {
 
     //注销事件
     unregisterLightEvent = function () {
-      window.scene.onPointerObservable.removeCallback(onmousedown);
+      scene.onPointerObservable.removeCallback(onmousedown);
       document.body.removeEventListener("keydown", onkeydown);
       editControl && editControl.removeAllActionListeners()
       detachDirDebug();
@@ -1877,12 +1879,12 @@ function App() {
   }
 
   this.debugLight = function () {
-    var engine = window.scene.getEngine();
+    var engine = scene.getEngine();
     var canvas = engine.getRenderingCanvas();
     //防止多次创建事件
     disposeLightDebug();
     //显示所有光源球
-    window.scene.lights.forEach(function (light) {
+    scene.lights.forEach(function (light) {
       showLightBall(light);
     })
     //显示调试框
@@ -1935,10 +1937,10 @@ function App() {
     if (onlyOne) {
       var folderTop = new BABYUI.Folder("材质库调试灯光");
     } else {
-      var folderTop = new BABYUI.Folder("灯光调试:" + window.scene.lights.length + "个光源");
+      var folderTop = new BABYUI.Folder("灯光调试:" + scene.lights.length + "个光源");
     }
     lightDebugFolders = {};
-    window.scene.lights.forEach(function (light) {
+    scene.lights.forEach(function (light) {
       if (onlyOne) {
         if (light != currentLight) {
           return;
@@ -2110,5 +2112,4 @@ function App() {
   }
 }
 
-let app = new App();
-export default app;
+export default App;

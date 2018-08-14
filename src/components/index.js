@@ -1,24 +1,20 @@
-import app from './app.js'
-import org from './EditControl.min.js'
+import App from './app'
 import io from 'socket.io-client';
 
-// import io from './socket.io.js';
+let scene = window.scene;
+let multiDebugDom = $(".babylon-material-editor");
+let app = null;
 
-function MultiDebug(option) {
-  var def = {
-    ip: window.location.hostname,
-    port: 30,
-    onlyServer: false,
-  }
-  var opt = Object.assign(def, option);
+function MultiDebug(opt) {
   var _this = this;
   var socket = null;
-  var multiDebugDom = $(".multi-debug");
   var EXE = MultiDebug.exe;
   var GET = MultiDebug.get;
   var SET = MultiDebug.set;
   var EXEI = MultiDebug.exeI;
   MultiDebug.modules = this;
+  scene = opt.scene;
+  app = new App();
   /**socket*/
   this.socket = null;
   /**模块实例对象*/
@@ -33,12 +29,6 @@ function MultiDebug(option) {
   this.debugModule = null;
   /**模块实例对象*/
   this.socketModule = null;
-  /**暴露的Applicationcent层接口*/
-  MultiDebug.exportAPI = {
-    "menuModule": ["onDebugMode", "onViewMode", "onClickMainMenu"],
-    "lanModule": ["onClickLanList", "onMouseoverLanList", "onMouseoutLanList", "onRefreshScene", "onClickSubMenu"],
-    "debugModule": ["onChange"]
-  }
   /**开启菜单模块
    * @class*/
   this.MenuModule = function () {
@@ -1836,7 +1826,7 @@ function MultiDebug(option) {
     this.appName = "";
     var hostname = opt.ip + ":" + opt.port;
     /**客户端socket*/
-    socket = this.socket = _this.socket = io.connect('ws://' + hostname);
+    socket = this.socket = _this.socket = io('ws://' + hostname);
     /**注册socket的事件
      * @param {Object} events - 接收的所有socket事件
      * @param {string} events.eventName - socket事件
@@ -2005,8 +1995,10 @@ function MultiDebug(option) {
           } else {
             console.log("超过5秒未连接成功，已自动断开连接......")
             socket.disconnect();
-            _this.hideModules();
+            multiDebugDom.hide();
           }
+        } else {
+          console.log("已成功连接socket:" + hostname + "...")
         }
       }
 
@@ -2015,23 +2007,8 @@ function MultiDebug(option) {
 
     conntectSocket();
   }
-  /**关闭所有模块*/
-  this.hideModules = function () {
-    multiDebugDom.hide();
-    //$(document.body).css("padding-top", "");
-    //EXE("menuModule", "hide")
-    //EXE("lanModule", "hide")
-    //EXE("picModule", "hide")
-    //EXE("chatModule", "hide")
-  };
-  /**开启所有模块*/
-  this.showModules = function () {
-    multiDebugDom.show();
-    //$(document.body).css("padding-top", "24px");
-  }
 
   function initModules() {
-    _this.showModules();
     _this.menuModule = new _this.MenuModule();
     _this.lanModule = new _this.LanModule();
     _this.picModule = new _this.PicModule();
@@ -2043,12 +2020,19 @@ function MultiDebug(option) {
   if (opt.onlyServer) {
     _this.socketModule = new _this.SocketModule();
     _this.debugModule = new _this.DebugModule();
+    multiDebugDom.hide();
   } else {
-    initModules()
+    initModules();
   }
 
 }
 
+/**暴露的Applicationcent层接口*/
+MultiDebug.exportAPI = {
+  "menuModule": ["onDebugMode", "onViewMode", "onClickMainMenu"],
+  "lanModule": ["onClickLanList", "onMouseoverLanList", "onMouseoutLanList", "onRefreshScene", "onClickSubMenu"],
+  "debugModule": ["onChange"]
+}
 /**执行UI模块方法,兼容错误处理
  * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
  * @param {string} func - 要执行的模块的方法，如"openWindow"
@@ -3095,4 +3079,20 @@ MultiDebug.Application = {
     }
   }
 }
-export {org, MultiDebug};
+
+function expandJquery() {
+  jQuery.easing['jswing'] = jQuery.easing['swing'];
+  jQuery.extend(jQuery.easing,
+    {
+      def: 'easeOutQuad',
+      easeInOutBack: function (x, t, b, c, d, s) {
+        if (s == undefined) s = 1.70158;
+        if ((t /= d / 2) < 1) return c / 2 * (t * t * (((s *= (1.525)) + 1) * t - s)) + b;
+        return c / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + b;
+      }
+    });
+}
+
+expandJquery();
+export default MultiDebug;
+export {multiDebugDom, scene}
