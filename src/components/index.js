@@ -39,7 +39,6 @@ class MultiDebug {
         MultiDebug.exe("chatModule", "openWindow");
         //切换到相应聊天频道
         MultiDebug.exeI("chatModule", "onToggleUserChannel", userName);
-
       },
       /**点击主菜单触发的事件
        * @param {string} itemName - 选项名字*/
