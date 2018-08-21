@@ -72,4 +72,4 @@ class Demo {
 }
 
 let demo = new Demo()
-window.d = demo;
+// window.d = demo;
