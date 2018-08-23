@@ -18,7 +18,7 @@ class MultiDebug {
    * @param {Object[]} argv2 - 传入模块方法的参数
    * @param {Object[]} argv.... - 传入模块方法的参数
    * */
-  static exe(module, func, argv1, argv2) {
+  static exe(module, func) {
     let modules = null;
     if (!(modules = MultiDebug.modules)) {
       console.warn("需要先实例化MultiDebug,才能调用模块");
@@ -73,7 +73,7 @@ class MultiDebug {
    * @param {Object[]} argv2 - 传入接口方法的参数
    * @param {Object[]} argv... - 传入接口方法的参数
    */
-  static exeI(module, func, argv1, argv2) {
+  static exeI(module, func) {
     let _module, _func;
     if (MultiDebug.Interface.hasOwnProperty(module)) {
       if ((_module = MultiDebug.Interface[module]).hasOwnProperty(func)) {
@@ -107,7 +107,7 @@ class MultiDebug {
    * @param {Object[]} argv2 - 传入接口方法的参数
    * @param {Object[]} argv... - 传入接口方法的参数
    */
-  static exeA(module, func, argv1, argv2) {
+  static exeA(module, func) {
     let _module, _func;
     if (MultiDebug.Application.hasOwnProperty(module)) {
       if ((_module = MultiDebug.Application[module]).hasOwnProperty(func)) {
@@ -141,10 +141,12 @@ class MultiDebug {
       /**调试模式触发的事件*/
       onDebugMode: function () {
         MultiDebug.get("menuModule", "navTop").removeClass("opacity");
+        MultiDebug.exe("lanModule", "scale1");
       },
       /**浏览模式触发的事件*/
       onViewMode: function () {
-        MultiDebug.get("menuModule", "navTop").addClass("opacity");
+        MultiDebug.get("menuModule", "navTop").addClass("opacity")
+        MultiDebug.exe("lanModule", "scale0");
       },
       /**点击聊天菜单触发的事件,并触发切换频道事件
        * @param {string} userName - 点击的名字*/
@@ -1079,6 +1081,7 @@ class MultiDebug {
     MultiDebug.modules = this;
     this.opt = opt;
     this.menuModule = new this.MenuModule();
+    this.lanModule = new this.LanModule();
   }
 
   /**开启菜单模块
@@ -1173,6 +1176,323 @@ class MultiDebug {
       navTop.hide();
     }
 
+  }
+
+  /**开启局域网模块
+   * @class*/
+  LanModule() {
+    let nav = multiDebugDom.find(".nav-lan");
+    let bar = multiDebugDom.find(".nav-lan-dragbar");
+    let lanTitle = multiDebugDom.find(".nav-lan .title");
+    let lanList = multiDebugDom.find(".nav-lan .lan-list");
+    let refreshButton = lanTitle.find(".refresh");
+    let subMenu = multiDebugDom.find("ul.submenu");
+    /**@member*/
+    this.lanList = lanList;
+    /**
+     * 更新局域网状态,同时更新滚动条高度和lanList高度
+     * @param {Object[]} json - 用于显示LanList的JSON数据
+     * @param {string} json[].name - 显示的名字
+     * @param {string} json[].stat - 显示的状态"success"||"warn"||"danger"
+     * @param {string} json[].config - 是否添加设置iconfont
+     * @param {string} json[].title - li元素title
+     * @param {Object} json[].data - 传入li的额外数据
+     */
+    this.refreshLanList = function (json) {
+      if (typeof json == "object") {
+        nav.innerHeight(window.innerHeight - 200);
+        bar.innerHeight(window.innerHeight - 200);
+        nav.css("width", "auto");
+        lanList.html("");
+        [].concat.call(json).forEach(function (info) {
+          if (!info)
+            return;
+          let stat = info.stat;
+          let name = info.name;
+          let dom = $("<li>");
+          let statSpan = $("<span class=stat>");
+          let nameSpan = $("<span>");
+          statSpan.addClass("color-" + stat);
+          nameSpan.html(name);
+          dom.append(statSpan).append(nameSpan);
+          //配置按钮点击事件
+          if (info.config) {
+            let config = $("<span class='iconfont config'>")
+            dom.append(config);
+            //配置按钮点击事件
+            dom[0].config = true;
+          } else {
+            dom[0].config = false;
+          }
+          if (info.title) {
+            dom[0].title = info.title;
+          }
+          if (info.data) {
+            for (let key in info.data) {
+              if (!dom[0].data) {
+                dom[0].data = {};
+              }
+              dom[0].data[key] = info.data[key];
+              if (key == "mesh") {
+                info.data[key].li = dom;
+              }
+            }
+          }
+          lanList.append(dom);
+        })
+        //更新高度
+        lanList.innerHeight(nav.innerHeight() - lanList.position().top);
+      }
+      //初始化拖拽条
+      bar.css("left", nav.innerWidth());
+      oriWidth = nav.innerWidth();
+    }
+    /**
+     * 更新单个局域网状态
+     * @param {Array} json - 用于显示LanList的JSON数据
+     * @param {Array|String} dom - 需要更改状态的的dom
+     * @param {Object} data - 需要额外验证的数据,只有DOM为字符串的情况下才开启匹配
+     * @param {string} json.name - 显示的名字
+     * @param {string} json.stat - 显示的状态"success"||"warn"||"danger"
+     * @param {string} json.config - 是否添加设置iconfont
+     * @param {string} json.title - li元素title
+     * @param {string} json.data - li元素的额外数据
+     */
+    this.refreshSingleLan = function (json, dom, data) {
+      if (dom && json) {
+        if (typeof dom == "string") {
+          lanList.children().each(function (i, lan) {
+            lan = $(lan);
+            let name = lan.children().eq(1);
+            if (name.html() == dom) {
+              dom = lan;
+              for (let key in data) {
+                if (lan[0].data[key] == data[key]) {
+                  dom = lan;
+                  break;
+                }
+              }
+            }
+          })
+        }
+        let stat = dom.find(".stat")
+        let name = dom.children().eq(1);
+        let config = dom.find(".config");
+        if (json.title) {
+          dom[0].title = json.title;
+        }
+        if (json.stat) {
+          stat.removeClass().addClass("stat color-" + json.stat);
+        }
+        if (json.name) {
+          name.html(json.name);
+        }
+        if (json.config) {
+          if (config.length == 0) {
+            let config = $("<span class='iconfont config'>");
+            dom.append(config);
+          }
+          //配置按钮点击事件
+          dom[0].config = true;
+        } else {
+          config.remove();
+          dom[0].config = false;
+        }
+        if (json.data) {
+          for (let key in json.data) {
+            dom[0].data[key] = json.data[key];
+          }
+        }
+      }
+    }
+    /**显示子菜单栏在li元素的右边
+     * @param {Object} dom - 触发的选项li元素，jQuery对象
+     * @param {Object} data - 传入副菜单的额外数据，可选
+     * @param {Number} x    - 如果有此参数，则强制修改clientX
+     * @param {Number} y    - 如果有此参数，则强制修改clientY
+     */
+    this.showSubMenu = function (dom, data, x, y) {
+      try {
+        if (data) {
+          subMenu[0].data = data;
+        }
+        let height = subMenu.innerHeight();
+        subMenu.show({
+          duration: 300,
+          easing: "easeInOutBack"
+        });
+        let windowHeight = window.innerHeight;
+        let top = y || dom.offset().top - window.scrollY;
+        let left = x || (lanList.innerWidth() + lanList.offset().left + 15);
+        if (height + top > windowHeight) {
+          subMenu.css("top", top - height + (y ? 0 : dom.innerHeight()) + "px")
+        } else {
+          subMenu.css("top", top + "px");
+        }
+        subMenu.css("left", left + "px")
+        subMenu.focus();
+      } catch (e) {
+        console.warn(e)
+      }
+    }
+    /**高亮显示lanList
+     * @param {Object} li -jqueryDom li*/
+    this.highlightLi = function (dom) {
+      lanList.children().each(function (i, dom) {
+        $(dom).removeClass("active")
+      })
+      $(dom).addClass("active");
+    }
+    /**取消高亮显示
+     * @param {Object} li -jqueryDom li*/
+    this.removeHightlightLi = function (li) {
+      li.removeClass("active")
+    }
+    /**滚动到li
+     * @param {Object} li -jqueryDom li*/
+    this.scrollToLi = function (li) {
+      try {
+        lanList.children().each(function (i, dom) {
+          $(dom).removeClass("current-pick");
+        })
+        lanList.scrollTop(li.innerHeight() * li.index());
+        li.addClass("current-pick");
+        //li.on("mousemove", function () {
+        //lanList.on("mouseover", function (e) {
+        //    if (e.target.nodeName == "LI") {
+        //li.removeClass("current-pick");
+        //li.off("mousemove");
+        //}
+        //})
+      } catch (e) {
+        console.warn(e)
+      }
+    }
+    /**显示模块*/
+    this.show = function () {
+      nav.stop().show();
+      bar.stop().show();
+    }
+    /**隐藏模块*/
+    this.hide = function () {
+      nav.stop().hide();
+      bar.stop().hide();
+    }
+    let oriWidth = null;
+
+    function init() {
+      let px = null;
+      let canDrag = false;
+      let width = null;
+      //初始化拖拽条
+      nav.innerHeight(window.innerHeight - 200);
+      bar.innerHeight(window.innerHeight - 200);
+      bar.css("left", nav.innerWidth());
+      oriWidth = nav.innerWidth();
+
+      function move() {
+        function mousedown(e) {
+          if (e.target.nodeName.toUpperCase() == "LI") {
+            return;
+          }
+          canDrag = true;
+          px = e.clientX;
+          width = nav.width();
+          bar.removeClass("hide")
+        }
+
+        bar.on("mousedown", mousedown);
+        nav.on("mousedown", mousedown);
+        $(document).on("mousemove", function (e) {
+          if (canDrag) {
+            let dif = e.clientX - px;
+            nav.width(width + dif);
+            bar.css("left", nav.innerWidth());
+          }
+        })
+        $(document).on("mouseup", function () {
+          canDrag = false;
+          if (window.parseInt(bar.css("left")) <= 30) {
+            nav.width(0);
+            bar.css("left", nav.innerWidth());
+            bar.addClass("hide")
+          }
+        })
+      }
+
+      move();
+      //更新场景
+      refreshButton.click(function () {
+        EXEI("lanModule", "onRefreshScene")
+      })
+
+      //li点击事件
+      function onClickLanList(e) {
+        let src = $(e.srcElement || e.target);
+        if (src[0].nodeName == "LI") {
+          let stat = src[0].data.stat;
+          let name = src[0].data.name;
+          EXEI("lanModule", "onClickLanList", {
+            stat: stat,
+            name: name,
+            button: e.button,
+            config: src[0].config,
+            dom: src,
+            data: src[0].data
+          })
+        }
+      }
+
+      lanList.on("mouseup", onClickLanList).on("mouseover", onClickLanList).on("mouseover", function (e) {
+        let src = $(e.srcElement || e.target);
+        if (src[0].nodeName == "LI") {
+          EXEI("lanModule", "onMouseoverLanList", {
+            stat: src[0].data.stat,
+            name: src[0].data.name,
+            dom: src,
+            data: src[0].data
+          })
+        }
+      }).on("mouseout", function (e) {
+        let src = $(e.srcElement || e.target);
+        if (src[0].nodeName == "LI") {
+          EXEI("lanModule", "onMouseoutLanList", {
+            stat: src[0].data.stat,
+            name: src[0].data.name,
+            dom: src,
+            data: src[0].data
+          })
+        }
+      })
+      //单个菜单栏失焦消失
+      subMenu.blur(function () {
+        //console.log("blur")
+        subMenu.hide();
+      }).click(function () {
+        subMenu.hide();
+      })
+      //初始化submenu事件
+      subMenu.children("li").click(function (e) {
+        EXEI("lanModule", "onClickSubMenu", (e.srcElement || e.target).innerHTML, subMenu, subMenu[0].data.src);
+      })
+    }
+
+    init();
+    /**大小变为0，但是可以拖拽还原，没有隐藏*/
+    this.scale0 = function () {
+      nav.innerWidth(0);
+      bar.css("left", nav.innerWidth());
+      bar.addClass("hide")
+    }
+    /**还原到原来的大小*/
+    this.scale1 = function () {
+      if (!oriWidth) {
+        return;
+      }
+      nav.innerWidth(oriWidth);
+      bar.css("left", nav.innerWidth());
+      bar.removeClass("hide")
+    }
   }
 }
 
