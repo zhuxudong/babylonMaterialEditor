@@ -11,6 +11,120 @@ let multiDebugDom = $(".babylon-material-editor");
 
 /**@Class */
 class MultiDebug {
+  /**执行UI模块方法,兼容错误处理
+   * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
+   * @param {string} func - 要执行的模块的方法，如"openWindow"
+   * @param {Object[]} argv1 - 传入模块方法的参数
+   * @param {Object[]} argv2 - 传入模块方法的参数
+   * @param {Object[]} argv.... - 传入模块方法的参数
+   * */
+  static exe(module, func, argv1, argv2) {
+    let modules = null;
+    if (!(modules = MultiDebug.modules)) {
+      console.warn("需要先实例化MultiDebug,才能调用模块");
+      return;
+    }
+    if (modules[module] && modules[module][func] && modules[module][func].apply) {
+      let arg = [];
+      for (let i = 2; i <= arguments.length; i++) {
+        arg.push(arguments[i])
+      }
+      return modules[module][func].apply(modules[module], arg);
+    }
+  }
+
+  /**获取模块数据,兼容错误处理
+   * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
+   * @param {string} pro - 要获取的模块的member
+   * */
+  static get(module, pro) {
+    let modules = null;
+    if (!(modules = MultiDebug.modules)) {
+      console.warn("需要先实例化MultiDebug,才能调用模块");
+      return;
+    }
+    if (modules[module] && modules[module].hasOwnProperty && modules[module].hasOwnProperty(pro)) {
+      return modules[module][pro];
+    }
+    return null;
+  }
+
+  /**设置模块数据,兼容错误处理
+   * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
+   * @param {string} pro - 要设置的模块的属性
+   * @param {string} val - 要设置的模块的值
+   * */
+  static set(module, pro, val) {
+    let modules = null;
+    if (!(modules = MultiDebug.modules)) {
+      console.warn("需要先实例化MultiDebug,才能调用模块");
+      return;
+    }
+    if (modules[module]) {
+      modules[module][pro] = val;
+    }
+    return null;
+  }
+
+  /**执行事件接口方法,兼容错误处理
+   * @param {string} module - 接口对应模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
+   * @param {string} func - 要执行的接口的方法，如"openWindow"
+   * @param {Object[]} argv1 - 传入接口方法的参数
+   * @param {Object[]} argv2 - 传入接口方法的参数
+   * @param {Object[]} argv... - 传入接口方法的参数
+   */
+  static exeI(module, func, argv1, argv2) {
+    let _module, _func;
+    if (MultiDebug.Interface.hasOwnProperty(module)) {
+      if ((_module = MultiDebug.Interface[module]).hasOwnProperty(func)) {
+        _func = _module[func];
+        let arg = [];
+        for (let i = 2; i < arguments.length; i++) {
+          arg.push(arguments[i])
+        }
+        let returnValue = _func.apply && _func.apply(window, arg);
+        let api = MultiDebug.exportAPI;
+        try {
+          if (api && api[module] && api[module].indexOf && api[module].indexOf(func) != -1) {
+            MultiDebug.exeA.apply(window, [].concat.call([], module, func, arg))
+          }
+        } catch (e) {
+          console.warn(e)
+        }
+        return returnValue;
+      } else {
+        console.warn("没有MultiDebug.Interface." + module + "." + func)
+      }
+    } else {
+      console.warn("没有MultiDebug.Interface." + module)
+    }
+  }
+
+  /**执行应用层接口方法,兼容错误处理
+   * @param {string} module - 应用层对应模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
+   * @param {string} func - 要执行的应用层接口的方法"
+   * @param {Object[]} argv1 - 传入接口方法的参数
+   * @param {Object[]} argv2 - 传入接口方法的参数
+   * @param {Object[]} argv... - 传入接口方法的参数
+   */
+  static exeA(module, func, argv1, argv2) {
+    let _module, _func;
+    if (MultiDebug.Application.hasOwnProperty(module)) {
+      if ((_module = MultiDebug.Application[module]).hasOwnProperty(func)) {
+        _func = _module[func];
+        let arg = [];
+        for (let i = 2; i < arguments.length; i++) {
+          arg.push(arguments[i])
+        }
+        return _func.apply && _func.apply(window, arg)
+      } else {
+        console.warn("没有MultiDebug.Application." + module + "." + func)
+      }
+    } else {
+      console.warn("没有MultiDebug.Application." + module)
+    }
+  }
+
   /**暴露的Applicationcent层接口*/
   static exportAPI = {
     "menuModule": ["onDebugMode", "onViewMode", "onClickMainMenu"],
@@ -950,6 +1064,7 @@ class MultiDebug {
     }
   }
   static modules = null;
+
   menuModule = null;
   lanModule = null;
   picModule = null;
@@ -964,120 +1079,6 @@ class MultiDebug {
     MultiDebug.modules = this;
     this.opt = opt;
     this.menuModule = new this.MenuModule();
-  }
-
-  /**执行UI模块方法,兼容错误处理
-   * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
-   * @param {string} func - 要执行的模块的方法，如"openWindow"
-   * @param {Object[]} argv1 - 传入模块方法的参数
-   * @param {Object[]} argv2 - 传入模块方法的参数
-   * @param {Object[]} argv.... - 传入模块方法的参数
-   * */
-  static exe(module, func, argv1, argv2) {
-    let modules = null;
-    if (!(modules = MultiDebug.modules)) {
-      console.warn("需要先实例化MultiDebug,才能调用模块");
-      return;
-    }
-    if (modules[module] && modules[module][func] && modules[module][func].apply) {
-      let arg = [];
-      for (let i = 2; i <= arguments.length; i++) {
-        arg.push(arguments[i])
-      }
-      return modules[module][func].apply(modules[module], arg);
-    }
-  }
-
-  /**获取模块数据,兼容错误处理
-   * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
-   * @param {string} pro - 要获取的模块的member
-   * */
-  static get(module, pro) {
-    let modules = null;
-    if (!(modules = MultiDebug.modules)) {
-      console.warn("需要先实例化MultiDebug,才能调用模块");
-      return;
-    }
-    if (modules[module] && modules[module].hasOwnProperty && modules[module].hasOwnProperty(pro)) {
-      return modules[module][pro];
-    }
-    return null;
-  }
-
-  /**设置模块数据,兼容错误处理
-   * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
-   * @param {string} pro - 要设置的模块的属性
-   * @param {string} val - 要设置的模块的值
-   * */
-  static set(module, pro, val) {
-    let modules = null;
-    if (!(modules = MultiDebug.modules)) {
-      console.warn("需要先实例化MultiDebug,才能调用模块");
-      return;
-    }
-    if (modules[module]) {
-      modules[module][pro] = val;
-    }
-    return null;
-  }
-
-  /**执行事件接口方法,兼容错误处理
-   * @param {string} module - 接口对应模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
-   * @param {string} func - 要执行的接口的方法，如"openWindow"
-   * @param {Object[]} argv1 - 传入接口方法的参数
-   * @param {Object[]} argv2 - 传入接口方法的参数
-   * @param {Object[]} argv... - 传入接口方法的参数
-   */
-  static exeI(module, func, argv1, argv2) {
-    let _module, _func;
-    if (MultiDebug.Interface.hasOwnProperty(module)) {
-      if ((_module = MultiDebug.Interface[module]).hasOwnProperty(func)) {
-        _func = _module[func];
-        let arg = [];
-        for (let i = 2; i < arguments.length; i++) {
-          arg.push(arguments[i])
-        }
-        let returnValue = _func.apply && _func.apply(window, arg);
-        let api = MultiDebug.exportAPI;
-        try {
-          if (api && api[module] && api[module].indexOf && api[module].indexOf(func) != -1) {
-            MultiDebug.exeA.apply(window, [].concat.call([], module, func, arg))
-          }
-        } catch (e) {
-          console.warn(e)
-        }
-        return returnValue;
-      } else {
-        console.warn("没有MultiDebug.Interface." + module + "." + func)
-      }
-    } else {
-      console.warn("没有MultiDebug.Interface." + module)
-    }
-  }
-
-  /**执行应用层接口方法,兼容错误处理
-   * @param {string} module - 应用层对应模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
-   * @param {string} func - 要执行的应用层接口的方法"
-   * @param {Object[]} argv1 - 传入接口方法的参数
-   * @param {Object[]} argv2 - 传入接口方法的参数
-   * @param {Object[]} argv... - 传入接口方法的参数
-   */
-  static exeA(module, func, argv1, argv2) {
-    let _module, _func;
-    if (MultiDebug.Application.hasOwnProperty(module)) {
-      if ((_module = MultiDebug.Application[module]).hasOwnProperty(func)) {
-        _func = _module[func];
-        let arg = [];
-        for (let i = 2; i < arguments.length; i++) {
-          arg.push(arguments[i])
-        }
-        return _func.apply && _func.apply(window, arg)
-      } else {
-        console.warn("没有MultiDebug.Application." + module + "." + func)
-      }
-    } else {
-      console.warn("没有MultiDebug.Application." + module)
-    }
   }
 
   /**开启菜单模块

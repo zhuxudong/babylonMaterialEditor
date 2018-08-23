@@ -22,7 +22,10 @@
   * {
     box-sizing: border-box;
   }
-
+  transition:opacity @duration;
+  &.opacity{
+    opacity:0;
+  }
   .nav-lan-dragbar, .nav-pic-dragbar {
     position: absolute;
     pointer-events: auto;
