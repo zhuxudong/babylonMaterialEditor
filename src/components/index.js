@@ -142,11 +142,13 @@ class MultiDebug {
       onDebugMode: function () {
         MultiDebug.get("menuModule", "navTop").removeClass("opacity");
         MultiDebug.exe("lanModule", "scale1");
+        MultiDebug.exe("picModule", "scale1");
       },
       /**浏览模式触发的事件*/
       onViewMode: function () {
         MultiDebug.get("menuModule", "navTop").addClass("opacity")
         MultiDebug.exe("lanModule", "scale0");
+        MultiDebug.exe("picModule", "scale0");
       },
       /**点击聊天菜单触发的事件,并触发切换频道事件
        * @param {string} userName - 点击的名字*/
@@ -1082,6 +1084,9 @@ class MultiDebug {
     this.opt = opt;
     this.menuModule = new this.MenuModule();
     this.lanModule = new this.LanModule();
+    this.picModule = new this.PicModule();
+    this.chatModule = new this.ChatModule();
+    this.debugModule = new this.DebugModule();
   }
 
   /**开启菜单模块
@@ -1494,6 +1499,923 @@ class MultiDebug {
       bar.removeClass("hide")
     }
   }
+
+  /**开启图片资源模块
+   * @class*/
+  PicModule() {
+    let module = this;
+    let bar = multiDebugDom.find(".nav-pic-dragbar");
+    let navPic = multiDebugDom.find(".nav-pic");
+    let picTitle = multiDebugDom.find(".nav-pic .title")
+    let picPanel = multiDebugDom.find(".nav-pic .pic-panel");
+    let disableButton = null;
+    let activeButton = null;
+    let activePanel = null;
+
+    this.button1 = picTitle.find("button").eq(0);
+    this.button2 = picTitle.find("button").eq(1);
+    this.button3 = picTitle.find("button").eq(2);
+    this.button4 = picTitle.find("button").eq(3);
+    this.panel1 = picPanel.eq(0);
+    this.panel2 = picPanel.eq(1);
+    this.panel3 = picPanel.eq(2);
+    this.panel4 = picPanel.eq(3);
+    /**显示模块*/
+    this.show = function () {
+      navPic.stop().show();
+      bar.stop().show();
+    }
+    /**隐藏模块*/
+    this.hide = function () {
+      navPic.stop().hide();
+      bar.stop().hide();
+    }
+    /**
+     * 激活相应的按钮,只能有一个按钮处于激活状态,且取消按钮的禁止状态
+     * @param {Object} button - 需要激活的按钮,只能是jqueryDom对象
+     */
+    this.activeButton = function (button) {
+      picTitle.children("button").removeClass("color-success");
+      button.removeClass("disable").addClass("color-success");
+      activeButton = button;
+      disableButton = picTitle.children("button.disable");
+    }
+    /**
+     * 禁止相应的按钮,无论按钮是否处于激活状态
+     * @param {Object} button - 需要禁止的按钮,只能是jqueryDom对象
+     */
+    this.disableButton = function (button) {
+      button.removeClass("color-success").addClass("disable");
+      activeButton = picTitle.children("button.color-success");
+      disableButton = picTitle.children("button.disable");
+    }
+    /**显示picPanel
+     * @param {Object} panel - 需要显示的picPanel*/
+    this.showPanel = function (panel) {
+      picPanel.hide(0);
+      panel.show(0);
+      activePanel = panel;
+    }
+
+    /**清空图片库*/
+    this.clearPanel = function () {
+      picPanel.hide(0);
+      picTitle.children("button").removeClass("color-success disable");
+      activeButton = null;
+      disableButton = null;
+      activePanel = null;
+    }
+    /**根据数据生成立方体纹理类型板块
+     * @param {Array} data - 立方体纹理文件夹名字数组
+     * @param {string} path - 存放文件夹的目录
+     * @param {Object} panel - 需要显示的picPanel
+     */
+    this.createCubePanel = function (data, path, panel) {
+      if (!data || !panel) {
+        return;
+      }
+      let currentPanel = panel;
+      let extend = ["_px.jpg", "_py.jpg", "_pz.jpg", "_nx.jpg", "_ny.jpg", "_nz.jpg"];
+      if (currentPanel.hasClass("pic-panel-cube")) {
+        currentPanel.html("");
+        [].concat(data).forEach(function (fileName) {
+          let file = $("<div class=file draggable=true>");
+          let name = $("<span class=name>");
+          name.html(fileName);
+          for (let i = 0; i < 6; i++) {
+            let img = $("<img class=mini title=" + (fileName + extend[i]) + ">")
+            img[0].src = path + fileName + "/" + fileName + extend[i];
+            file.append(img);
+          }
+          file.append(name);
+          currentPanel.append(file);
+          file.click(function (e) {
+            let target = e.srcElement || e.target;
+            let picName = null;
+            if ((target.nodeName).toUpperCase() == "IMG") {
+              picName = fileName + extend[$(target).index()];
+            }
+            EXEI("picModule", "onClickPic", {
+              button: e.button,
+              fileName: fileName,
+              picName: picName,
+              path: path,
+              type: "skybox"
+            })
+          })
+          file.on("dragstart", function (e) {
+            let info = {
+              fileName: fileName,
+              path: path,
+              type: "skybox",
+              panel: panel.index()
+            }
+            let data = e.originalEvent.dataTransfer;
+            data.setData("picData", JSON.stringify(info));
+            EXEI("picModule", "onDragPic", info)
+          })
+        })
+      }
+    }
+    /**根据数据生成平面纹理类型板块
+     * @param {Array} data - 图片名字数组
+     * @param {string} path - 存放图片的目录
+     * @param {Object} panel - 需要显示的picPanel
+     */
+    this.createTexturePanel = function (data, path, panel) {
+      if (!data || !panel) {
+        return;
+      }
+      let currentPanel = panel;
+      if (currentPanel.hasClass("pic-panel-texture")) {
+        currentPanel.html("");
+        [].concat(data).forEach(function (fileName) {
+          if (fileName == "Thumbs.db")
+            return;
+          let file = $("<div class=file draggable=true>");
+          let name = $("<span class=name>");
+          name.html(fileName);
+          let img = $("<img class=mini title=" + fileName + ">");
+          img[0].src = path + fileName;
+          file.append(img).append(name);
+          currentPanel.append(file);
+          file.click(function (e) {
+            EXEI("picModule", "onClickPic", {
+              button: e.button,
+              fileName: fileName,
+              picName: fileName,
+              path: path,
+              type: "texture",
+            })
+          })
+          file.on("dragstart", function (e) {
+            let info = {
+              fileName: fileName,
+              path: path,
+              type: "texture",
+              panel: panel.index()
+            }
+            let data = e.originalEvent.dataTransfer;
+            data.setData("picData", JSON.stringify(info))
+            EXEI("picModule", "onDragPic", info)
+          })
+
+        })
+      }
+    }
+    /**滚动到相应的图片，高亮显示
+     * @param {number} panelIndex 第1,2,3,4个panel
+     * @param {string} fileName 文件名字*/
+    this.scrollToPic = function (panelIndex, fileName) {
+      let panel = module["panel" + panelIndex];
+      let button = module["button" + panelIndex];
+      //显示
+      module.showPanel(panel);
+      //按钮
+      module.activeButton(button);
+      //滚动
+      panel.children(".file").each(function (i, dom) {
+        dom = $(dom);
+        let name = dom.find("span.name").html();
+        if (name == fileName) {
+          dom.addClass("short-tip");
+          let currentScrollTop = panel.scrollTop();
+          let dif = dom.position().top;
+          panel.scrollTop(currentScrollTop + dif)
+          dom.on("mouseout", function () {
+            dom.removeClass("short-tip");
+            dom.off("mouseout")
+          })
+        } else {
+          dom.removeClass("short-tip");
+        }
+      })
+    }
+
+    function init() {
+      let py = null;
+      let canDrag = false;
+      let height = null;
+      //初始化滚动条、拖拽条、picPanel的位置;
+      bar.css("bottom", navPic.innerHeight());
+      picPanel.css("top", picTitle.outerHeight() + "px");
+      picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight());
+
+      function move() {
+        function mousedown(e) {
+          canDrag = true;
+          bar.removeClass("hide");
+          py = e.clientY;
+          height = navPic.innerHeight();
+        }
+
+        bar.on("mousedown", mousedown)
+        picTitle.on("mousedown", mousedown);
+        //动态更新拖拽条和滚动条的位置
+        $(document).on("mousemove", function (e) {
+          if (canDrag) {
+            let dif = py - e.clientY;
+            navPic.height(height + dif);
+            bar.css("bottom", navPic.innerHeight());
+            picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight())
+          }
+        })
+        $(document).on("mouseup", function () {
+          if (window.parseInt(bar.css("bottom")) <= 30) {
+            navPic.height(0);
+            bar.css("bottom", navPic.innerHeight());
+            picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight())
+            bar.addClass("hide");
+          }
+          canDrag = false;
+        })
+      }
+
+      move();
+      //切换picPanel
+      picTitle.children("button").click(function (e) {
+        let $dom = $(e.srcElement || e.target);
+        let panel = module["panel" + ($dom.index() + 1)]
+        //禁止状态的按钮不能触发事件
+        if ($dom.hasClass("disable")) {
+          return;
+        }
+        EXEI("picModule", "onTogglePicPanel", $dom, panel)
+      })
+
+    }
+
+    init();
+    /**大小变为0，但是可以拖拽还原，没有隐藏*/
+    this.scale0 = function () {
+      navPic.innerHeight(0);
+      picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight())
+      bar.css("bottom", navPic.innerHeight());
+      bar.addClass("hide");
+    }
+    /**还原到原来的大小*/
+    this.scale1 = function () {
+      navPic.innerHeight(200);
+      picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight())
+      bar.css("bottom", navPic.innerHeight());
+      bar.removeClass("hide");
+    }
+  }
+
+  /**开启聊天模块
+   * @class*/
+  ChatModule() {
+    let module = this;
+    this.MAXCONTENT = 10;//最大预加载聊天信息，向上滚动懒加载
+    let navChat = multiDebugDom.find(".nav-chat");
+    let chatTop = $(".nav-chat .chat-top");
+    let chatWho = chatTop.find(".chat-who")
+    let myName = $(".nav-chat .chat-top .user-info .myname");
+    let myImg = $(".nav-chat .chat-top .user-info .user-img.user-me");
+    let chatList = $(".nav-chat .chat-list");
+    //拖拽条
+    let dragBarTop = $(".nav-chat .dragbar-top");
+    let dragBarBottom = $(".nav-chat .dragbar-bottom");
+    let dragBarLeft = $(".nav-chat .dragbar-left");
+    let dragBarRight = $(".nav-chat .dragbar-right");
+    let dragBarLeftTop = $(".nav-chat .dragbar-left-top");
+    let dragBarLeftBottom = $(".nav-chat .dragbar-left-bottom");
+    let dragBarRightTop = $(".nav-chat .dragbar-right-top");
+    let dragBarRightBottom = $(".nav-chat .dragbar-right-bottom");
+    //信息主体
+    let chatBody = $(".nav-chat .chat-body");
+    let close = chatTop.find(".user-info .close");
+    let rename = chatTop.find(".user-info .config");
+    //发送
+    let chatInput = $(".nav-chat .chat-input");
+    let submit = $(".nav-chat .chat-input .send");
+    let textarea = $(".nav-chat .chat-input textarea");
+    /**当前聊天频道，默认公共频道*/
+    this.currentChannel = chatList.find(".user.public .user-name").html();
+    /**当前聊天频道图片路径*/
+    this.currentImg = null;
+    /**公共频道*/
+    this.publicRoom = this.currentChannel;
+    /**消息日志频道*/
+    this.logRoom = chatList.find(".user.log .user-name").html();
+    /**窗口是否激活状态*/
+    this.blur = false;
+
+    //图片缓存
+    let imgBuffer = {}
+    //正在ajax请求的url
+    let ajaxing = {};
+
+    function setImgBuffer(imgPath, base64) {
+      imgBuffer[imgPath] = base64;
+    }
+
+    /**显示模块*/
+    this.show = function () {
+      navChat.show();
+    }
+    /**隐藏模块*/
+    this.hide = function () {
+      navChat.hide();
+    }
+    /**获取图片资源，有缓存的话会读取缓存
+     * @param {string} imgPath -图片服务器相对路径
+     * @param {function} onsuccess - 读取成功的回调函数 (base64:图片数据)
+     * @param {boolean} force - 强制读取非缓存内容
+     * */
+    this.getServerImg = function (imgPath, onsuccess, force) {
+      if (!imgPath) {
+        return
+      }
+      if (!force && imgBuffer.hasOwnProperty(imgPath)) {
+        onsuccess && onsuccess(imgBuffer[imgPath]);
+      } else {
+        //如果已经有请求正在发送，则只需要等待请求，最多等待5s.
+        if (ajaxing[imgPath]) {
+          let time = 0;
+          (function () {
+            //等待请求完毕
+            if (!ajaxing[imgPath]) {
+              onsuccess(imgBuffer[imgPath])
+            } else {
+              if (time++ < 10) {
+                window.setTimeout(arguments.callee, 500)
+              } else {
+                onsuccess && onsuccess(null);
+              }
+            }
+          })();
+        } else {
+          ajaxing[imgPath] = true;
+          $.ajax(SERVERFIX + imgPath, {
+            error: function () {
+              ajaxing[imgPath] = false;
+              onsuccess && onsuccess(null);
+            },
+            success: function (base64) {
+              setImgBuffer(imgPath, base64);
+              ajaxing[imgPath] = false;
+              onsuccess && onsuccess(base64);
+            }
+          })
+        }
+
+      }
+    }
+    /**
+     * 显示聊天窗口，位置居中屏幕
+     * */
+    this.openWindow = function () {
+      navChat.show();
+      navChat.css("margin-left", -navChat.innerWidth() / 2 + "px");
+      navChat.css("margin-top", -navChat.innerHeight() / 2 + "px");
+    }
+    /**关闭聊天窗口*/
+    this.closeWindow = function () {
+      navChat.fadeOut();
+    }
+    /**隐藏输入框*/
+    this.hideSubmit = function () {
+      chatInput.hide();
+    }
+    /**显示输入框*/
+    this.showSubmit = function () {
+      chatInput.show();
+    }
+    /**消息提醒
+     * @param {string} userName - 需要显示消息未读提醒的频道名字
+     * @param {booean} once - 需要只提示一次，true：一次，false:一直提示
+     * */
+    this.showContentReminder = function (userName, once) {
+      module.hideContentReminder(userName);
+      window.setTimeout(function () {
+        chatList.children().each(function (i, user) {
+          user = $(user);
+          if (user.find("div:last-child").html() == userName) {
+            if (once) {
+              user.addClass("reminder-once");
+              $("#z_chatMenu").addClass("reminder-once")
+            } else {
+              user.addClass("reminder-infinite");
+              $("#z_chatMenu").addClass("reminder-infinite")
+            }
+          }
+        })
+      }, 100)
+    }
+    /**取消消息提醒
+     * @param {string} userName - 需要取消消息未读提醒的频道名字
+     * */
+    this.hideContentReminder = function (userName) {
+      $("#z_chatMenu").removeClass("reminder-infinite")
+      chatList.children().each(function (i, user) {
+        user = $(user);
+        if (user.find("div:last-child").html() == userName) {
+          user.removeClass("reminder-infinite reminder-once");
+        }
+      })
+    }
+
+    /**显示桌边提醒
+     * @param {string} title - 需要显示在桌面的标题
+     * @param {string} message - 需要显示在桌面的文字
+     * @param {string} imgURL - 需要显示在桌面的图片URL
+     * @param {number} time -   消息显示的时间,默认3s
+     * @return {object} notification -   消息对象，可以通过hideDesktopMessage（notification）来关闭
+     * */
+    this.showDesktopMessage = function (title, message, imgURL, time) {
+      if (Notification.permission == "default") {
+        Notification.requestPermission && Notification.requestPermission()
+      }
+      let notification = new Notification(title, {
+        body: message,
+        icon: imgURL
+      });
+      window.setTimeout(function () {
+        notification.close()
+      }, time ? time * 1000 : 3000)
+      return notification;
+    }
+
+    /**关闭桌面消息提醒
+     * @param {object} notification - 消息对象，通过showDesktopMessage返回*/
+    this.hideDesktopMessage = function (notification) {
+      try {
+        notification.close && notification.close();
+      } catch (e) {
+        console.warn(e)
+      }
+    }
+
+    let logContentBuffer = [];
+    /**消息日志 初始化，以后的操作都是基于缓存
+     * @param {Object[]} data - 消息记录数据包
+     * @param {string} data[].from - 发送者名字
+     * @param {string} data[].fromImg - 发送者头像
+     * @param {string} data[].to - 发送对象名字
+     * @param {string} data[].toImg - 发送对象头像
+     * @param {string} data[].content - 聊天内容
+     * @param {string} data[].time - 聊天历史时间
+     * */
+    this.initLogContentBuffer = function (data) {
+      if (data && data instanceof Array) {
+        logContentBuffer = data;
+      }
+    }
+    /**追加信息到消息日志
+     * @param {string} content - 需要追加到消息日志的信息
+     * */
+    this.appendLogContentBuffer = function (content) {
+      let data = {};
+      data.from = GET("socketModule", "myName");
+      data.fromImg = GET("socketModule", "myImg");
+      data.content = content;
+      data.to = module.logRoom;
+      data.time = new Date().getTime();
+      logContentBuffer.push(data);
+      if (module.currentChannel == module.logRoom) {
+        module.appendChatBody(data);
+      }
+      //保存到服务器
+      EXEI("chatModule", "onAppendLogContent", data);
+    }
+    /**获取消息日志缓存
+     * @return {object[]} 日志缓存数据包*/
+    this.getLogContentBuffer = function () {
+      return logContentBuffer;
+    }
+    /**更新聊天框在线人员
+     * @param {Object[]} users
+     * @param {string} users[].userName -用户名字
+     * @param {string} users[].userImg  - 用户头像路径
+     * */
+    this.updateUserList = function (users) {
+      //删除用户列表,除了公共聊天室和消息日志
+      chatList.children().each(function (i, dom) {
+        dom = $(dom);
+        if (i > 1) {
+          dom.remove();
+        }
+      })
+      let one = true;
+      users.forEach(function (userInfo) {
+        let user = $("<div class=user>");
+        let img = $("<div class=user-img>");
+        let name = $("<div class=user-name >" + userInfo.userName + "</div>");
+        if (userInfo.userImg) {
+          module.getServerImg(userInfo.userImg, function (base64) {
+            img.css("background-image", "url(" + base64 + ")");
+            //刷新一次聊天窗口，防止用户昵称和头像的变化
+            if (one) {
+              one = false;
+              EXEI("chatModule", "onToggleUserChannel", module.currentChannel);
+            }
+          }, true)
+        }
+        user.append(img).append(name)
+        chatList.append(user)
+      })
+    }
+    /**更新右上角本人用户信息
+     * @param {Object} myInfo - 本人用户信息
+     * @param {string} myInfo.userName
+     * @param {string} myInfo.userImg
+     * */
+    this.updateMyUserInfo = function (myInfo) {
+      myName.html(myInfo.userName);
+      if (myInfo.userImg) {
+        module.getServerImg(myInfo.userImg, function (base64) {
+          myImg.css("background-image", "url(" + base64 + ")");
+          //更新聊天信息
+        }, true)
+      }
+    }
+    /**更新聊天窗口顶部chatwho 内容
+     * @param {string} userName - 要显示正在跟谁聊天*/
+    this.updateChatWithWho = function (userName) {
+      chatWho.html(userName)
+    }
+    /**高亮显示用户，用来显示正在跟谁聊天,只能高亮一个
+     * @param {string} userName - 正在聊天的用户名字
+     * */
+    this.highlightUser = function (userName) {
+      chatList.children().each(function (i, user) {
+        user = $(user);
+        if (user.find("div:last-child").html() == userName) {
+          user.addClass("active")
+        } else {
+          user.removeClass("active");
+        }
+      })
+    }
+    //聊天内容数据结构
+    let chatContentBuffer = []
+
+    /**聊天缓存 初始化，以后的操作都是基于缓存
+     * @param {Object[]} data - 聊天记录数据包
+     * @param {string} data[].from - 发送者名字
+     * @param {string} data[].fromImg - 发送者头像
+     * @param {string} data[].to - 发送对象名字
+     * @param {string} data[].toImg - 发送对象头像
+     * @param {string} data[].content - 聊天内容
+     * @param {string} data[].time - 聊天历史时间
+     * */
+    this.initChatContentBuffer = function (data) {
+      if (data && data instanceof Array) {
+        chatContentBuffer = data;
+      }
+    }
+    /**获取聊天缓存
+     * @return {Object} 缓存数据包
+     * */
+    this.getChatContentBuffer = function () {
+      return chatContentBuffer;
+    }
+    /**追加聊天内容到缓存
+     * @param {Object} data - 聊天记录数据包
+     * @param {string} data.from - 发送者名字
+     * @param {string} data.fromImg - 发送者头像
+     * @param {string} data.to - 发送对象名字
+     * @param {string} data.toImg - 发送对象头像
+     * @param {string} data.content - 聊天内容
+     * @param {string} data.time - 聊天历史时间
+     */
+    this.appendChatContentBuffer = function (data) {
+      try {
+        chatContentBuffer.push(data);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    /**根据传进来的JSON初始化聊天窗口,默认滚屏到底部
+     * @param {Object[]} data - 聊天记录数据包
+     * @param {string} data[].from - 发送者名字
+     * @param {string} data[].fromImg - 发送者头像
+     * @param {string} data[].to - 发送对象名字
+     * @param {string} data[].toImg - 发送对象头像
+     * @param {string} data[].content - 聊天内容
+     * @param {string} data[].time - 聊天历史时间
+     * @param {function} onsuccess - 初始化成功后的回调函数
+     */
+    this.createChatBody = function (data, onsuccess) {
+      if (!data) {
+        return;
+      }
+      chatBody.html("");
+      [].concat(data).forEach(function (data) {
+        let myName = GET("socketModule", "myName");
+        let isPublic = module.currentChannel == module.publicRoom;
+        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
+        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
+        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
+        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        //过滤其他频道信息
+        if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
+          return;
+        }
+        //start
+        let wrapper = $("<div class=chat-content>");
+        let imgWrapper = $("<div class=user-img-wrapper>");
+        let userImg = $("<div class=user-img>");
+        imgWrapper.append(userImg);
+        let contentWrapper = $("<div class=content-wrapper>");
+        let name = $("<span class=username>");
+        let content = $("<div class=content>");
+        contentWrapper.append(name).append(content);
+        let time = $("<div class=time>");
+        wrapper.append(imgWrapper).append(contentWrapper).append(time);
+        content.html(data.content);
+        name.html(data.from);
+        if (data.time) {
+          time.html(MultiDebug.Tool.getDayTime(data.time));
+        }
+        if (isMe || isPublicMe) {
+          wrapper.addClass("me")
+        } else {
+          wrapper.addClass("other")
+        }
+        if (data.fromImg) {
+          module.getServerImg(data.fromImg, function (base64) {
+            userImg.css("background-image", "url(" + base64 + ")");
+          })
+        }
+        chatBody.append(wrapper);
+      })
+      onsuccess && onsuccess();
+      let children = null;
+      if ((children = chatBody.children()).length > 0) {
+        chatBody.scrollTop(children.last().position().top - children.first().position().top)
+      }
+    }
+    /**根据传进来的JSON追加聊天信息,默认滚屏到底部
+     * @param {Object[]} data - 聊天记录数据包
+     * @param {string} data[].from - 发送者名字
+     * @param {string} data[].fromImg - 发送者头像
+     * @param {string} data[].to - 发送对象名字
+     * @param {string} data[].toImg - 发送对象头像
+     * @param {string} data[].content - 聊天内容
+     * @param {string} data[].time - 聊天历史时间
+     * @param {function} onsuccess - 初始化成功后的回调函数
+     */
+    this.appendChatBody = function (data, onsuccess) {
+      if (!data) {
+        return;
+      }
+      [].concat(data).forEach(function (data) {
+        let myName = GET("socketModule", "myName");
+        let isPublic = module.currentChannel == module.publicRoom;
+        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
+        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
+        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
+        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        //过滤其他频道信息
+        if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
+          return;
+        }
+        //start
+        let wrapper = $("<div class=chat-content>");
+        let imgWrapper = $("<div class=user-img-wrapper>");
+        let userImg = $("<div class=user-img>");
+        imgWrapper.append(userImg);
+        let contentWrapper = $("<div class=content-wrapper>");
+        let name = $("<span class=username>");
+        let content = $("<div class=content>");
+        contentWrapper.append(name).append(content);
+        let time = $("<div class=time>");
+        wrapper.append(imgWrapper).append(contentWrapper).append(time);
+        content.html(data.content);
+        name.html(data.from);
+        if (data.time) {
+          time.html(MultiDebug.Tool.getDayTime(data.time));
+        }
+        if (isMe || isPublicMe) {
+          wrapper.addClass("me")
+        } else {
+          wrapper.addClass("other")
+        }
+        if (data.fromImg) {
+          module.getServerImg(data.fromImg, function (base64) {
+            userImg.css("background-image", "url(" + base64 + ")");
+          })
+        }
+        chatBody.append(wrapper);
+      })
+      onsuccess && onsuccess();
+      let children = null;
+      if ((children = chatBody.children()).length > 0) {
+        chatBody.scrollTop(children.last().position().top - children.first().position().top)
+      }
+    }
+
+    //初始化UI和UI事件
+    function init() {
+      let py = 0;
+      let px = 0;
+      let marginLeft = navChat.css("margin-left");
+      let marginTop = navChat.css("margin-top");
+      let height = 0;
+      let width = 0;
+      let canDrag = false;
+      let canMove = false;
+
+      //拖拽拉伸
+      function move() {
+        let zIndex = $(".multi-debug").css("z-index");
+
+        chatTop.on("mousedown", function (e) {
+          canMove = true;
+          py = e.clientY;
+          px = e.clientX;
+          marginLeft = navChat.css("margin-left");
+          marginTop = navChat.css("margin-top");
+        }).dblclick(function () {
+          if (navChat.innerHeight() != window.innerHeight || navChat.innerWidth() != window.innerWidth) {
+            navChat.innerHeight(window.innerHeight).innerWidth(window.innerWidth);
+            navChat.css("margin-left", -window.innerWidth / 2).css("margin-top", -window.innerHeight / 2)
+            $(".multi-debug").css("z-index", 65560);
+          } else {
+            navChat.innerHeight(400).innerWidth(700);
+            $(".multi-debug").css("z-index", zIndex);
+          }
+          chatBody.css("height", navChat.innerHeight() - 140 + "px");
+
+        })
+        //drag
+        dragBarLeftTop.add(dragBarLeftBottom).add(dragBarRightTop).add(dragBarRightBottom).add(dragBarTop).add(dragBarBottom).add(dragBarLeft).add(dragBarRight).on("mousedown", function (e) {
+          let dom = e.srcElement || e.target;
+          if (dom == dragBarTop[0]) {
+            canDrag = "top";
+          } else if (dom == dragBarBottom[0]) {
+            canDrag = "bottom";
+          } else if (dom == dragBarLeft[0]) {
+            canDrag = "left";
+          } else if (dom == dragBarRight[0]) {
+            canDrag = "right";
+          } else if (dom == dragBarLeftTop[0]) {
+            canDrag = "left top"
+          } else if (dom == dragBarLeftBottom[0]) {
+            canDrag = "left bottom"
+          } else if (dom == dragBarRightTop[0]) {
+            canDrag = "right top"
+          } else if (dom == dragBarRightBottom[0]) {
+            canDrag = "right bottom"
+          }
+          height = navChat.innerHeight();
+          width = navChat.innerWidth();
+          px = e.clientX;
+          py = e.clientY;
+          marginLeft = navChat.css("margin-left");
+          marginTop = navChat.css("margin-top");
+        })
+
+        $(document).on("mousemove", function (e) {
+          if (canMove) {
+            let difY = py - e.clientY;
+            let difX = px - e.clientX;
+            navChat.css("margin-left", window.parseFloat(marginLeft) - difX + "px")
+              .css("margin-top", window.parseFloat(marginTop) - difY + "px")
+          } else if (canDrag) {
+            let difX = px - e.clientX;
+            let difY = py - e.clientY;
+            if (canDrag.search("top") != -1) {
+              navChat.innerHeight(height + difY);
+              navChat.css("margin-top", window.parseFloat(marginTop) - difY + "px");
+              chatBody.css("height", navChat.innerHeight() - 140 + "px");
+            }
+            if (canDrag.search("bottom") != -1) {
+              navChat.innerHeight(height - difY);
+              chatBody.css("height", navChat.innerHeight() - 140 + "px");
+            }
+            if (canDrag.search("left") != -1) {
+              let difX = px - e.clientX;
+              navChat.innerWidth(width + difX);
+              navChat.css("margin-left", window.parseFloat(marginLeft) - difX + "px");
+            }
+            if (canDrag.search("right") != -1) {
+              let difX = px - e.clientX;
+              navChat.innerWidth(width - difX);
+            }
+          }
+        })
+        $(document).on("mouseup", function () {
+          canMove = false;
+          canDrag = false;
+          let offset = navChat.offset();
+          let dif = 50;
+          if (offset.top < -20 || offset.top > window.innerHeight - 20 || offset.left > window.innerWidth - dif || offset.left < -chatTop.innerWidth() + dif) {
+            //navChat.css("margin-left", marginLeft).css("margin-top", marginTop);
+            navChat.fadeOut(600);
+          }
+        })
+      }
+
+      move();
+      //关闭窗口
+      close.click(function () {
+        module.closeWindow();
+        module.currentChannel = null;
+      })
+      //改名
+      rename.click(function () {
+        EXEI("chatModule", "onRename", {
+          myName: GET("socketModule", "myName"),
+          myImg: GET("socketModule", "myImg")
+        })
+      })
+      //切换聊天频道，更新currentChannel,currentImg
+      chatList.click(function (e) {
+        let $dom = $(e.srcElement || e.target);
+        let userName = $dom.filter(".user").find(" div:last-child").html()
+        EXEI("chatModule", "onToggleUserChannel", userName);
+      })
+
+      //发送信息
+      function submitEvent() {
+        let content = textarea.val();
+        textarea.val("");
+        let data = {
+          from: MultiDebug.get("socketModule", "myName"),
+          fromImg: MultiDebug.get("socketModule", "myImg"),
+          to: module.currentChannel,
+          toImg: module.currentImg,
+          content: content,
+          time: new Date().getTime()
+        }
+        EXEI("chatModule", "onSubmitChatContent", data);
+      }
+
+      submit.click(submitEvent);
+      chatInput.on("keydown", function (e) {
+        if ((e.key == "Enter" || e.keyCode == 13) && !e.shiftKey) {
+          submitEvent();
+          return false;
+        }
+      })
+      //桌边提醒
+      $(document.body).one("click", function () {
+        //请求打开桌边提醒服务
+        Notification.requestPermission && Notification.requestPermission()
+      })
+      //判断桌边是否隐藏
+      $(window).on("blur", function () {
+        //console.log("blur")
+        module.blur = true;
+      }).on("focus", function () {
+        //console.log("focus")
+        module.blur = false;
+      })
+    }
+
+    init();
+  }
+
+  /** 开启BABYUI调试模块
+   * @class*/
+  DebugModule() {
+    /**BABYUI debug*/
+    let module = this;
+    /**当前正在调试的物体
+     * @member*/
+    this.currentDebugMesh = null;
+    /**隐藏调试框*/
+    this.hideDebug = function () {
+      BABYUI.destroy();
+      module.currentDebugMesh = null;
+    }
+    /**显示调试框，数据进行联机调试
+     * @param {Object} mesh 要调试的物体*/
+    this.showDebug = function (mesh) {
+      if (!mesh) {
+        return;
+      }
+      if (!mesh.material) {
+        MultiDebug.Tool.showMessage(mesh.name + "没有材质...", 2, "danger");
+        return;
+      }
+      if (!mesh.geometry) {
+        MultiDebug.Tool.showMessage(mesh.name + "没有顶点数据...", 2, "danger");
+        return;
+      }
+      module.hideDebug();
+      module.currentDebugMesh = mesh;
+      return true;
+    }
+    /**显示灯光调试框*/
+    this.showLightDebug = function (light) {
+      if (!light) {
+        return;
+      }
+      module.hideDebug();
+      module.currentDebugMesh = light;
+      return true;
+    }
+    BABYUI.onChange = function () {
+      window.setTimeout(function () {
+        EXEI("debugModule", "onChange", module.currentDebugMesh)
+      }, 110)
+    }
+  }
+
 }
 
 export default MultiDebug;
