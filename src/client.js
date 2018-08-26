@@ -1,3 +1,5 @@
+/**@module*/
+
 import "./components/tool/reset";
 import {editMesh, unEditMesh, editMaterial, unEditMaterial} from "./components/tool/edit"
 import initSceneByJSON from './components/tool/initSceneByJSON';

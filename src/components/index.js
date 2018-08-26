@@ -140,13 +140,13 @@ class MultiDebug {
     menuModule: {
       /**调试模式触发的事件*/
       onDebugMode: function () {
-        MultiDebug.get("menuModule", "navTop").removeClass("opacity");
+        MultiDebug.exe("menuModule", "fadeOut");
         MultiDebug.exe("lanModule", "scale1");
         MultiDebug.exe("picModule", "scale1");
       },
       /**浏览模式触发的事件*/
       onViewMode: function () {
-        MultiDebug.get("menuModule", "navTop").addClass("opacity")
+        MultiDebug.exe("menuModule", "fadeIn");
         MultiDebug.exe("lanModule", "scale0");
         MultiDebug.exe("picModule", "scale0");
       },
@@ -1180,7 +1180,14 @@ class MultiDebug {
     this.hide = function () {
       navTop.hide();
     }
-
+    /**渐现*/
+    this.fadeIn = function () {
+      this.navTop.removeClass("opacity");
+    }
+    /**渐隐,虽然隐藏了，但是鼠标滑过会显示*/
+    this.fadeOut = function () {
+      this.navTop.addClass("opacity");
+    }
   }
 
   /**开启局域网模块
