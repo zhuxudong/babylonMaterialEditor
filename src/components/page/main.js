@@ -18,3 +18,7 @@ function expandJquery() {
 expandJquery();
 //添加页面
 $("<div class='babylon-material-editor'>").appendTo($(document.body)).html(page);
+//阻止右键的默认事件
+window.oncontextmenu = function () {
+  return false;
+}

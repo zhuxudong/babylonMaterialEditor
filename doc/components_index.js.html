@@ -1,4 +1,32 @@
-/**@module*/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**@module*/
 import io from 'socket.io-client';
 import EditControl from './tool/EditControl.min.js'
 import BABYUI from './babyui/babyui';
@@ -24,9 +52,9 @@ class MultiDebug {
       console.warn("需要先实例化MultiDebug,才能调用模块");
       return;
     }
-    if (modules[module] && modules[module][func] && modules[module][func].apply) {
+    if (modules[module] &amp;&amp; modules[module][func] &amp;&amp; modules[module][func].apply) {
       let arg = [];
-      for (let i = 2; i <= arguments.length; i++) {
+      for (let i = 2; i &lt;= arguments.length; i++) {
         arg.push(arguments[i])
       }
       return modules[module][func].apply(modules[module], arg);
@@ -43,7 +71,7 @@ class MultiDebug {
       console.warn("需要先实例化MultiDebug,才能调用模块");
       return;
     }
-    if (modules[module] && modules[module].hasOwnProperty && modules[module].hasOwnProperty(pro)) {
+    if (modules[module] &amp;&amp; modules[module].hasOwnProperty &amp;&amp; modules[module].hasOwnProperty(pro)) {
       return modules[module][pro];
     }
     return null;
@@ -79,13 +107,13 @@ class MultiDebug {
       if ((_module = MultiDebug.Interface[module]).hasOwnProperty(func)) {
         _func = _module[func];
         let arg = [];
-        for (let i = 2; i < arguments.length; i++) {
+        for (let i = 2; i &lt; arguments.length; i++) {
           arg.push(arguments[i])
         }
-        let returnValue = _func.apply && _func.apply(window, arg);
+        let returnValue = _func.apply &amp;&amp; _func.apply(window, arg);
         let api = MultiDebug.exportAPI;
         try {
-          if (api && api[module] && api[module].indexOf && api[module].indexOf(func) != -1) {
+          if (api &amp;&amp; api[module] &amp;&amp; api[module].indexOf &amp;&amp; api[module].indexOf(func) != -1) {
             MultiDebug.exeA.apply(window, [].concat.call([], module, func, arg))
           }
         } catch (e) {
@@ -113,10 +141,10 @@ class MultiDebug {
       if ((_module = MultiDebug.Application[module]).hasOwnProperty(func)) {
         _func = _module[func];
         let arg = [];
-        for (let i = 2; i < arguments.length; i++) {
+        for (let i = 2; i &lt; arguments.length; i++) {
           arg.push(arguments[i])
         }
-        return _func.apply && _func.apply(window, arg)
+        return _func.apply &amp;&amp; _func.apply(window, arg)
       } else {
         console.warn("没有MultiDebug.Application." + module + "." + func)
       }
@@ -140,13 +168,13 @@ class MultiDebug {
     menuModule: {
       /**调试模式触发的事件*/
       onDebugMode: function () {
-        MultiDebug.exe("menuModule", "fadeIn");
+        MultiDebug.exe("menuModule", "fadeOut");
         MultiDebug.exe("lanModule", "scale1");
         MultiDebug.exe("picModule", "scale1");
       },
       /**浏览模式触发的事件*/
       onViewMode: function () {
-        MultiDebug.exe("menuModule", "fadeOut");
+        MultiDebug.exe("menuModule", "fadeIn");
         MultiDebug.exe("lanModule", "scale0");
         MultiDebug.exe("picModule", "scale0");
       },
@@ -345,13 +373,6 @@ class MultiDebug {
       }
     },
     /**@namespace*/
-    debugModule: {
-      /**当调试值发生变化时候触发的事件
-       * @param {object} mesh -当前正在调试的物体*/
-      onChange: function (mesh) {
-      }
-    },
-    /**@namespace*/
     socketModule: {
       /**成功登陆触发的事件
        * @param {string} userName 用户姓名
@@ -434,7 +455,7 @@ class MultiDebug {
           })
         }
         //更新用户信息数据
-        if (data.userList && data.userList.length > 0) {
+        if (data.userList &amp;&amp; data.userList.length > 0) {
           MultiDebug.set("socketModule", "userList", data.userList);
         }
         //更新菜单栏在线列表,自己在最上面
@@ -470,7 +491,7 @@ class MultiDebug {
         let currentChannel = MultiDebug.get("chatModule", "currentChannel");
         let publicRoom = MultiDebug.get("chatModule", "publicRoom");
         //根据信息来源决定是否刷新聊天窗口
-        if ((currentChannel == publicRoom && data.to == publicRoom) || (data.from == currentChannel && data.to == myName)) {
+        if ((currentChannel == publicRoom &amp;&amp; data.to == publicRoom) || (data.from == currentChannel &amp;&amp; data.to == myName)) {
           MultiDebug.exe("chatModule", "appendChatBody", data);
         }
         //桌面提示
@@ -481,14 +502,14 @@ class MultiDebug {
           })
         }
         //长短提示
-        if (currentChannel == publicRoom && data.to == publicRoom) {
+        if (currentChannel == publicRoom &amp;&amp; data.to == publicRoom) {
           MultiDebug.exe("chatModule", "showContentReminder", data.to, true)
-        } else if (currentChannel != publicRoom && data.to == publicRoom) {
+        } else if (currentChannel != publicRoom &amp;&amp; data.to == publicRoom) {
           MultiDebug.exe("chatModule", "showContentReminder", data.to, false)
         }
-        if (currentChannel == data.from && data.to == myName) {
+        if (currentChannel == data.from &amp;&amp; data.to == myName) {
           MultiDebug.exe("chatModule", "showContentReminder", data.from, true)
-        } else if (currentChannel != data.from && data.to == myName) {
+        } else if (currentChannel != data.from &amp;&amp; data.to == myName) {
           MultiDebug.exe("chatModule", "showContentReminder", data.from, false)
         }
 
@@ -511,6 +532,13 @@ class MultiDebug {
        * */
       onReceiveDebugChange: function (data) {
 
+      }
+    },
+    /**@namespace*/
+    debugModule: {
+      /**当调试值发生变化时候触发的事件
+       * @param {object} mesh -当前正在调试的物体*/
+      onChange: function (mesh) {
       }
     }
   }
@@ -564,8 +592,8 @@ class MultiDebug {
             }
           });
 
-          !noMessage && MultiDebug.Tool.showMessage("一键锁定成功......", 1);
-          !noMessage && MultiDebug.exe("chatModule", "appendLogContentBuffer", "一键锁定成功......");
+          !noMessage &amp;&amp; MultiDebug.Tool.showMessage("一键锁定成功......", 1);
+          !noMessage &amp;&amp; MultiDebug.exe("chatModule", "appendLogContentBuffer", "一键锁定成功......");
         }
 
         function unlock() {
@@ -622,7 +650,7 @@ class MultiDebug {
               let date = RegExp.$1;
               let versionName = RegExp.$2;
               let showName = versionName;
-              for (let i = 0; i < 20 - versionName.length; i++) {
+              for (let i = 0; i &lt; 20 - versionName.length; i++) {
                 showName += " - ";
               }
               showName += MultiDebug.Tool.getDayTime(date, true);
@@ -674,8 +702,8 @@ class MultiDebug {
               let date = RegExp.$1;
               let versionName = RegExp.$2;
               let showName = versionName;
-              for (let i = 0; i < 20 - versionName.length; i++) {
-                //showName += "&nbsp;&nbsp;";
+              for (let i = 0; i &lt; 20 - versionName.length; i++) {
+                //showName += "&amp;nbsp;&amp;nbsp;";
                 showName += " - ";
               }
               showName += MultiDebug.Tool.getDayTime(date, true);
@@ -699,7 +727,7 @@ class MultiDebug {
         }
 
         function setOutlineWidth() {
-          MultiDebug.Tool.showPrompt("设置描边粗细<br>当前:" + app.getOutlineWidth(), function (num) {
+          MultiDebug.Tool.showPrompt("设置描边粗细&lt;br>当前:" + app.getOutlineWidth(), function (num) {
             num = Number(num);
             if (typeof num == "number") {
               app.setOutlineWidth(num);
@@ -718,7 +746,7 @@ class MultiDebug {
         }
 
         function setLightBallSize() {
-          MultiDebug.Tool.showPrompt("设置光球大小<br>当前:" + app.getLightBallSize(), function (num) {
+          MultiDebug.Tool.showPrompt("设置光球大小&lt;br>当前:" + app.getLightBallSize(), function (num) {
             num = Number(num);
             if (typeof num == "number") {
               app.setLightBallSize(num);
@@ -948,7 +976,7 @@ class MultiDebug {
                 let canToggleList = materiaTypeList.filter(function (kind) {
                   return kind != myMaterialType;
                 })
-                MultiDebug.Tool.showSelect("您当前的材质类型为:<br>" + myMaterialType + "<br>请选择您要转换的材质类型", canToggleList, function (type) {
+                MultiDebug.Tool.showSelect("您当前的材质类型为:&lt;br>" + myMaterialType + "&lt;br>请选择您要转换的材质类型", canToggleList, function (type) {
                   app.toggleMaterialType(data.mesh, type)
                 })
               } else {
@@ -963,42 +991,6 @@ class MultiDebug {
     },
     picModule: {},
     chatModule: {},
-    /**@namespace*/
-    debugModule: {
-      /**当调试值发生变化时候触发的事件
-       * @param {object} mesh -当前正在调试的物体或灯光*/
-      onChange: function (mesh) {
-        if (mesh && mesh.material) {
-          //获取调试的JSON
-          let json = createJSON({meshes: mesh, console: false});
-          json = JSON.parse(json);
-          json = json.materials[mesh.material.name];
-          //发送到服务器
-          MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
-          //发送给其他人材质JSON
-          MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
-            materialId: mesh.material.id,
-            json: json
-          })
-        }
-        if (mesh && mesh instanceof BABYLON.Light) {
-          //获取调试的JSON
-          let lightName = mesh.name;
-          let json = createJSON({lights: mesh, console: false});
-          json = JSON.parse(json);
-          json = json.lights[lightName];
-          if (json) {
-            //发送灯光JSON到服务器
-            MultiDebug.exe("socketModule", "setServerData", "debugInfo.lights." + lightName, json);
-            //发送给其他人灯光JSON
-            MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
-              lightName: lightName,
-              json: json
-            })
-          }
-        }
-      }
-    },
     /**@namespace*/
     socketModule: {
       /**登陆成功的事件*/
@@ -1065,31 +1057,64 @@ class MultiDebug {
           doMaterial();
         }
       }
+    },
+    /**@namespace*/
+    debugModule: {
+      /**当调试值发生变化时候触发的事件
+       * @param {object} mesh -当前正在调试的物体或灯光*/
+      onChange: function (mesh) {
+        if (mesh &amp;&amp; mesh.material) {
+          //获取调试的JSON
+          let json = createJSON({meshes: mesh, console: false});
+          json = JSON.parse(json);
+          json = json.materials[mesh.material.name];
+          //发送到服务器
+          MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
+          //发送给其他人材质JSON
+          MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
+            materialId: mesh.material.id,
+            json: json
+          })
+        }
+        if (mesh &amp;&amp; mesh instanceof BABYLON.Light) {
+          //获取调试的JSON
+          let lightName = mesh.name;
+          let json = createJSON({lights: mesh, console: false});
+          json = JSON.parse(json);
+          json = json.lights[lightName];
+          if (json) {
+            //发送灯光JSON到服务器
+            MultiDebug.exe("socketModule", "setServerData", "debugInfo.lights." + lightName, json);
+            //发送给其他人灯光JSON
+            MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
+              lightName: lightName,
+              json: json
+            })
+          }
+        }
+      }
     }
   }
   static modules = null;
-  static opt = {
-    scene: window.scene,
-    ip: window.location.hostname,
-    port: 3000
-  }
+
   menuModule = null;
   lanModule = null;
   picModule = null;
   chatModule = null;
   debugModule = null;
   socketModule = null;
+  socket = null;
+  opt = null;
 
   constructor(opt) {
     scene = opt.scene;
     MultiDebug.modules = this;
-    Object.assign(MultiDebug.opt, opt)
+    this.opt = opt;
     this.menuModule = new this.MenuModule();
     this.lanModule = new this.LanModule();
     this.picModule = new this.PicModule();
     this.chatModule = new this.ChatModule();
     this.debugModule = new this.DebugModule();
-    this.socketModule = new this.SocketModule();
   }
 
   /**开启菜单模块
@@ -1136,6 +1161,10 @@ class MultiDebug {
       }
 
       pull();
+      //禁止右键默认事件
+      window.oncontextmenu = function () {
+        return false;
+      }
       //切换调试模式;
       debugMenu.children("li").click(function (e) {
         let $dom = $(e.srcElement || e.target);
@@ -1167,7 +1196,7 @@ class MultiDebug {
     this.updateUserList = function (names) {
       chatMenu.html("");
       names.forEach(function (name, i) {
-        let li = $("<li " + ((i == 0) ? " " : "class=\"border\" ") + ">" + name + "</li>");
+        let li = $("&lt;li " + ((i == 0) ? " " : "class=\"border\" ") + ">" + name + "&lt;/li>");
         chatMenu.append(li)
       })
     }
@@ -1220,15 +1249,15 @@ class MultiDebug {
             return;
           let stat = info.stat;
           let name = info.name;
-          let dom = $("<li>");
-          let statSpan = $("<span class=stat>");
-          let nameSpan = $("<span>");
+          let dom = $("&lt;li>");
+          let statSpan = $("&lt;span class=stat>");
+          let nameSpan = $("&lt;span>");
           statSpan.addClass("color-" + stat);
           nameSpan.html(name);
           dom.append(statSpan).append(nameSpan);
           //配置按钮点击事件
           if (info.config) {
-            let config = $("<span class='iconfont config'>")
+            let config = $("&lt;span class='iconfont config'>")
             dom.append(config);
             //配置按钮点击事件
             dom[0].config = true;
@@ -1270,7 +1299,7 @@ class MultiDebug {
      * @param {string} json.data - li元素的额外数据
      */
     this.refreshSingleLan = function (json, dom, data) {
-      if (dom && json) {
+      if (dom &amp;&amp; json) {
         if (typeof dom == "string") {
           lanList.children().each(function (i, lan) {
             lan = $(lan);
@@ -1300,7 +1329,7 @@ class MultiDebug {
         }
         if (json.config) {
           if (config.length == 0) {
-            let config = $("<span class='iconfont config'>");
+            let config = $("&lt;span class='iconfont config'>");
             dom.append(config);
           }
           //配置按钮点击事件
@@ -1423,7 +1452,7 @@ class MultiDebug {
         })
         $(document).on("mouseup", function () {
           canDrag = false;
-          if (window.parseInt(bar.css("left")) <= 30) {
+          if (window.parseInt(bar.css("left")) &lt;= 30) {
             nav.width(0);
             bar.css("left", nav.innerWidth());
             bar.addClass("hide")
@@ -1434,7 +1463,7 @@ class MultiDebug {
       move();
       //更新场景
       refreshButton.click(function () {
-        MultiDebug.exeI("lanModule", "onRefreshScene")
+        EXEI("lanModule", "onRefreshScene")
       })
 
       //li点击事件
@@ -1443,7 +1472,7 @@ class MultiDebug {
         if (src[0].nodeName == "LI") {
           let stat = src[0].data.stat;
           let name = src[0].data.name;
-          MultiDebug.exeI("lanModule", "onClickLanList", {
+          EXEI("lanModule", "onClickLanList", {
             stat: stat,
             name: name,
             button: e.button,
@@ -1457,7 +1486,7 @@ class MultiDebug {
       lanList.on("mouseup", onClickLanList).on("mouseover", onClickLanList).on("mouseover", function (e) {
         let src = $(e.srcElement || e.target);
         if (src[0].nodeName == "LI") {
-          MultiDebug.exeI("lanModule", "onMouseoverLanList", {
+          EXEI("lanModule", "onMouseoverLanList", {
             stat: src[0].data.stat,
             name: src[0].data.name,
             dom: src,
@@ -1467,7 +1496,7 @@ class MultiDebug {
       }).on("mouseout", function (e) {
         let src = $(e.srcElement || e.target);
         if (src[0].nodeName == "LI") {
-          MultiDebug.exeI("lanModule", "onMouseoutLanList", {
+          EXEI("lanModule", "onMouseoutLanList", {
             stat: src[0].data.stat,
             name: src[0].data.name,
             dom: src,
@@ -1484,7 +1513,7 @@ class MultiDebug {
       })
       //初始化submenu事件
       subMenu.children("li").click(function (e) {
-        MultiDebug.exeI("lanModule", "onClickSubMenu", (e.srcElement || e.target).innerHTML, subMenu, subMenu[0].data.src);
+        EXEI("lanModule", "onClickSubMenu", (e.srcElement || e.target).innerHTML, subMenu, subMenu[0].data.src);
       })
     }
 
@@ -1585,11 +1614,11 @@ class MultiDebug {
       if (currentPanel.hasClass("pic-panel-cube")) {
         currentPanel.html("");
         [].concat(data).forEach(function (fileName) {
-          let file = $("<div class=file draggable=true>");
-          let name = $("<span class=name>");
+          let file = $("&lt;div class=file draggable=true>");
+          let name = $("&lt;span class=name>");
           name.html(fileName);
-          for (let i = 0; i < 6; i++) {
-            let img = $("<img class=mini title=" + (fileName + extend[i]) + ">")
+          for (let i = 0; i &lt; 6; i++) {
+            let img = $("&lt;img class=mini title=" + (fileName + extend[i]) + ">")
             img[0].src = path + fileName + "/" + fileName + extend[i];
             file.append(img);
           }
@@ -1601,7 +1630,7 @@ class MultiDebug {
             if ((target.nodeName).toUpperCase() == "IMG") {
               picName = fileName + extend[$(target).index()];
             }
-            MultiDebug.exeI("picModule", "onClickPic", {
+            EXEI("picModule", "onClickPic", {
               button: e.button,
               fileName: fileName,
               picName: picName,
@@ -1618,7 +1647,7 @@ class MultiDebug {
             }
             let data = e.originalEvent.dataTransfer;
             data.setData("picData", JSON.stringify(info));
-            MultiDebug.exeI("picModule", "onDragPic", info)
+            EXEI("picModule", "onDragPic", info)
           })
         })
       }
@@ -1638,15 +1667,15 @@ class MultiDebug {
         [].concat(data).forEach(function (fileName) {
           if (fileName == "Thumbs.db")
             return;
-          let file = $("<div class=file draggable=true>");
-          let name = $("<span class=name>");
+          let file = $("&lt;div class=file draggable=true>");
+          let name = $("&lt;span class=name>");
           name.html(fileName);
-          let img = $("<img class=mini title=" + fileName + ">");
+          let img = $("&lt;img class=mini title=" + fileName + ">");
           img[0].src = path + fileName;
           file.append(img).append(name);
           currentPanel.append(file);
           file.click(function (e) {
-            MultiDebug.exeI("picModule", "onClickPic", {
+            EXEI("picModule", "onClickPic", {
               button: e.button,
               fileName: fileName,
               picName: fileName,
@@ -1663,7 +1692,7 @@ class MultiDebug {
             }
             let data = e.originalEvent.dataTransfer;
             data.setData("picData", JSON.stringify(info))
-            MultiDebug.exeI("picModule", "onDragPic", info)
+            EXEI("picModule", "onDragPic", info)
           })
 
         })
@@ -1727,7 +1756,7 @@ class MultiDebug {
           }
         })
         $(document).on("mouseup", function () {
-          if (window.parseInt(bar.css("bottom")) <= 30) {
+          if (window.parseInt(bar.css("bottom")) &lt;= 30) {
             navPic.height(0);
             bar.css("bottom", navPic.innerHeight());
             picPanel.innerHeight(navPic.innerHeight() - picTitle.innerHeight())
@@ -1746,7 +1775,7 @@ class MultiDebug {
         if ($dom.hasClass("disable")) {
           return;
         }
-        MultiDebug.exeI("picModule", "onTogglePicPanel", $dom, panel)
+        EXEI("picModule", "onTogglePicPanel", $dom, panel)
       })
 
     }
@@ -1833,8 +1862,8 @@ class MultiDebug {
       if (!imgPath) {
         return
       }
-      if (!force && imgBuffer.hasOwnProperty(imgPath)) {
-        onsuccess && onsuccess(imgBuffer[imgPath]);
+      if (!force &amp;&amp; imgBuffer.hasOwnProperty(imgPath)) {
+        onsuccess &amp;&amp; onsuccess(imgBuffer[imgPath]);
       } else {
         //如果已经有请求正在发送，则只需要等待请求，最多等待5s.
         if (ajaxing[imgPath]) {
@@ -1844,10 +1873,10 @@ class MultiDebug {
             if (!ajaxing[imgPath]) {
               onsuccess(imgBuffer[imgPath])
             } else {
-              if (time++ < 10) {
+              if (time++ &lt; 10) {
                 window.setTimeout(arguments.callee, 500)
               } else {
-                onsuccess && onsuccess(null);
+                onsuccess &amp;&amp; onsuccess(null);
               }
             }
           })();
@@ -1856,12 +1885,12 @@ class MultiDebug {
           $.ajax(SERVERFIX + imgPath, {
             error: function () {
               ajaxing[imgPath] = false;
-              onsuccess && onsuccess(null);
+              onsuccess &amp;&amp; onsuccess(null);
             },
             success: function (base64) {
               setImgBuffer(imgPath, base64);
               ajaxing[imgPath] = false;
-              onsuccess && onsuccess(base64);
+              onsuccess &amp;&amp; onsuccess(base64);
             }
           })
         }
@@ -1931,7 +1960,7 @@ class MultiDebug {
      * */
     this.showDesktopMessage = function (title, message, imgURL, time) {
       if (Notification.permission == "default") {
-        Notification.requestPermission && Notification.requestPermission()
+        Notification.requestPermission &amp;&amp; Notification.requestPermission()
       }
       let notification = new Notification(title, {
         body: message,
@@ -1947,7 +1976,7 @@ class MultiDebug {
      * @param {object} notification - 消息对象，通过showDesktopMessage返回*/
     this.hideDesktopMessage = function (notification) {
       try {
-        notification.close && notification.close();
+        notification.close &amp;&amp; notification.close();
       } catch (e) {
         console.warn(e)
       }
@@ -1964,7 +1993,7 @@ class MultiDebug {
      * @param {string} data[].time - 聊天历史时间
      * */
     this.initLogContentBuffer = function (data) {
-      if (data && data instanceof Array) {
+      if (data &amp;&amp; data instanceof Array) {
         logContentBuffer = data;
       }
     }
@@ -1973,8 +2002,8 @@ class MultiDebug {
      * */
     this.appendLogContentBuffer = function (content) {
       let data = {};
-      data.from = MultiDebug.get("socketModule", "myName");
-      data.fromImg = MultiDebug.get("socketModule", "myImg");
+      data.from = GET("socketModule", "myName");
+      data.fromImg = GET("socketModule", "myImg");
       data.content = content;
       data.to = module.logRoom;
       data.time = new Date().getTime();
@@ -1983,7 +2012,7 @@ class MultiDebug {
         module.appendChatBody(data);
       }
       //保存到服务器
-      MultiDebug.exeI("chatModule", "onAppendLogContent", data);
+      EXEI("chatModule", "onAppendLogContent", data);
     }
     /**获取消息日志缓存
      * @return {object[]} 日志缓存数据包*/
@@ -2005,16 +2034,16 @@ class MultiDebug {
       })
       let one = true;
       users.forEach(function (userInfo) {
-        let user = $("<div class=user>");
-        let img = $("<div class=user-img>");
-        let name = $("<div class=user-name >" + userInfo.userName + "</div>");
+        let user = $("&lt;div class=user>");
+        let img = $("&lt;div class=user-img>");
+        let name = $("&lt;div class=user-name >" + userInfo.userName + "&lt;/div>");
         if (userInfo.userImg) {
           module.getServerImg(userInfo.userImg, function (base64) {
             img.css("background-image", "url(" + base64 + ")");
             //刷新一次聊天窗口，防止用户昵称和头像的变化
             if (one) {
               one = false;
-              MultiDebug.exeI("chatModule", "onToggleUserChannel", module.currentChannel);
+              EXEI("chatModule", "onToggleUserChannel", module.currentChannel);
             }
           }, true)
         }
@@ -2067,7 +2096,7 @@ class MultiDebug {
      * @param {string} data[].time - 聊天历史时间
      * */
     this.initChatContentBuffer = function (data) {
-      if (data && data instanceof Array) {
+      if (data &amp;&amp; data instanceof Array) {
         chatContentBuffer = data;
       }
     }
@@ -2109,26 +2138,26 @@ class MultiDebug {
       }
       chatBody.html("");
       [].concat(data).forEach(function (data) {
-        let myName = MultiDebug.get("socketModule", "myName");
+        let myName = GET("socketModule", "myName");
         let isPublic = module.currentChannel == module.publicRoom;
-        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
-        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
-        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
-        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        let isPublicMe = isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.publicRoom;
+        let isPublicOther = isPublic &amp;&amp; data.from != myName &amp;&amp; data.to == module.publicRoom;
+        let isMe = !isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.currentChannel;
+        let isOther = !isPublic &amp;&amp; data.from == module.currentChannel &amp;&amp; data.to == myName;
         //过滤其他频道信息
-        if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
+        if (!isMe &amp;&amp; !isOther &amp;&amp; !isPublicMe &amp;&amp; !isPublicOther) {
           return;
         }
         //start
-        let wrapper = $("<div class=chat-content>");
-        let imgWrapper = $("<div class=user-img-wrapper>");
-        let userImg = $("<div class=user-img>");
+        let wrapper = $("&lt;div class=chat-content>");
+        let imgWrapper = $("&lt;div class=user-img-wrapper>");
+        let userImg = $("&lt;div class=user-img>");
         imgWrapper.append(userImg);
-        let contentWrapper = $("<div class=content-wrapper>");
-        let name = $("<span class=username>");
-        let content = $("<div class=content>");
+        let contentWrapper = $("&lt;div class=content-wrapper>");
+        let name = $("&lt;span class=username>");
+        let content = $("&lt;div class=content>");
         contentWrapper.append(name).append(content);
-        let time = $("<div class=time>");
+        let time = $("&lt;div class=time>");
         wrapper.append(imgWrapper).append(contentWrapper).append(time);
         content.html(data.content);
         name.html(data.from);
@@ -2147,7 +2176,7 @@ class MultiDebug {
         }
         chatBody.append(wrapper);
       })
-      onsuccess && onsuccess();
+      onsuccess &amp;&amp; onsuccess();
       let children = null;
       if ((children = chatBody.children()).length > 0) {
         chatBody.scrollTop(children.last().position().top - children.first().position().top)
@@ -2168,26 +2197,26 @@ class MultiDebug {
         return;
       }
       [].concat(data).forEach(function (data) {
-        let myName = MultiDebug.get("socketModule", "myName");
+        let myName = GET("socketModule", "myName");
         let isPublic = module.currentChannel == module.publicRoom;
-        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
-        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
-        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
-        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        let isPublicMe = isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.publicRoom;
+        let isPublicOther = isPublic &amp;&amp; data.from != myName &amp;&amp; data.to == module.publicRoom;
+        let isMe = !isPublic &amp;&amp; data.from == myName &amp;&amp; data.to == module.currentChannel;
+        let isOther = !isPublic &amp;&amp; data.from == module.currentChannel &amp;&amp; data.to == myName;
         //过滤其他频道信息
-        if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
+        if (!isMe &amp;&amp; !isOther &amp;&amp; !isPublicMe &amp;&amp; !isPublicOther) {
           return;
         }
         //start
-        let wrapper = $("<div class=chat-content>");
-        let imgWrapper = $("<div class=user-img-wrapper>");
-        let userImg = $("<div class=user-img>");
+        let wrapper = $("&lt;div class=chat-content>");
+        let imgWrapper = $("&lt;div class=user-img-wrapper>");
+        let userImg = $("&lt;div class=user-img>");
         imgWrapper.append(userImg);
-        let contentWrapper = $("<div class=content-wrapper>");
-        let name = $("<span class=username>");
-        let content = $("<div class=content>");
+        let contentWrapper = $("&lt;div class=content-wrapper>");
+        let name = $("&lt;span class=username>");
+        let content = $("&lt;div class=content>");
         contentWrapper.append(name).append(content);
-        let time = $("<div class=time>");
+        let time = $("&lt;div class=time>");
         wrapper.append(imgWrapper).append(contentWrapper).append(time);
         content.html(data.content);
         name.html(data.from);
@@ -2206,7 +2235,7 @@ class MultiDebug {
         }
         chatBody.append(wrapper);
       })
-      onsuccess && onsuccess();
+      onsuccess &amp;&amp; onsuccess();
       let children = null;
       if ((children = chatBody.children()).length > 0) {
         chatBody.scrollTop(children.last().position().top - children.first().position().top)
@@ -2308,7 +2337,7 @@ class MultiDebug {
           canDrag = false;
           let offset = navChat.offset();
           let dif = 50;
-          if (offset.top < -20 || offset.top > window.innerHeight - 20 || offset.left > window.innerWidth - dif || offset.left < -chatTop.innerWidth() + dif) {
+          if (offset.top &lt; -20 || offset.top > window.innerHeight - 20 || offset.left > window.innerWidth - dif || offset.left &lt; -chatTop.innerWidth() + dif) {
             //navChat.css("margin-left", marginLeft).css("margin-top", marginTop);
             navChat.fadeOut(600);
           }
@@ -2323,16 +2352,16 @@ class MultiDebug {
       })
       //改名
       rename.click(function () {
-        MultiDebug.exeI("chatModule", "onRename", {
-          myName: MultiDebug.get("socketModule", "myName"),
-          myImg: MultiDebug.get("socketModule", "myImg")
+        EXEI("chatModule", "onRename", {
+          myName: GET("socketModule", "myName"),
+          myImg: GET("socketModule", "myImg")
         })
       })
       //切换聊天频道，更新currentChannel,currentImg
       chatList.click(function (e) {
         let $dom = $(e.srcElement || e.target);
         let userName = $dom.filter(".user").find(" div:last-child").html()
-        MultiDebug.exeI("chatModule", "onToggleUserChannel", userName);
+        EXEI("chatModule", "onToggleUserChannel", userName);
       })
 
       //发送信息
@@ -2347,12 +2376,12 @@ class MultiDebug {
           content: content,
           time: new Date().getTime()
         }
-        MultiDebug.exeI("chatModule", "onSubmitChatContent", data);
+        EXEI("chatModule", "onSubmitChatContent", data);
       }
 
       submit.click(submitEvent);
       chatInput.on("keydown", function (e) {
-        if ((e.key == "Enter" || e.keyCode == 13) && !e.shiftKey) {
+        if ((e.key == "Enter" || e.keyCode == 13) &amp;&amp; !e.shiftKey) {
           submitEvent();
           return false;
         }
@@ -2360,7 +2389,7 @@ class MultiDebug {
       //桌边提醒
       $(document.body).one("click", function () {
         //请求打开桌边提醒服务
-        Notification.requestPermission && Notification.requestPermission()
+        Notification.requestPermission &amp;&amp; Notification.requestPermission()
       })
       //判断桌边是否隐藏
       $(window).on("blur", function () {
@@ -2417,208 +2446,34 @@ class MultiDebug {
     }
     BABYUI.onChange = function () {
       window.setTimeout(function () {
-        MultiDebug.exeI("debugModule", "onChange", module.currentDebugMesh)
+        EXEI("debugModule", "onChange", module.currentDebugMesh)
       }, 110)
     }
   }
 
-  /** 开启socket模块
-   * @class*/
-  SocketModule() {
-    let module = this;
-    /**用户姓名*/
-    this.myName = null;
-    /**用户头像*/
-    this.myImg = null;
-    /**IP*/
-    this.myIP = null;
-    /**在线用户列表l*/
-    this.userList = [];
-    /**项目名称*/
-    this.appName = "";
-    /**客户端socket*/
-    let socket = null;
-    /**注册socket的事件
-     * @param {Object} events - 接收的所有socket事件
-     * @param {string} events.eventName - socket事件
-     * @param {string} events.func - socket触发的事件
-     * @param {Object} socket - 需要绑定的socket对象
-     * */
-    this.registerEvents = function (events, socket) {
-      events.forEach(function (func, eventName) {
-        if (typeof eventName == "string" && typeof func == "function") {
-          socket.on(eventName, func);
-          try {
-            if (MultiDebug.Application.socketModule[eventName]) {
-              socket.on(eventName, MultiDebug.Application.socketModule[eventName]);
-            }
-          } catch (e) {
-            console.warn(e);
-          }
-        }
-      })
-    }
-    /**显示登陆框*/
-    this.showLogin = function () {
-      MultiDebug.Tool.showPromptWithFile("请注册您的用户名，用户名将永久有效", "请上传您的头像", function (text, file, base64) {
-        socket.emit("onSaveUserInfo", {
-          userName: text,
-          userImg: base64,
-          logining: true
-        })
-      }, true);
-    }
-    /**重命名界面
-     *@param {string} data.myName - 本人姓名
-     *@param {string} data.myImg - 本人图片路径
-     */
-    this.showRename = function (data) {
-      MultiDebug.Tool.showPromptWithFile("当前昵称:【" + data.myName + "】<br><br>新昵称:", "您可以重新上传头像<br>", function (text, file, base64) {
-        socket.emit("onSaveUserInfo", {
-          userName: text,
-          userImg: base64,
-          logining: false
-        })
-      }, false, data.myImg ? SERVERFIX + data.myImg : null, true);
-    }
-    /**显示重名提示窗口
-     * @param {string} userName - 重复的名字*/
-    this.showNameRepeat = function (userName) {
-      MultiDebug.Tool.showPrompt(userName + " 已被别人注册，请更换昵称", function (text) {
-        socket.emit("onSaveUserInfo", {
-          userName: text,
-          userImg: null,
-          logining: true
-        })
-      }, true);
-    }
-    /**获取服务器端数据
-     * @param {string} key - 要获取的服务器的数据的键值,可以.连接，如a.b.c
-     * @param {function} onsuccess - 获取成功后的回调函数 (info:服务器返回的数据)
-     * */
-    this.getServerData = function (key, onsuccess) {
-      key = key + "";
-      let eventName = "onGetServerData__" + key;
-      socket.off(eventName)
-      socket.on(eventName, function (data) {
-        socket.off(eventName);
-        typeof onsuccess == "function" && onsuccess(data);
-      })
-      socket.emit("onGetServerData", key);
-    }
-    /**设置服务器端数据
-     * @param {string} key - 要设置的服务器的数据的键值,可以.连接，如a.b.c
-     * @param {string} data - 要设置的服务器的数据的数据
-     * @param {function} onsuccess - 获取成功后的回调函数 (ori:服务器本来的数据,overwrite:覆盖后的数据)
-     * */
-    this.setServerData = function (key, data, onsuccess) {
-      key = key + "";
-      let eventName = "onSetServerData__" + key;
-      socket.off(eventName);
-      socket.on(eventName, function (ori, overwrite) {
-        socket.off(eventName);
-        typeof onsuccess == "function" && onsuccess(ori, overwrite);
-      })
-      socket.emit("onSetServerData", key, data);
-    }
-    /**通知其他在线用户
-     * @param {string} eventName - 通知的事件名字
-     * @param {Object} data - 需要发送的数据
-     * */
-    this.broadcastOther = function (eventName, data) {
-      socket.emit("onBroadcastOther", eventName, data);
-    }
-    /**通知其他人我已经登陆*/
-    this.broadcastOtherMylogin = function () {
-      let times = 0;
-
-      function reminderOther() {
-        let myName = MultiDebug.get("socketModule", "myName");
-        let myImg = MultiDebug.get("socketModule", "myImg");
-        if (myName) {
-          module.broadcastOther("onOtherPeopleLogin", {
-            name: myName,
-            img: myImg
-          })
-        } else {
-          if (times++ < 10) {
-            window.setTimeout(arguments.callee, 500);
-          }
-        }
-      }
-
-      reminderOther();
-    }
-    /**获取公私图片库文件列表
-     * @param {function} onsuccess 成功回调函数 (data:Object,data.publicTexture,data.publicSkybox,data.privateTexture,data.privateSkybox,data.appName)*/
-    this.getPicFileList = function (onsuccess) {
-      socket.emit("onGetPicFileList");
-      socket.on("onGetPicFileList", function (data) {
-        socket.off("onGetPicFileList");
-        onsuccess && onsuccess(data);
-      })
-    }
-    /**获取APP相对路径下的文件列表数组
-     * @param {string} path - 相对APP项目的相对路径*/
-    this.getAppFileList = function (path, onsuccess) {
-      socket.emit("onGetAppFileList", path);
-      socket.on("onGetAppFileList", function (data) {
-        socket.off("onGetAppFileList");
-        onsuccess && onsuccess(data);
-      })
-    }
-    /**删除APP相对路径下的文件
-     * @param {string} path - 路径*/
-    this.delAppFile = function (path) {
-      socket.emit("onDelAppFile", path);
-    }
-    /**保存文件到APP相对路径下*/
-    this.saveAppFile = function (path, content) {
-      socket.emit("onSaveAppFile", path, content);
-    }
-    /**获取材质库路径下的文件列表
-     * @param {string} path
-     * @param {function} onsuccess (dirList)*/
-    this.getMaterialLibFileList = function (path, onsuccess) {
-      socket.emit("onGetMaterialLibFileList", path);
-      socket.on("onGetMaterialLibFileList", function (data) {
-        socket.off("onGetMaterialLibFileList");
-        onsuccess && onsuccess(data);
-      })
-    }
-    /**写文件到材质库路径下
-     * @param {string} path - 路径
-     * @param {string} content - 文件内容*/
-    this.saveMaterialLibFile = function (path, content) {
-      socket.emit("onSaveMaterialLibFile", path, content);
-    }
-
-    //socket连接成功才显示页面
-    function connectSocket() {
-      let times = 0;
-      let hostname = MultiDebug.opt.ip + ":" + MultiDebug.opt.port;
-      socket = io.connect('ws://' + hostname);
-
-      function wait() {
-        if (!socket.connected) {
-          if (times++ < 50) {
-            console.log("正在连接socket:" + hostname + "...请耐心等待");
-            window.setTimeout(wait, 100)
-          } else {
-            console.log("超过5秒未连接成功，已自动断开连接......")
-            socket.disconnect();
-          }
-        } else {
-          console.log("已成功连接socket:" + hostname + "...");
-        }
-      }
-
-      wait();
-    }
-
-    connectSocket();
-    this.registerEvents(MultiDebug.Interface.socketModule, socket);
-  }
 }
 
 export default MultiDebug;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-client.html">client</a></li><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_index.html">components/index</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_edit.html">components/tool/edit</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-components_tool_tool.html">components/tool/tool</a></li><li><a href="module-server.html">server</a></li></ul><h3>Classes</h3><ul><li><a href="module-components_index-MultiDebug.html">MultiDebug</a></li><li><a href="module-components_index-MultiDebug_ChatModule.html">ChatModule</a></li><li><a href="module-components_index-MultiDebug_DebugModule.html">DebugModule</a></li><li><a href="module-components_index-MultiDebug_LanModule.html">LanModule</a></li><li><a href="module-components_index-MultiDebug_MenuModule.html">MenuModule</a></li><li><a href="module-components_index-MultiDebug_PicModule.html">PicModule</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li><li><a href="module-components_index-chatModule.html">chatModule</a></li><li><a href="module-components_index-debugModule.html">debugModule</a></li><li><a href="module-components_index-lanModule.html">lanModule</a></li><li><a href="module-components_index-menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug_Application.html">Application</a></li><li><a href="module-components_index-MultiDebug_Interface.html">Interface</a></li><li><a href="module-components_index-picModule.html">picModule</a></li><li><a href="module-components_index-socketModule.html">socketModule</a></li><li><a href="module-components_tool_tool-Tool.html">Tool</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Aug 26 2018 11:18:43 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
