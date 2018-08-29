@@ -20,5 +20,4 @@ function openDebug(opt) {
     new MultiDebug(opt)
   })
 }
-
 export {openDebug, editMesh, unEditMesh, editMaterial, unEditMaterial, initSceneByJSON};

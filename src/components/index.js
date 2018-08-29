@@ -363,7 +363,7 @@ class MultiDebug {
         MultiDebug.set("socketModule", "myImg", userImg);
         MultiDebug.set("socketModule", "myIP", myIP);
         //提示
-        MultiDebug.Tool.showMessage("您好， " + userName + " ，欢迎登陆......", 5);
+        Tool.showMessage("您好， " + userName + " ，欢迎登陆......", 5);
         //------处理聊天信息
         MultiDebug.exe("socketModule", "getServerData", "chatContent", function (data) {
           //初始化到缓存
@@ -564,7 +564,7 @@ class MultiDebug {
             }
           });
 
-          !noMessage && MultiDebug.Tool.showMessage("一键锁定成功......", 1);
+          !noMessage && Tool.showMessage("一键锁定成功......", 1);
           !noMessage && MultiDebug.exe("chatModule", "appendLogContentBuffer", "一键锁定成功......");
         }
 
@@ -595,18 +595,18 @@ class MultiDebug {
               })
             }
           })
-          MultiDebug.Tool.showMessage("一键解锁成功......", 1);
+          Tool.showMessage("一键解锁成功......", 1);
           MultiDebug.exe("chatModule", "appendLogContentBuffer", "一键解锁成功......");
           //取消调试框
           MultiDebug.exe("debugModule", "hideDebug");
         }
 
         function saveVersion() {
-          MultiDebug.Tool.showPrompt("请输入你要保存的版本的名字", function (data) {
+          Tool.showPrompt("请输入你要保存的版本的名字", function (data) {
             //没有重名的
             let json = createJSON({console: false});
             MultiDebug.exe("socketModule", "saveAppFile", "version/" + new Date().getTime() + " " + data, json);
-            MultiDebug.Tool.showMessage("保存版本" + data + "成功......");
+            Tool.showMessage("保存版本" + data + "成功......");
             MultiDebug.exe("chatModule", "appendLogContentBuffer", "保存版本" + data + "成功......")
           });
         }
@@ -625,11 +625,11 @@ class MultiDebug {
               for (let i = 0; i < 20 - versionName.length; i++) {
                 showName += " - ";
               }
-              showName += MultiDebug.Tool.getDayTime(date, true);
+              showName += Tool.getDayTime(date, true);
               map[showName] = name;
               return showName;
             })
-            MultiDebug.Tool.showSelect("请选择你要回溯的版本", list, function (showName) {
+            Tool.showSelect("请选择你要回溯的版本", list, function (showName) {
               let fileName = map[showName];
               if (fileName) {
                 let appName = MultiDebug.get("socketModule", "appName");
@@ -638,8 +638,8 @@ class MultiDebug {
                 //版本回溯,无缓存
                 $.get(APPFIX + appName + "/multidebug.bak/version/" + fileName, function (data) {
                   initSceneByJSON(data);
-                  MultiDebug.Tool.showMessage("版本已经成功回溯到 " + showName);
-                  //MultiDebug.Tool.showMessage("请注意，服务器只保存您锁定的物体的数据!他人锁定的物体不会进行保存...", 2, "warn");
+                  Tool.showMessage("版本已经成功回溯到 " + showName);
+                  //Tool.showMessage("请注意，服务器只保存您锁定的物体的数据!他人锁定的物体不会进行保存...", 2, "warn");
                   MultiDebug.exe("chatModule", "appendLogContentBuffer", "版本已经成功回溯到 " + showName)
                   //保存到服务器
                   let lanList = MultiDebug.get("lanModule", "lanList");
@@ -678,16 +678,16 @@ class MultiDebug {
                 //showName += "&nbsp;&nbsp;";
                 showName += " - ";
               }
-              showName += MultiDebug.Tool.getDayTime(date, true);
+              showName += Tool.getDayTime(date, true);
               map[showName] = name;
               return showName;
             })
-            MultiDebug.Tool.showSelect("请选择你要删除的版本", list, function (showName) {
+            Tool.showSelect("请选择你要删除的版本", list, function (showName) {
               let fileName = map[showName];
               if (fileName) {
                 let appName = MultiDebug.get("socketModule", "appName");
                 MultiDebug.exe("socketModule", "delAppFile", "version/" + fileName);
-                MultiDebug.Tool.showMessage("成功删除版本" + showName);
+                Tool.showMessage("成功删除版本" + showName);
                 MultiDebug.exe("chatModule", "appendLogContentBuffer", "成功删除版本" + showName)
               }
             })
@@ -699,7 +699,7 @@ class MultiDebug {
         }
 
         function setOutlineWidth() {
-          MultiDebug.Tool.showPrompt("设置描边粗细<br>当前:" + app.getOutlineWidth(), function (num) {
+          Tool.showPrompt("设置描边粗细<br>当前:" + app.getOutlineWidth(), function (num) {
             num = Number(num);
             if (typeof num == "number") {
               app.setOutlineWidth(num);
@@ -718,7 +718,7 @@ class MultiDebug {
         }
 
         function setLightBallSize() {
-          MultiDebug.Tool.showPrompt("设置光球大小<br>当前:" + app.getLightBallSize(), function (num) {
+          Tool.showPrompt("设置光球大小<br>当前:" + app.getLightBallSize(), function (num) {
             num = Number(num);
             if (typeof num == "number") {
               app.setLightBallSize(num);
@@ -821,7 +821,7 @@ class MultiDebug {
             userName: myName,
             userIP: myIP
           }, function () {
-            MultiDebug.Tool.showMessage("锁定成功...", 1);
+            Tool.showMessage("锁定成功...", 1);
             //更新本地LANLIST
             MultiDebug.exe("lanModule", "refreshSingleLan", {
               stat: "success",
@@ -845,7 +845,7 @@ class MultiDebug {
           MultiDebug.exe("lanModule", "removeHightlightLi", li);
           //解锁
           MultiDebug.exe("socketModule", "setServerData", "lockInfo." + data.name, null, function (e) {
-            MultiDebug.Tool.showMessage("解锁成功...", 1);
+            Tool.showMessage("解锁成功...", 1);
             //更新本地LANLIST
             MultiDebug.exe("lanModule", "refreshSingleLan", {
               stat: "warn",
@@ -871,7 +871,7 @@ class MultiDebug {
           if (data.mesh.material) {
             app.exportMaterial(data.mesh.material)
           } else {
-            MultiDebug.Tool.showMessage("物体没有材质,无法导出...", 1, "danger")
+            Tool.showMessage("物体没有材质,无法导出...", 1, "danger")
           }
         }
 
@@ -879,7 +879,7 @@ class MultiDebug {
           if (data.mesh.material) {
             app.importMaterial(data.mesh, data.mesh.material)
           } else {
-            MultiDebug.Tool.showMessage("物体没有材质,无法导出...", 1, "danger")
+            Tool.showMessage("物体没有材质,无法导出...", 1, "danger")
           }
 
         }
@@ -912,7 +912,7 @@ class MultiDebug {
               }
             }
             // else {
-            //    MultiDebug.Tool.showMessage("请先锁定...", 2, "danger");
+            //    Tool.showMessage("请先锁定...", 2, "danger");
             //}
           }
             break;
@@ -923,21 +923,21 @@ class MultiDebug {
             if (data.stat == "success") {
               app.pasteMaterial(data.mesh.material, data.mesh);
             } else {
-              MultiDebug.Tool.showMessage("请先锁定", 1, "warn")
+              Tool.showMessage("请先锁定", 1, "warn")
             }
             break;
           case "导入材质":
             if (data.stat == "success") {
               importMaterial();
             } else {
-              MultiDebug.Tool.showMessage("请先锁定", 1, "warn")
+              Tool.showMessage("请先锁定", 1, "warn")
             }
             break;
           case "导出材质":
             if (data.stat == "success") {
               exportMaterial();
             } else {
-              MultiDebug.Tool.showMessage("请先锁定", 1, "warn")
+              Tool.showMessage("请先锁定", 1, "warn")
             }
             break;
           case "转化材质":
@@ -948,14 +948,14 @@ class MultiDebug {
                 let canToggleList = materiaTypeList.filter(function (kind) {
                   return kind != myMaterialType;
                 })
-                MultiDebug.Tool.showSelect("您当前的材质类型为:<br>" + myMaterialType + "<br>请选择您要转换的材质类型", canToggleList, function (type) {
+                Tool.showSelect("您当前的材质类型为:<br>" + myMaterialType + "<br>请选择您要转换的材质类型", canToggleList, function (type) {
                   app.toggleMaterialType(data.mesh, type)
                 })
               } else {
-                MultiDebug.Tool.showMessage("请先给物体赋予材质再进行转化", 1, "warn")
+                Tool.showMessage("请先给物体赋予材质再进行转化", 1, "warn")
               }
             } else {
-              MultiDebug.Tool.showMessage("请先锁定", 1, "warn")
+              Tool.showMessage("请先锁定", 1, "warn")
             }
             break;
         }
@@ -2133,7 +2133,7 @@ class MultiDebug {
         content.html(data.content);
         name.html(data.from);
         if (data.time) {
-          time.html(MultiDebug.Tool.getDayTime(data.time));
+          time.html(Tool.getDayTime(data.time));
         }
         if (isMe || isPublicMe) {
           wrapper.addClass("me")
@@ -2192,7 +2192,7 @@ class MultiDebug {
         content.html(data.content);
         name.html(data.from);
         if (data.time) {
-          time.html(MultiDebug.Tool.getDayTime(data.time));
+          time.html(Tool.getDayTime(data.time));
         }
         if (isMe || isPublicMe) {
           wrapper.addClass("me")
@@ -2395,11 +2395,11 @@ class MultiDebug {
         return;
       }
       if (!mesh.material) {
-        MultiDebug.Tool.showMessage(mesh.name + "没有材质...", 2, "danger");
+        Tool.showMessage(mesh.name + "没有材质...", 2, "danger");
         return;
       }
       if (!mesh.geometry) {
-        MultiDebug.Tool.showMessage(mesh.name + "没有顶点数据...", 2, "danger");
+        Tool.showMessage(mesh.name + "没有顶点数据...", 2, "danger");
         return;
       }
       module.hideDebug();
@@ -2460,7 +2460,7 @@ class MultiDebug {
     }
     /**显示登陆框*/
     this.showLogin = function () {
-      MultiDebug.Tool.showPromptWithFile("请注册您的用户名，用户名将永久有效", "请上传您的头像", function (text, file, base64) {
+      Tool.showPromptWithFile("请注册您的用户名，用户名将永久有效", "请上传您的头像", function (text, file, base64) {
         socket.emit("onSaveUserInfo", {
           userName: text,
           userImg: base64,
@@ -2473,7 +2473,7 @@ class MultiDebug {
      *@param {string} data.myImg - 本人图片路径
      */
     this.showRename = function (data) {
-      MultiDebug.Tool.showPromptWithFile("当前昵称:【" + data.myName + "】<br><br>新昵称:", "您可以重新上传头像<br>", function (text, file, base64) {
+      Tool.showPromptWithFile("当前昵称:【" + data.myName + "】<br><br>新昵称:", "您可以重新上传头像<br>", function (text, file, base64) {
         socket.emit("onSaveUserInfo", {
           userName: text,
           userImg: base64,
@@ -2484,7 +2484,7 @@ class MultiDebug {
     /**显示重名提示窗口
      * @param {string} userName - 重复的名字*/
     this.showNameRepeat = function (userName) {
-      MultiDebug.Tool.showPrompt(userName + " 已被别人注册，请更换昵称", function (text) {
+      Tool.showPrompt(userName + " 已被别人注册，请更换昵称", function (text) {
         socket.emit("onSaveUserInfo", {
           userName: text,
           userImg: null,
