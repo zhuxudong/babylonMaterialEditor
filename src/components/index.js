@@ -125,7 +125,8 @@ class MultiDebug {
     }
   }
 
-  /**暴露的Applicationcent层接口*/
+  /**暴露的Applicationcent层接口
+   * 事件层接口执行结束后还会执行app层接口*/
   static exportAPI = {
     "menuModule": ["onDebugMode", "onViewMode", "onClickMainMenu"],
     "lanModule": ["onClickLanList", "onMouseoverLanList", "onMouseoutLanList", "onRefreshScene", "onClickSubMenu"],
