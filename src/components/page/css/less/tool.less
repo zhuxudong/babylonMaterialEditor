@@ -20,7 +20,7 @@
     }
   }
 
-  .z-prompt, .z-select, .z-prompt-file, .mul-login .inner {
+  .z-prompt, .z-select, .z-prompt-file, .mul-login .inner, .mul-register .inner {
     position: absolute;
     width: 50%;
     min-width: 300px;
@@ -105,7 +105,16 @@
     pointer-events: auto;
     font-size: 14px;
   }
-  .mul-login {
+  .mul-login, .mul-register {
     display: none;
+    .toggleLogin {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      a{
+        cursor:pointer;
+        text-decoration: underline;
+      }
+    }
   }
 }

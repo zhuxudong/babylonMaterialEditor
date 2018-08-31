@@ -2595,21 +2595,27 @@ class MultiDebug {
     }
     /**登录系统，用来显示当前系统调试人数，谁在调试，用户聊天，用户头像，版本信息等功能*/
     this.login = () => {
-      let wrapper = $(".mul-login")
-      let account = wrapper.find("[data-type='account']")
-      let password = wrapper.find("[data-type='password']")
-      let login = wrapper.find("[data-type='login']")
-      let reg = wrapper.find("[data-type='reg']")
-      wrapper.fadeIn();
+      let loginWrapper = $(".mul-login")
+      let regWrapper = $(".mul-register")
+      let curMode = "login"
+      let logAccount = loginWrapper.find("[data-type='account']")
+      let logPassword = loginWrapper.find("[data-type='password']")
+      let regAccount = regWrapper.find("[data-type='account']")
+      let regPassword = regWrapper.find("[data-type='password']")
+      let regPassword2 = regWrapper.find("[data-type='password2']")
+      let login = regWrapper.find("[data-type='login']")
+      let reg = loginWrapper.find("[data-type='register']")
 
       //resolve({account,password})
-      function check() {
+      function check(account, password, password2) {
         return new Promise((resolve) => {
-          if (!/\w+/.test(account.val())) {
-            Tool.showMessage("昵称格式要求至少1位数字或者字母！", 1, "danger")
+          if (!/[\u4e00-\u9fa5a-zA-Z]+/.test(account.val())) {
+            Tool.showMessage("昵称格式要求至少1位中文或英文！", 1, "danger")
           } else if (!/.+/.test(password.val())) {
             Tool.showMessage("密码格式要求至少1位任意字符！", 1, "danger")
-          } else {
+          } else if (arguments.length == 3 && password2.val() != password.val()) {
+            Tool.showMessage("两次输入的密码不一致！", 1, "danger")
+          } else if (arguments.length == 3 || arguments.length == 2) {
             resolve({
               account: account.val(),
               password: password.val()
@@ -2619,38 +2625,63 @@ class MultiDebug {
       }
 
       //获取myName,myImg,appName
-      function onLogin() {
-        check().then((data) => {
-          socket.emit("login", data.account, data.password, (userInfo) => {
-            if (typeof userInfo === "string") {
-              Tool.showMessage(userInfo, 1, "danger")
-            } else {
-              Tool.showMessage("欢迎登录！ " + userInfo.userName, 1, "success")
-              wrapper.fadeOut();
-              module.myName = userInfo.userName;
-              module.myImg = userInfo.userImg;
-              module.appPath = userInfo.appPath;
-              module.publicPath = userInfo.publicPath;
-            }
+      function onLogin(press) {
+        regWrapper.fadeOut();
+        loginWrapper.fadeIn();
+        curMode = "login"
+        let click = () => {
+          check(logAccount, logPassword).then((data) => {
+            socket.emit("login", data.account, data.password, (userInfo) => {
+              if (typeof userInfo === "string") {
+                Tool.showMessage(userInfo, 1, "danger")
+              } else {
+                Tool.showMessage("欢迎登录！ " + userInfo.userName, 1, "success")
+                loginWrapper.fadeOut();
+                module.myName = userInfo.userName;
+                module.myImg = userInfo.userImg;
+                module.appPath = userInfo.appPath;
+                module.publicPath = userInfo.publicPath;
+              }
+            })
           })
-        })
+        }
+        if (typeof press == "boolean") {
+          click();
+        } else {
+          loginWrapper.find("button.color-success").off().click(click)
+        }
       }
 
-      function onReg() {
-        check().then((data) => {
-          socket.emit("register", data.account, data.password, (userInfo) => {
-            if (typeof userInfo === "string") {
-              Tool.showMessage(userInfo, 1, "danger")
-            } else {
-              Tool.showMessage("注册成功！ " + data.account, 1, "success")
-            }
+      function onReg(press) {
+        loginWrapper.fadeOut();
+        regWrapper.fadeIn();
+        curMode = "reg"
+        let click = () => {
+          check(regAccount, regPassword, regPassword2).then((data) => {
+            socket.emit("register", data.account, data.password, (userInfo) => {
+              if (typeof userInfo === "string") {
+                Tool.showMessage(userInfo, 1, "danger")
+              } else {
+                Tool.showMessage("注册成功！ " + data.account, 1, "success")
+                onLogin();
+              }
+            })
           })
-        })
+        }
+        if (typeof press == "boolean") {
+          click();
+        } else {
+          regWrapper.find("button.color-success").off().click(click)
+        }
       }
 
       function enter(e) {
         if (e.key == "Enter") {
-          onLogin();
+          if (curMode == "login") {
+            onLogin(true);
+          } else if (curMode == "reg") {
+            onReg(true);
+          }
         }
       }
 
@@ -2660,6 +2691,7 @@ class MultiDebug {
         .on("keydown", enter)
       login.off().on("click", onLogin)
       reg.off().on("click", onReg)
+      onLogin();
     }
 
     //socket连接成功才显示页面

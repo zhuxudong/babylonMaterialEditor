@@ -175,14 +175,28 @@
         <!--</div>-->
     </div>
 </div>
+<!--登录页面-->
 <div class="mul-login z-cover">
     <div class="inner">
+        <div class="toggleLogin">
+            没有账号？
+            <a data-type="register">注册</a>
+        </div>
         昵称：<input type="text" data-type="account">
         密码：<input type="password" data-type="password">
-        <div class='button-group'>
-            <button class='btn color-success' data-type="login">登录</button>
-            <button class='btn color-blue' data-type="reg">注册</button>
-        </div>
+        <button class='btn color-success'>登录</button>
     </div>
-
+</div>
+<!--注册页面-->
+<div class="mul-register z-cover">
+    <div class="inner">
+        <div class="toggleLogin">
+            已有账号？
+            <a data-type="login">登录</a>
+        </div>
+        昵称：<input type="text" data-type="account">
+        密码：<input type="text" onfocus="this.type='password'" data-type="password">
+        确认密码：<input type="text" onfocus="this.type='password'" data-type="password2">
+        <button class='btn color-success'>确定</button>
+    </div>
 </div>
