@@ -360,7 +360,7 @@ let Tool = {
     }
     let lastDom = $(".z-message:not([other])").last();
     let lastOtherDom = $(".z-message[other]").last();
-    $(document.body).append(dom);
+    $(".babylon-material-editor").append(dom);
 
     if (checkOther()) {
       lastDom = lastOtherDom;
@@ -399,11 +399,11 @@ let Tool = {
       });
     }, second * 1000)
     dom.on("mouseover", function () {
-      dom.css("z-index", "65570");
+      dom.css("z-index", "1");
       window.clearTimeout(timeout);
     })
     dom.on("mouseout", function () {
-      dom.css("z-index", "65560");
+      dom.css("z-index", "0");
       timeout = window.setTimeout(function () {
         dom.fadeOut(1000, function () {
           dom.remove();

@@ -33,10 +33,12 @@ const config = {
 /** 最终路径*/
 const finalPath = {
   appPath: '',
+  appLibPath: '',
   appSkyboxPath: '',
   appTexturePath: '',
   appDataPath: '',
   publicPath: '',
+  publicLibPath: '',
   publicSkyboxPath: '',
   publicTexturePath: '',
   userInfoPath: ''
@@ -106,12 +108,14 @@ function checkPort(port) {
  * */
 function initFinalPath() {
   finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
-  finalPath.appSkyboxPath = path.resolve(finalPath.appPath, config.app.materialLibPath, "skyboxes");
-  finalPath.appTexturePath = path.resolve(finalPath.appPath, config.app.materialLibPath, "textures");
+  finalPath.appLibPath = path.resolve(finalPath.appPath, config.app.materialLibPath);
+  finalPath.appSkyboxPath = path.resolve(finalPath.appLibPath, "skyboxes");
+  finalPath.appTexturePath = path.resolve(finalPath.appLibPath, "textures");
   finalPath.appDataPath = path.resolve(finalPath.appPath, config.app.dataPath);
-  finalPath.publicPath = path.resolve(__dirname, config.public.context, config.public.materialLibPath);
-  finalPath.publicSkyboxPath = path.resolve(finalPath.publicPath, "skyboxes");
-  finalPath.publicTexturePath = path.resolve(finalPath.publicPath, "textures");
+  finalPath.publicPath = path.resolve(__dirname, config.public.context);
+  finalPath.publicLibPath = path.resolve(finalPath.publicPath, config.public.materialLibPath);
+  finalPath.publicSkyboxPath = path.resolve(finalPath.publicLibPath, "skyboxes");
+  finalPath.publicTexturePath = path.resolve(finalPath.publicLibPath, "textures");
   finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath);
 }
 
@@ -121,7 +125,7 @@ function createFinalPath() {
     let promises = [];
     for (let item in finalPath) {
       let path = finalPath[item];
-      promises.push(fs.mkdirs(path))
+      promises.push(fs.ensureDir(path))
     }
     Promise.all(promises).then(resolve).catch(reject)
   })
@@ -184,17 +188,16 @@ class Socket {
     io.on('connection', (socket) => {
       this.socketList.push(this.createUserInfo(socket));
       this.on(socket, socketEvents);
-      socket.on('disconnect', () => {
-        this.socketList = this.socketList.filter((s) => socket.id !== s.id);
-      })
     })
   }
 
-  createUserInfo(socket, userName, userPassword, userImg) {
+  createUserInfo(socket, userName, userPassword, userImg, appPath, publicPath) {
     socket.userInfo = {
       userName: userName,
       userPassword: userPassword,
-      userImg: userImg
+      userImg: userImg,
+      appPath: appPath,
+      publicPath: publicPath
     }
     return socket;
   }
@@ -207,6 +210,10 @@ class Socket {
       socket.userInfo[key] = val;
     })
     return socket;
+  }
+
+  getUserInfo(socket) {
+    return socket.userInfo;
   }
 
   on(socket, socketEvents) {
@@ -244,16 +251,60 @@ let socket = null;
 
 //--------事件接口--------
 let socketEvents = {
+  /**用户登录
+   * @param {string} account -昵称
+   * @param {string} password -密码
+   * @param {function} cb -回调用户信息
+   * */
+  login(account, password, cb) {
+    let file = path.resolve(finalPath.userInfoPath, socket.encode(account));
+    if (fs.pathExistsSync(file)) {
+      fs.readJson(file).then((json) => {
+        if (socket.decode(json.userPassword) !== password) {
+          cb("密码输入错误！")
+        } else {
+          socket.updateUserInfo(this, {
+            userName: account,
+            userPassword: password,
+            userImg: json.userImg,
+            appPath: path.relative(config.root, finalPath.appPath),
+            publicPath: path.relative(config.root, finalPath.publicPath)
+          })
+          cb(socket.getUserInfo(this))
+        }
+      })
+    } else {
+      cb("没有发现有关" + account + "的资料,请先进行注册!")
+    }
+  },
+  /**用户注册
+   * @param {string} account -昵称
+   * @param {string} password -密码
+   * @param {function} cb -回调用户信息
+   * */
+  register(account, password, cb) {
+    let file = path.resolve(finalPath.userInfoPath, socket.encode(account));
+    if (!fs.pathExistsSync(file)) {
+      fs.outputJson(file, {
+        userPassword: socket.encode(password),
+        userImg: null
+      }).then(cb)
+    } else {
+      cb(account + "已经被人注册！请重新起个名字")
+    }
+  },
   /**退出联机调试系统*/
   disconnect: function () {
-    let socket = this;
-    //通知其他人下线
-    socket.broadcast.emit("onOtherPeopleLogOut", socket.info.userName, socket.info.userImg);
-    //存放聊天记录
-    multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "chatContent"), "chatContent", true);
-    //存放日志记录
-    multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "logContent"), "logContent", true);
-    multiDebug.removeSocket(socket);
+    socket.socketList = socket.socketList.filter((s) => socket.id !== s.id);
+
+    // let socket = this;
+    // //通知其他人下线
+    // socket.broadcast.emit("onOtherPeopleLogOut", socket.info.userName, socket.info.userImg);
+    // //存放聊天记录
+    // multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "chatContent"), "chatContent", true);
+    // //存放日志记录
+    // multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "logContent"), "logContent", true);
+    // multiDebug.removeSocket(socket);
 
   },
   /**客户端请求 存储用户信息到服务器

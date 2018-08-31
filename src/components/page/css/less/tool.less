@@ -4,7 +4,6 @@
 .babylon-material-editor {
   .z-cover {
     position: absolute;
-    z-index: 65537;
     width: 100%;
     height: 100%;
     top: 0;
@@ -21,7 +20,7 @@
     }
   }
 
-  .z-prompt, .z-select, .z-prompt-file {
+  .z-prompt, .z-select, .z-prompt-file, .mul-login .inner {
     position: absolute;
     width: 50%;
     min-width: 300px;
@@ -32,7 +31,6 @@
     color: #333;
     background: #FBFBFB;
     border-radius: 5px;
-    z-index: 65538;
     pointer-events: auto;
     span {
       font-size: 14px;
@@ -90,6 +88,7 @@
       background: none center/cover no-repeat;
       border-radius: 50%;
     }
+
   }
 
   .z-message {
@@ -99,11 +98,14 @@
     position: absolute;
     top: 100px;
     left: 200px;
-    z-index: 65560;
+    z-index: 0;
     word-break: break-all;
     word-wrap: break-word;
     opacity: .8;
     pointer-events: auto;
     font-size: 14px;
+  }
+  .mul-login {
+    display: none;
   }
 }

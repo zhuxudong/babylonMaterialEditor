@@ -1931,9 +1931,9 @@ class MultiDebug {
      * @return {object} notification -   消息对象，可以通过hideDesktopMessage（notification）来关闭
      * */
     this.showDesktopMessage = function (title, message, imgURL, time) {
-      if (Notification.permission == "default") {
-        Notification.requestPermission && Notification.requestPermission()
-      }
+      // if (Notification.permission == "default") {
+      Notification.requestPermission && Notification.requestPermission()
+      // }
       let notification = new Notification(title, {
         body: message,
         icon: imgURL
@@ -2431,12 +2431,12 @@ class MultiDebug {
     this.myName = null;
     /**用户头像*/
     this.myImg = null;
-    /**IP*/
-    this.myIP = null;
     /**在线用户列表l*/
     this.userList = [];
-    /**项目名称*/
-    this.appName = "";
+    /**私有库路径*/
+    this.appPath = "";
+    /**公有库路径*/
+    this.publicPath = "";
     /**客户端socket*/
     let socket = null;
     /**注册socket的事件
@@ -2593,32 +2593,107 @@ class MultiDebug {
     this.saveMaterialLibFile = function (path, content) {
       socket.emit("onSaveMaterialLibFile", path, content);
     }
+    /**登录系统，用来显示当前系统调试人数，谁在调试，用户聊天，用户头像，版本信息等功能*/
+    this.login = () => {
+      let wrapper = $(".mul-login")
+      let account = wrapper.find("[data-type='account']")
+      let password = wrapper.find("[data-type='password']")
+      let login = wrapper.find("[data-type='login']")
+      let reg = wrapper.find("[data-type='reg']")
+      wrapper.fadeIn();
 
-    //socket连接成功才显示页面
-    function connectSocket() {
-      let times = 0;
-      let hostname = MultiDebug.opt.ip + ":" + MultiDebug.opt.port;
-      socket = io.connect('ws://' + hostname);
-
-      function wait() {
-        if (!socket.connected) {
-          if (times++ < 50) {
-            console.log("正在连接socket:" + hostname + "...请耐心等待");
-            window.setTimeout(wait, 100)
+      //resolve({account,password})
+      function check() {
+        return new Promise((resolve) => {
+          if (!/\w+/.test(account.val())) {
+            Tool.showMessage("昵称格式要求至少1位数字或者字母！", 1, "danger")
+          } else if (!/.+/.test(password.val())) {
+            Tool.showMessage("密码格式要求至少1位任意字符！", 1, "danger")
           } else {
-            console.log("超过5秒未连接成功，已自动断开连接......")
-            socket.disconnect();
+            resolve({
+              account: account.val(),
+              password: password.val()
+            })
           }
-        } else {
-          console.log("已成功连接socket:" + hostname + "...");
+        })
+      }
+
+      //获取myName,myImg,appName
+      function onLogin() {
+        check().then((data) => {
+          socket.emit("login", data.account, data.password, (userInfo) => {
+            if (typeof userInfo === "string") {
+              Tool.showMessage(userInfo, 1, "danger")
+            } else {
+              Tool.showMessage("欢迎登录！ " + userInfo.userName, 1, "success")
+              wrapper.fadeOut();
+              module.myName = userInfo.userName;
+              module.myImg = userInfo.userImg;
+              module.appPath = userInfo.appPath;
+              module.publicPath = userInfo.publicPath;
+            }
+          })
+        })
+      }
+
+      function onReg() {
+        check().then((data) => {
+          socket.emit("register", data.account, data.password, (userInfo) => {
+            if (typeof userInfo === "string") {
+              Tool.showMessage(userInfo, 1, "danger")
+            } else {
+              Tool.showMessage("注册成功！ " + data.account, 1, "success")
+            }
+          })
+        })
+      }
+
+      function enter(e) {
+        if (e.key == "Enter") {
+          onLogin();
         }
       }
 
-      wait();
+      $(document)
+        .off("keydown", $(document).data("mul-login"))
+        .data("mul-login", enter)
+        .on("keydown", enter)
+      login.off().on("click", onLogin)
+      reg.off().on("click", onReg)
     }
 
-    connectSocket();
-    this.registerEvents(MultiDebug.Interface.socketModule, socket);
+    //socket连接成功才显示页面
+    function connectSocket() {
+      return new Promise((resolve, reject) => {
+        let times = 0;
+        let hostname = MultiDebug.opt.ip + ":" + MultiDebug.opt.port;
+        socket = io.connect('ws://' + hostname);
+
+        function wait() {
+          if (!socket.connected) {
+            if (times++ < 50) {
+              console.log("正在连接socket:" + hostname + "...请耐心等待");
+              window.setTimeout(wait, 100)
+            } else {
+              console.log("超过5秒未连接成功，已自动断开连接......")
+              socket.disconnect();
+              reject();
+            }
+          } else {
+            console.log("已成功连接socket:" + hostname + "...");
+            resolve()
+          }
+        }
+
+        wait();
+      })
+
+    }
+
+    connectSocket().then(() => {
+      this.login();
+      this.registerEvents(MultiDebug.Interface.socketModule, socket);
+    });
   }
 }
 
