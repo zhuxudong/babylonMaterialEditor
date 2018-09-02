@@ -40,3 +40,14 @@ npm run build
 ```
 npm run doc
 ``` 
+# 使用
+### 线上
+```
+import * as editor from babylonMaterialEditor;
+editor.initSceneByJSON(scene,json)
+```
+### 调试
+```
+import * as editor from babylonMaterialEditor;
+editor.openDebug(option...)
+```
