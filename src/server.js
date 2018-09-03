@@ -412,3 +412,71 @@ checkArgs()
     console.log("*** something unexpected happened,exit......")
     console.log(err)
   })
+
+function main() {
+  document.body.innerHTML = "";
+  document.oncontextmenu = function () {
+    return false
+  }
+  let target = document.createElement("div")
+  target.style.position = "absolute"
+  target.style.width = "50px"
+  target.style.height = "50px"
+  target.style.borderRadius = "50%"
+  target.style.background = "#da7373"
+  target.style.left = "50%"
+  target.style.top = "50%"
+  target.style.transform = "translate(-50%,-50%)"
+  document.body.appendChild(target)
+  let man = document.createElement("div")
+  man.style.position = "absolute"
+  man.style.width = "50px"
+  man.style.height = "50px"
+  man.style.borderRadius = "50%"
+  man.style.left = "100px"
+  man.style.top = "100px"
+  man.style.background = "rgb(164, 115, 218)";
+  man.style.marginTop = "-25px"
+  man.style.marginLeft = "-25px"
+  document.body.appendChild(man);
+
+
+  let interval = null;
+  let speed = 3;
+  /**鼠标右键事件*/
+  document.addEventListener("mousedown", function (e) {
+    if (e.button != 2)
+      return;
+    clearInterval(interval)
+    interval = setInterval(function () {
+      let oriX = parseFloat(man.style.left);
+      let oriY = parseFloat(man.style.top);
+      let clientX = parseFloat(e.clientX);
+      let clientY = parseFloat(e.clientY);
+      let difX = clientX - oriX;
+      let difY = clientY - oriY;
+      let difAll = Math.sqrt(Math.pow(difX, 2) + Math.pow(difY, 2));
+      let angle = Math.atan(Math.abs(difY / difX));
+      let dirX = difX > 0 ? 1 : difX === 0 ? 0 : -1;
+      let dirY = difY > 0 ? 1 : difY === 0 ? 0 : -1;
+      if (difAll <= speed) {
+        man.style.left = clientX + "px";
+        man.style.top = clientY + "px";
+        clearInterval(interval)
+      } else {
+        man.style.left = oriX + dirX * speed * Math.cos(angle) + "px";
+        man.style.top = oriY + dirY * speed * Math.sin(angle) + "px";
+      }
+    }, 20)
+  })
+  /**键盘事件*/
+  document.addEventListener("keydown", function (e) {
+    switch (e.code) {
+      case "Keys":
+      case "KeyS": {
+        clearInterval(interval);
+      }
+        break;
+    }
+  })
+}
