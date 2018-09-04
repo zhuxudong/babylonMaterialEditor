@@ -83,9 +83,9 @@ class MultiDebug {
           arg.push(arguments[i])
         }
         let returnValue = _func.apply && _func.apply(window, arg);
-        let api = MultiDebug.exportAPI;
+        let api = MultiDebug.Application;
         try {
-          if (api && api[module] && api[module].indexOf && api[module].indexOf(func) != -1) {
+          if (api[module] && api[module].hasOwnProperty(func)) {
             MultiDebug.exeA.apply(window, [].concat.call([], module, func, arg))
           }
         } catch (e) {
@@ -125,13 +125,6 @@ class MultiDebug {
     }
   }
 
-  /**暴露的Applicationcent层接口
-   * 事件层接口执行结束后还会执行app层接口*/
-  static exportAPI = {
-    "menuModule": ["onDebugMode", "onViewMode", "onClickMainMenu"],
-    "lanModule": ["onClickLanList", "onMouseoverLanList", "onMouseoutLanList", "onRefreshScene", "onClickSubMenu"],
-    "debugModule": ["onChange"]
-  }
   /**事件接口
    * @namespace
    */
@@ -355,10 +348,8 @@ class MultiDebug {
     /**@namespace*/
     socketModule: {
       /**成功登陆触发的事件
-       * @param {string} userName 用户姓名
-       * @param {string} userImg 用户头像路径
        * */
-      onLoginSuccess: function (userName, userImg, myIP) {
+      onLogin: function () {
         //保存我的信息
         MultiDebug.set("socketModule", "myName", userName);
         MultiDebug.set("socketModule", "myImg", userImg);
@@ -1003,7 +994,7 @@ class MultiDebug {
     /**@namespace*/
     socketModule: {
       /**登陆成功的事件*/
-      onLoginSuccess: function () {
+      onLogin: function () {
         //保存初始纹理
         app.storeInitialTexture();
         //更新lanlist
