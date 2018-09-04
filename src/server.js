@@ -11,12 +11,14 @@ const io = require("socket.io")();
 const config = {
   // 公共材质库相关配置
   public: {
-    context: "./static",
+    // context: "./static",
+    context: "../dist/static",
     materialLibPath: "materialLib",
   },
   // 项目相关配置
   app: {
-    context: "./static/model",
+    // context: "./static/model",
+    context: "../dist/static/model",
     // finalPath = private.app+private.app.appName
     appName: "demo",
     materialLibPath: "materialLib",
@@ -24,7 +26,8 @@ const config = {
     dataPath: 'editorData'
   },
   // 用户账号密码头像
-  userInfoPath: "./static/users",
+  // userInfoPath: "./static/users",
+  userInfoPath: "../dist/static/users",
   // 根路径,上面的context都是基于此根路径
   root: "./",
   // socket port
@@ -276,7 +279,9 @@ let socketEvents = {
             publicLibPath: path.relative(config.root, finalPath.publicLibPath),
           })
           console.log(account + " 已登录...")
-          cb(server.getUserInfo(socket))
+          cb(server.getUserInfo(socket));
+          //登录成功！
+          socket.emit("onLogin")
         }
       })
     } else {
