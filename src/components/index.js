@@ -1,13 +1,12 @@
 /**@module*/
 import io from 'socket.io-client';
-import App from 'babylonApp';
+import App from './app';
 import EditControl from './tool/EditControl.min.js'
 import BABYUI from './babyui/babyui';
 import createJSON from './tool/createJSON';
 import initSceneByJSON from './tool/initSceneByJSON';
 import Tool from './tool/tool'
 
-let scene = window.scene;
 let app = null;
 let multiDebugDom = $(".babylon-material-editor");
 
@@ -492,11 +491,11 @@ class MultiDebug {
     menuModule: {
       /**调试模式触发的事件*/
       onDebugMode: function () {
-        // app.debugMode();
+        app.debugMode();
       },
       /**浏览模式触发的事件*/
       onViewMode: function () {
-        // app.viewMode();
+        app.viewMode();
       },
       /**点击主菜单触发的事件
        * @param {string} itemName - 选项名字*/
@@ -759,7 +758,7 @@ class MultiDebug {
        * @param {Object} data.data - 额外数据
        */
       onMouseoverLanList: function (data) {
-        app.renderMesh(data.data.mesh)
+        app.outline.renderMesh(data.data.mesh)
       },
       /**鼠标划过
        * @param {object} data
@@ -769,7 +768,7 @@ class MultiDebug {
        * @param {Object} data.data - 额外数据
        */
       onMouseoutLanList: function (data) {
-        app.unrenderMesh(data.data.mesh)
+        app.outline.unrenderMesh(data.data.mesh)
       },
       /**点击锁定物体触发的事件
        * @param {Object} itemName - 点击的副菜单栏具体选项
@@ -783,13 +782,11 @@ class MultiDebug {
        * */
       onClickSubMenu: function (itemName, subMenu, li) {
         let myName = MultiDebug.get("socketModule", "myName");
-        let myIP = MultiDebug.get("socketModule", "myIP");
         let data = li[0].data;
 
         function lock() {
           MultiDebug.exe("socketModule", "setServerData", "lockInfo." + data.name, {
-            userName: myName,
-            userIP: myIP
+            userName: myName
           }, function () {
             Tool.showMessage("锁定成功...", 1);
             //更新本地LANLIST
@@ -982,21 +979,21 @@ class MultiDebug {
         //自动打开第一个
         MultiDebug.exeI("picModule", "onTogglePicPanel", MultiDebug.get("picModule", "button1"), MultiDebug.get("picModule", "panel1"))
         //更新调试数据
-        //app.refreshDebug();
+        app.refreshDebug();
         //更新描边数据
         MultiDebug.exe("socketModule", "getServerData", "outlineWidth", function (data) {
-          if (typeof data == "number") {
-            app.setOutlineWidth(data)
+          if (typeof data === "number") {
+            app.outline.setOutlineWidth(data)
           }
         })
         //更新光源数据
         MultiDebug.exe("socketModule", "getServerData", "lightBallSize", function (data) {
-          if (typeof data == "number") {
-            app.setLightBallSize(data)
+          if (typeof data === "number") {
+            app.light.setLightBallSize(data)
           }
         })
         //切换调试模式
-        MultiDebug.exeA("menuModule", "onDebugMode");
+        MultiDebug.exeI("menuModule", "onDebugMode");
       },
       /** @param {Object} data -点击的那个选项的信息
        * @param {string} data.stat - 选项状态 -"danger"||"warn"||"success"
@@ -1052,8 +1049,7 @@ class MultiDebug {
 
   constructor(opt) {
     Object.assign(MultiDebug.opt, opt)
-    scene = MultiDebug.scene;
-    app = new App(scene);
+    app = new App(MultiDebug.opt.scene);
     MultiDebug.modules = this;
     this.menuModule = new this.MenuModule();
     this.lanModule = new this.LanModule();
@@ -2472,14 +2468,7 @@ class MultiDebug {
      * @param {function} onsuccess - 获取成功后的回调函数 (info:服务器返回的数据)
      * */
     this.getServerData = function (key, onsuccess) {
-      key = key + "";
-      let eventName = "onGetServerData__" + key;
-      socket.off(eventName)
-      socket.on(eventName, function (data) {
-        socket.off(eventName);
-        typeof onsuccess == "function" && onsuccess(data);
-      })
-      socket.emit("onGetServerData", key);
+      socket.emit("onGetServerData", key + "", onsuccess);
     }
     /**设置服务器端数据
      * @param {string} key - 要设置的服务器的数据的键值,可以.连接，如a.b.c
@@ -2527,11 +2516,7 @@ class MultiDebug {
     /**获取公私图片库文件列表
      * @param {function} onsuccess 成功回调函数 (data:Object,data.publicTexture,data.publicSkybox,data.privateTexture,data.privateSkybox,data.appName)*/
     this.getPicFileList = function (onsuccess) {
-      socket.emit("onGetPicFileList");
-      socket.on("onGetPicFileList", function (data) {
-        socket.off("onGetPicFileList");
-        onsuccess && onsuccess(data);
-      })
+      socket.emit("onGetPicFileList", onsuccess);
     }
     /**获取APP相对路径下的文件列表数组
      * @param {string} path - 相对APP项目的相对路径*/

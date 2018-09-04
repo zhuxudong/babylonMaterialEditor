@@ -2,6 +2,7 @@ import "../client.js"
 // import createJSON from "@/tool/createJSON"
 // import initSceneByJSON from "@/tool/initSceneByJSON"
 import * as client from '../client';
+
 class Demo {
   constructor() {
     this.canvas = document.getElementById("renderCanvas");
@@ -58,7 +59,8 @@ class Demo {
 
   loadMesh() {
     BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes) => {
-      console.log(meshes)
+      client.editMesh(meshes)
+      client.editMaterial(this.scene.materials)
       client.openDebug({
         scene: this.scene
       })

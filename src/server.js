@@ -188,6 +188,10 @@ function polyfill() {
 class Server {
   constructor(io) {
     this.socketList = [];
+    this.serverData = {
+      lockInfo: {},
+      debugInfo: {}
+    };
     io.on('connection', (socket) => {
       this.on(socket, socketEvents);
     })
@@ -247,6 +251,98 @@ class Server {
       c += String.fromCharCode(code.charCodeAt(i) - c.charCodeAt(i - 1));
     }
     return c;
+  }
+
+  //获取服务器数据
+  getServerData(key) {
+    let string = String(key);
+    let keys = string.split(".");
+    //服务器存放数据的位置
+    let location = this.serverData;
+    let exists = keys.every(function (key) {
+      if (location.hasOwnProperty(key)) {
+        location = location[key];
+        return true;
+      } else {
+        return false;
+      }
+    })
+    if (exists) {
+      return location;
+    }
+  }
+
+  //设置服务器数据
+  setServerData(key, data, onsuccess) {
+    let string = String(key);
+    let keys = string.split(".");
+    //服务器存放数据的位置
+    let location = this.serverData;
+    let ori = null;
+    keys.forEach(function (key, i) {
+      if (location.hasOwnProperty(key)) {
+        ori = location[key];
+      } else {
+        location[key] = {};
+        ori = null;
+      }
+      if (i == keys.length - 1) {
+        location[key] = data;
+      } else {
+        location = location[key];
+      }
+    })
+    onsuccess && onsuccess(ori, data);
+  }
+
+  //是否目录
+  isDir(path) {
+    try {
+      if (fs.pathExistsSync(path)) {
+        let stat = fs.lstatSync(path);
+        return stat.isDirectory();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  //是否文件
+  isFile(path) {
+    try {
+      if (fs.pathExistsSync(path)) {
+        let stat = fs.lstatSync(path);
+        return stat.isFile();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  /**读取路径的所有文件，返回文件列表数组，排除文件夹
+   * @parawm {string} dirPath - 文件夹路径
+   * */
+  getFileList(dirPath) {
+    let dirList = [];
+    if (fs.pathExistsSync(dirPath)) {
+      dirList = fs.readdirSync(dirPath).filter((p) => {
+        return this.isFile(path.join(dirPath, p));
+      });
+    }
+    return dirList;
+  }
+
+  /**读取路径的所有文件夹，返回文件列表数组，排除文件夹
+   * @parawm {string} dirPath - 文件夹路径
+   * */
+  getDirList(dirPath) {
+    let dirList = [];
+    if (fs.pathExistsSync(dirPath)) {
+      dirList = fs.readdirSync(dirPath).filter((p) => {
+        return this.isDir(path.join(dirPath, p));
+      });
+    }
+    return dirList;
   }
 }
 
@@ -325,95 +421,27 @@ let socketEvents = {
     // multiDebug.removeSocket(socket);
 
   },
-  /**客户端请求 存储用户信息到服务器
-   * @param data.userName - 用户名字
-   * @param data.userImg - 用户头像base64
-   * @param data.logining - 是否在注册的时候请求服务器
-   * */
-  onSaveUserInfo: function (data) {
-    let socket = this;
-    multiDebug.saveUserInfo(data.userName, data.userImg, data.logining, socket);
-  },
   /**客户端请求 获取服务器端数据
    * @param {string} key - 要获取的服务器的数据的键值,可以.连接，如a.b.c
+   * @param {function} cb - 回调服务器端数据
    * */
-  onGetServerData: function (key) {
-    let socket = this;
-    let eventName = "onGetServerData__" + key;
-    let data = multiDebug.getServerData(key)
-    socket.emit(eventName, data);
-  },
-  /**客户端请求 设置服务器端数据
-   * @param {string} key - 要设置的服务器的数据的键值,可以.连接，如a.b.c
-   * @param {Object} data - 键值数据
-   * */
-  onSetServerData: function (key, data) {
-    let socket = this;
-    let eventName = "onSetServerData__" + key;
-    multiDebug.setServerData(key, data, function (ori, data) {
-      socket.emit(eventName, ori, data);
-    })
-  },
-  /**客户端请求 通知其他在线用户
-   * @param {string} eventName - 通知的事件名字
-   * @param {Object} data - 需要发送的数据
-   * */
-  onBroadcastOther: function (eventName, data) {
-    let socket = this;
-    socket.broadcast.emit(eventName, data)
+  onGetServerData: function (key, cb) {
+    let data = server.getServerData(key)
+    cb(data)
   },
   /**获取公私图片库文件列表*/
-  onGetPicFileList: function () {
-    let socket = this;
-    let publicTextureFix = PATH.join(MATERIALLIBFIX, TEXTURE);
-    let publicSkyboxFix = PATH.join(MATERIALLIBFIX, SKYBOX);
-    let privateFix = PATH.join(APPFIX, "materialLib/");
-    let privateTextureFix = PATH.join(privateFix, TEXTURE);
-    let privateSkyboxFix = PATH.join(privateFix, SKYBOX);
-    //初始化创建文件夹
-    multiDebug.mkdir(publicTextureFix);
-    multiDebug.mkdir(publicSkyboxFix);
-    multiDebug.mkdir(privateSkyboxFix);
-    multiDebug.mkdir(privateTextureFix);
-    let publicTexture = multiDebug.getFileList(publicTextureFix);
-    let publicSkybox = multiDebug.getDirList(publicSkyboxFix);
-    let privateTexture = multiDebug.getFileList(privateTextureFix);
-    let privateSkybox = multiDebug.getDirList(privateSkyboxFix);
-    socket.emit("onGetPicFileList", {
+  onGetPicFileList: function (cb) {
+    let publicTexture = server.getFileList(finalPath.publicTexturePath);
+    let publicSkybox = server.getDirList(finalPath.publicSkyboxPath);
+    let privateTexture = server.getFileList(finalPath.appTexturePath);
+    let privateSkybox = server.getDirList(finalPath.appSkyboxPath);
+    cb({
       publicTexture: publicTexture,
       publicSkybox: publicSkybox,
       privateTexture: privateTexture,
-      privateSkybox: privateSkybox,
-      appName: APPNAME
+      privateSkybox: privateSkybox
     });
-
   },
-  /**获取APP相对路径的文件列表数组*/
-  onGetAppFileList: function (path) {
-    let socket = this;
-    let dirList = multiDebug.getFileList(PATH.join(APPDATAFIX, path));
-    socket.emit("onGetAppFileList", dirList);
-  },
-  /**保存文件到app相对路径*/
-  onSaveAppFile: function (path, content) {
-    multiDebug.saveAppFile(path, content);
-  },
-  /**删除文件,app相对路径*/
-  onDelAppFile: function (path) {
-    multiDebug.delAppFile(path);
-  },
-  /**获取材质库文件列表*/
-  onGetMaterialLibFileList: function (path) {
-    path = PATH.join(MATERIALLIBFIX, path);
-    let dirList = multiDebug.getFileList(path);
-    let socket = this;
-    socket.emit("onGetMaterialLibFileList", dirList)
-  },
-  /**写文件到材质库路径*/
-  onSaveMaterialLibFile: function (path, content) {
-    path = PATH.join(MATERIALLIBFIX, path);
-    multiDebug.saveFile(path, content);
-  }
 }
 /**************************************************************************/
 /**************************************************************************/
