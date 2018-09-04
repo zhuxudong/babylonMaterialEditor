@@ -1,5 +1,6 @@
 /**@module*/
 import io from 'socket.io-client';
+import App from 'babylonApp';
 import EditControl from './tool/EditControl.min.js'
 import BABYUI from './babyui/babyui';
 import createJSON from './tool/createJSON';
@@ -7,6 +8,7 @@ import initSceneByJSON from './tool/initSceneByJSON';
 import Tool from './tool/tool'
 
 let scene = window.scene;
+let app = null;
 let multiDebugDom = $(".babylon-material-editor");
 
 /**@Class */
@@ -14,21 +16,15 @@ class MultiDebug {
   /**执行UI模块方法,兼容错误处理
    * @param {string} module - 模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
    * @param {string} func - 要执行的模块的方法，如"openWindow"
-   * @param {Object[]} argv1 - 传入模块方法的参数
-   * @param {Object[]} argv2 - 传入模块方法的参数
-   * @param {Object[]} argv.... - 传入模块方法的参数
+   * @param {Object[]} arg - 传入模块方法的参数
    * */
-  static exe(module, func) {
+  static exe(module, func, ...arg) {
     let modules = null;
     if (!(modules = MultiDebug.modules)) {
       console.warn("需要先实例化MultiDebug,才能调用模块");
       return;
     }
     if (modules[module] && modules[module][func] && modules[module][func].apply) {
-      let arg = [];
-      for (let i = 2; i <= arguments.length; i++) {
-        arg.push(arguments[i])
-      }
       return modules[module][func].apply(modules[module], arg);
     }
   }
@@ -69,19 +65,13 @@ class MultiDebug {
   /**执行事件接口方法,兼容错误处理
    * @param {string} module - 接口对应模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
    * @param {string} func - 要执行的接口的方法，如"openWindow"
-   * @param {Object[]} argv1 - 传入接口方法的参数
-   * @param {Object[]} argv2 - 传入接口方法的参数
-   * @param {Object[]} argv... - 传入接口方法的参数
+   * @param {Object[]} arg... - 传入接口方法的参数
    */
-  static exeI(module, func) {
+  static exeI(module, func, ...arg) {
     let _module, _func;
     if (MultiDebug.Interface.hasOwnProperty(module)) {
       if ((_module = MultiDebug.Interface[module]).hasOwnProperty(func)) {
         _func = _module[func];
-        let arg = [];
-        for (let i = 2; i < arguments.length; i++) {
-          arg.push(arguments[i])
-        }
         let returnValue = _func.apply && _func.apply(window, arg);
         let api = MultiDebug.Application;
         try {
@@ -103,19 +93,13 @@ class MultiDebug {
   /**执行应用层接口方法,兼容错误处理
    * @param {string} module - 应用层对应模块名字，"chatModule"||"MenuModule"||"lanModule"||"picModule"||"debugModule"||"socketModule"
    * @param {string} func - 要执行的应用层接口的方法"
-   * @param {Object[]} argv1 - 传入接口方法的参数
-   * @param {Object[]} argv2 - 传入接口方法的参数
-   * @param {Object[]} argv... - 传入接口方法的参数
+   * @param {Object[]} arg - 传入接口方法的参数
    */
-  static exeA(module, func) {
+  static exeA(module, func, ...arg) {
     let _module, _func;
     if (MultiDebug.Application.hasOwnProperty(module)) {
       if ((_module = MultiDebug.Application[module]).hasOwnProperty(func)) {
         _func = _module[func];
-        let arg = [];
-        for (let i = 2; i < arguments.length; i++) {
-          arg.push(arguments[i])
-        }
         return _func.apply && _func.apply(window, arg)
       } else {
         console.warn("没有MultiDebug.Application." + module + "." + func)
@@ -350,12 +334,6 @@ class MultiDebug {
       /**成功登陆触发的事件
        * */
       onLogin: function () {
-        //保存我的信息
-        MultiDebug.set("socketModule", "myName", userName);
-        MultiDebug.set("socketModule", "myImg", userImg);
-        MultiDebug.set("socketModule", "myIP", myIP);
-        //提示
-        Tool.showMessage("您好， " + userName + " ，欢迎登陆......", 5);
         //------处理聊天信息
         MultiDebug.exe("socketModule", "getServerData", "chatContent", function (data) {
           //初始化到缓存
@@ -1073,9 +1051,10 @@ class MultiDebug {
   socketModule = null;
 
   constructor(opt) {
-    scene = opt.scene;
-    MultiDebug.modules = this;
     Object.assign(MultiDebug.opt, opt)
+    scene = MultiDebug.scene;
+    app = new App(scene);
+    MultiDebug.modules = this;
     this.menuModule = new this.MenuModule();
     this.lanModule = new this.LanModule();
     this.picModule = new this.PicModule();
