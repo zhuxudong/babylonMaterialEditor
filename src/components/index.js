@@ -2437,6 +2437,10 @@ class MultiDebug {
     this.appPath = "";
     /**公有库路径*/
     this.publicPath = "";
+    /**私有库材质库路径*/
+    this.appLibPath = "";
+    /**公有库材质库路径*/
+    this.publicLibPath = "";
     /**客户端socket*/
     let socket = null;
     /**注册socket的事件
@@ -2641,6 +2645,8 @@ class MultiDebug {
                 module.myImg = userInfo.userImg;
                 module.appPath = userInfo.appPath;
                 module.publicPath = userInfo.publicPath;
+                module.appLibPath = userInfo.appLibPath;
+                module.publicLibPath = userInfo.publicLibPath;
               }
             })
           })

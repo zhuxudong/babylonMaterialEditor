@@ -25,7 +25,7 @@ const config = {
   },
   // 用户账号密码头像
   userInfoPath: "./static/users",
-  // 根路径,用于项目上线后根据服务器或者CDN的根路径去寻找公有库和私有库的图片资源
+  // 根路径,上面的context都是基于此根路径
   root: "./",
   // socket port
   port: 3000
@@ -107,16 +107,16 @@ function checkPort(port) {
 /** 初始化所有最终路径
  * */
 function initFinalPath() {
-  finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
+  finalPath.appPath = path.resolve(__dirname, config.root, config.app.context, config.app.appName);
   finalPath.appLibPath = path.resolve(finalPath.appPath, config.app.materialLibPath);
   finalPath.appSkyboxPath = path.resolve(finalPath.appLibPath, "skyboxes");
   finalPath.appTexturePath = path.resolve(finalPath.appLibPath, "textures");
   finalPath.appDataPath = path.resolve(finalPath.appPath, config.app.dataPath);
-  finalPath.publicPath = path.resolve(__dirname, config.public.context);
+  finalPath.publicPath = path.resolve(__dirname, config.root, config.public.context);
   finalPath.publicLibPath = path.resolve(finalPath.publicPath, config.public.materialLibPath);
   finalPath.publicSkyboxPath = path.resolve(finalPath.publicLibPath, "skyboxes");
   finalPath.publicTexturePath = path.resolve(finalPath.publicLibPath, "textures");
-  finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath);
+  finalPath.userInfoPath = path.resolve(__dirname, config.root, config.userInfoPath);
 }
 
 /** 生成所有最终路径*/
@@ -147,7 +147,7 @@ function consolePath() {
 /** 监听最终端口*/
 function listen(port) {
   io.listen(port);
-  socket = new Socket(io);
+  server = new Server(io);
 }
 
 function polyfill() {
@@ -182,22 +182,23 @@ function polyfill() {
 /**************************************************************************/
 
 /**************************************************************************/
-class Socket {
+class Server {
   constructor(io) {
     this.socketList = [];
     io.on('connection', (socket) => {
-      this.socketList.push(this.createUserInfo(socket));
       this.on(socket, socketEvents);
     })
   }
 
-  createUserInfo(socket, userName, userPassword, userImg, appPath, publicPath) {
+  createUserInfo(socket, userName, userPassword, userImg, appPath, appLibPath, publicPath, publicLibPath) {
     socket.userInfo = {
       userName: userName,
       userPassword: userPassword,
       userImg: userImg,
       appPath: appPath,
-      publicPath: publicPath
+      publicPath: publicPath,
+      appLibPath: appLibPath,
+      publicLibPath: publicLibPath
     }
     return socket;
   }
@@ -246,7 +247,7 @@ class Socket {
   }
 }
 
-let socket = null;
+let server = null;
 
 
 //--------事件接口--------
@@ -257,20 +258,25 @@ let socketEvents = {
    * @param {function} cb -回调用户信息
    * */
   login(account, password, cb) {
-    let file = path.resolve(finalPath.userInfoPath, socket.encode(account));
+    let socket = this;
+    let file = path.resolve(finalPath.userInfoPath, server.encode(account));
     if (fs.pathExistsSync(file)) {
       fs.readJson(file).then((json) => {
-        if (socket.decode(json.userPassword) !== password) {
+        if (server.decode(json.userPassword) !== password) {
           cb("密码输入错误！")
         } else {
-          socket.updateUserInfo(this, {
+          server.socketList.push(server.createUserInfo(socket));
+          server.updateUserInfo(socket, {
             userName: account,
             userPassword: password,
             userImg: json.userImg,
             appPath: path.relative(config.root, finalPath.appPath),
-            publicPath: path.relative(config.root, finalPath.publicPath)
+            appLibPath: path.relative(config.root, finalPath.appLibPath),
+            publicPath: path.relative(config.root, finalPath.publicPath),
+            publicLibPath: path.relative(config.root, finalPath.publicLibPath),
           })
-          cb(socket.getUserInfo(this))
+          console.log(account + " 已登录...")
+          cb(server.getUserInfo(socket))
         }
       })
     } else {
@@ -283,10 +289,10 @@ let socketEvents = {
    * @param {function} cb -回调用户信息
    * */
   register(account, password, cb) {
-    let file = path.resolve(finalPath.userInfoPath, socket.encode(account));
+    let file = path.resolve(finalPath.userInfoPath, server.encode(account));
     if (!fs.pathExistsSync(file)) {
       fs.outputJson(file, {
-        userPassword: socket.encode(password),
+        userPassword: server.encode(password),
         userImg: null
       }).then(cb)
     } else {
@@ -295,7 +301,14 @@ let socketEvents = {
   },
   /**退出联机调试系统*/
   disconnect: function () {
-    socket.socketList = socket.socketList.filter((s) => socket.id !== s.id);
+    let socket = this;
+    server.socketList = server.socketList.filter((s) => {
+      if (socket.id === s.id) {
+        console.log(server.getUserInfo(socket).userName + " 已退出...")
+        return false
+      }
+      return true;
+    })
 
     // let socket = this;
     // //通知其他人下线
