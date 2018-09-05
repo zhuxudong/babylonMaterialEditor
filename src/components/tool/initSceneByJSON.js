@@ -27,11 +27,11 @@ function initSceneByJSON(scene, json, material = null, light = null) {
       type = picName.slice(index + 1);
     }
     if (type === "skybox") {
-      texture = new BABYLON.CubeTexture(path + picName + "/" + picName, scene);
+      texture = new BABYLON.CubeTexture(path + "/skyboxes/" + picName + "/" + picName, scene);
     } else if (type === "dds") {
       try {
         if (BABYLON.CubeTexture.CreateFromPrefilteredData) {
-          texture = BABYLON.CubeTexture.CreateFromPrefilteredData(path + picName, scene);
+          texture = BABYLON.CubeTexture.CreateFromPrefilteredData(path + "/textures/" + picName, scene);
         } else {
           console.error("您当前的BABYLON版本并不支持DDS格式，请更换最新版本的BABYLON");
         }
@@ -39,7 +39,7 @@ function initSceneByJSON(scene, json, material = null, light = null) {
         console.warn(e);
       }
     } else if (type === "hdr") {
-      texture = new BABYLON.HDRCubeTexture(path + picName, scene, 256)
+      texture = new BABYLON.HDRCubeTexture(path + "/textures/" + picName, scene, 256)
     } else {
       console.warn(picName + ":立方体纹理不支持这种格式");
     }
@@ -49,7 +49,7 @@ function initSceneByJSON(scene, json, material = null, light = null) {
 
   //平面纹理
   function createTexture(path, picName, textureName) {
-    let texture = new BABYLON.Texture(path + picName, scene);
+    let texture = new BABYLON.Texture(path + "/textures/" + picName, scene);
     texture.name = textureName;
     return texture;
   }
@@ -109,12 +109,27 @@ function initSceneByJSON(scene, json, material = null, light = null) {
       }
 
       //新版本
-      function getPicPath(str) {
-        let split = str.split(/^p,/)
-        return {
-          path: split.length > 1 ? publicPath : appPath,
-          picName: split.length > 1 ? split[1] : split[0]
+      function getPicPath(picStr) {
+        if (!picStr) {
+          return {
+            picName: null,
+            path: null
+          }
+        } else if (picStr.indexOf("private,") === 0) {
+          return {
+            picName: picStr.slice(8),
+            path: appPath
+          }
+        } else if (picStr.indexOf("public,") === 0) {
+          return {
+            picName: picStr.slice(7),
+            path: publicPath
+          }
         }
+        return {
+          picName: "自带",
+          path: null
+        };
       }
 
       //纹理
@@ -126,13 +141,11 @@ function initSceneByJSON(scene, json, material = null, light = null) {
           let path = picPath.path;
           let picName = picPath.picName;
           if (!path || !picName) {
-            console.warn("请检查材质JSON:" + material.name + "[" + textureName + "]");
+            // console.warn("请检查材质JSON:" + material.name + "[" + textureName + "]");
           } else {
             if (cube) {
-              path = path + "/skyboxes/";
               material[texture] = createCubeTexture(path, picName, textureName);
             } else {
-              path = path + "/textures/";
               material[texture] = createTexture(path, picName, textureName);
             }
           }

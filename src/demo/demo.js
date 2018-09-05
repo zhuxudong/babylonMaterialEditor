@@ -60,7 +60,9 @@ class Demo {
   loadMesh() {
     BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes) => {
       client.editMesh(meshes)
-      client.editMaterial(this.scene.materials)
+      setTimeout(()=>{
+        client.editMaterial(this.scene.materials)
+      },1000)
       client.openDebug({
         scene: this.scene
       })

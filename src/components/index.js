@@ -7,6 +7,7 @@ import createJSON from './tool/createJSON';
 import initSceneByJSON from './tool/initSceneByJSON';
 import Tool from './tool/tool'
 
+let scene = null;
 let app = null;
 let multiDebugDom = $(".babylon-material-editor");
 
@@ -885,13 +886,14 @@ class MultiDebug {
           }
             break;
           case "复制材质":
-            app.copyMaterial(data.mesh.material, data.mesh);
+            app.material.copyMaterial(data.mesh.material, data.mesh);
             break;
           case "粘贴材质":
-            if (data.stat == "success") {
-              app.pasteMaterial(data.mesh.material, data.mesh);
-            } else {
-              Tool.showMessage("请先锁定", 1, "warn")
+            if (data.stat == "success" || data.stat == "warn") {
+              if (data.stat == "warn") {
+                lock();
+              }
+              app.material.pasteMaterial(data.mesh.material, data.mesh);
             }
             break;
           case "导入材质":
@@ -935,37 +937,37 @@ class MultiDebug {
     debugModule: {
       /**当调试值发生变化时候触发的事件
        * @param {object} mesh -当前正在调试的物体或灯光*/
-      // onChange: function (mesh) {
-      //   if (mesh && mesh.material) {
-      //     //获取调试的JSON
-      //     let json = createJSON({meshes: mesh, console: false});
-      //     json = JSON.parse(json);
-      //     json = json.materials[mesh.material.name];
-      //     //发送到服务器
-      //     MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
-      //     //发送给其他人材质JSON
-      //     MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
-      //       materialId: mesh.material.id,
-      //       json: json
-      //     })
-      //   }
-      //   if (mesh && mesh instanceof BABYLON.Light) {
-      //     //获取调试的JSON
-      //     let lightName = mesh.name;
-      //     let json = createJSON({lights: mesh, console: false});
-      //     json = JSON.parse(json);
-      //     json = json.lights[lightName];
-      //     if (json) {
-      //       //发送灯光JSON到服务器
-      //       MultiDebug.exe("socketModule", "setServerData", "debugInfo.lights." + lightName, json);
-      //       //发送给其他人灯光JSON
-      //       MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
-      //         lightName: lightName,
-      //         json: json
-      //       })
-      //     }
-      //   }
-      // }
+      onChange: function (mesh) {
+        if (mesh && mesh.material) {
+          //获取调试的JSON
+          let json = createJSON(scene, {meshes: mesh, console: false, window: false});
+          json = JSON.parse(json);
+          json = json.materials[mesh.material.name]
+          //发送到服务器
+          MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
+          //发送给其他人材质JSON
+          MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
+            materialId: mesh.material.id,
+            json: json
+          })
+        }
+        if (mesh && mesh instanceof BABYLON.Light) {
+          //获取调试的JSON
+          let lightName = mesh.name;
+          let json = createJSON({lights: mesh, console: false});
+          json = JSON.parse(json);
+          json = json.lights[lightName];
+          if (json) {
+            //发送灯光JSON到服务器
+            MultiDebug.exe("socketModule", "setServerData", "debugInfo.lights." + lightName, json);
+            //发送给其他人灯光JSON
+            MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
+              lightName: lightName,
+              json: json
+            })
+          }
+        }
+      }
     },
     /**@namespace*/
     socketModule: {
@@ -1013,17 +1015,27 @@ class MultiDebug {
        * */
       onReceiveDebugChange: function (data) {
         function doLight() {
-          let light = window.scene.getLightByName(data.lightName);
+          let light = scene.getLightByName(data.lightName);
           if (light) {
-            initSceneByJSON(data.json, null, light);
-            app.refreshLightBall(light);
+            let json = {};
+            json[light.name] = data.json
+            initSceneByJSON(scene, {
+              lights: json
+            }, null, light);
+            // app.refreshLightBall(light);
           }
         }
 
         function doMaterial() {
-          let material = window.scene.getMaterialByID(data.materialId);
+          let material = scene.getMaterialByID(data.materialId);
           if (material) {
-            initSceneByJSON(data.json, material)
+            let json = {};
+            json[material.name] = data.json
+            initSceneByJSON(scene, {
+              appPath: MultiDebug.get("socketModule", "appLibPath"),
+              publicPath: MultiDebug.get("socketModule", "publicLibPath"),
+              materials: json
+            }, material)
           }
         }
 
@@ -1050,8 +1062,9 @@ class MultiDebug {
 
   constructor(opt) {
     Object.assign(MultiDebug.opt, opt)
-    app = new App(MultiDebug.opt.scene);
+    scene = MultiDebug.opt.scene
     MultiDebug.modules = this;
+    app = new App(scene);
     this.menuModule = new this.MenuModule();
     this.lanModule = new this.LanModule();
     this.picModule = new this.PicModule();
@@ -2596,6 +2609,8 @@ class MultiDebug {
                 module.publicPath = userInfo.publicPath;
                 module.appLibPath = userInfo.appLibPath;
                 module.publicLibPath = userInfo.publicLibPath;
+                MultiDebug.exe("socketModule", "setServerData", "debugInfo.publicPath", module.publicLibPath);
+                MultiDebug.exe("socketModule", "setServerData", "debugInfo.appPath", module.appLibPath);
               }
             })
           })

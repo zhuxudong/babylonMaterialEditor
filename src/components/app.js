@@ -5,6 +5,7 @@ import {baseProCN, textureProCN, otherProCN} from "./lang/cn"
 import Tool from './tool/tool'
 import BABYUI from './babyui/babyui';
 import initSceneByJSON from './tool/initSceneByJSON';
+import createJSON from './tool/createJSON';
 
 let scene = null;
 
@@ -125,6 +126,9 @@ class Light {
 /**材质类*/
 class Material {
   initialTexture = {};
+  currentCopyMaterial = null;
+  currentCopyMesh = null;
+  currentCopyJSON = null;
 
   showTitle(control, par, exp) {
     control.title = (par ? ("参数介绍:" + par) : "") + (exp ? ("\n调试经验:" + exp) : "");
@@ -969,6 +973,53 @@ class Material {
       } else {
         showMode1();
       }
+    }
+  }
+
+  //复制粘贴材质
+  copyMaterial(material, mesh) {
+    if (material) {
+      this.currentCopyMaterial = material;
+      this.currentCopyMesh = mesh;
+      Tool.showMessage("您已成功复制 [" + mesh.name + "] 的材质 [" + material.name + "]", 1);
+      MultiDebug.exe("chatModule", "appendLogContentBuffer", "您已成功复制 [" + mesh.name + "] 的材质 [" + material.name + "]");
+      this.currentCopyJSON = JSON.parse(createJSON(scene, {
+        material: material,
+        console: false,
+        window: false
+      })).materials[material.name]
+    } else {
+      Tool.showMessage(mesh.name + "没有材质...", 1, "danger");
+    }
+  }
+
+  pasteMaterial(material, mesh) {
+    if (this.currentCopyMaterial) {
+      if (material) {
+        Tool.showConfirm("您确定要将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "] ?", () => {
+          let json = {}
+          json[material.name] = this.currentCopyJSON
+          initSceneByJSON(scene, {
+            appPath: MultiDebug.get("socketModule", "appLibPath"),
+            publicPath: MultiDebug.get("socketModule", "publicLibPath"),
+            materials: json
+          }, material);
+          //更新调试框
+          if (MultiDebug.get("debugModule", "currentDebugMesh") == mesh) {
+            MultiDebug.exe("debugModule", "showDebug", mesh);
+            this.showDebug(mesh);
+          }
+          //更新日志
+          Tool.showMessage("您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]", 3);
+          MultiDebug.exe("chatModule", "appendLogContentBuffer", "您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]");
+          //保存到服务器
+          MultiDebug.exeI("debugModule", "onChange", mesh)
+        })
+      } else {
+        Tool.showMessage("该物体没有材质...", 1, "danger");
+      }
+    } else {
+      Tool.showMessage("您还没有复制材质...", 1, "danger");
     }
   }
 }
