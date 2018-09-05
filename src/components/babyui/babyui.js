@@ -20,8 +20,12 @@ function Base(title, parent) {
   Object.defineProperty(this, "title", {
     set: (val) => {
       title = val;
-      this.dom.attr("title", val);
-      this.dom.children("span").eq(0).html(val);
+      if (this.dom.hasClass("baby-folder")) {
+        this.dom.find("span").eq(0).attr("title", val);
+      } else {
+        this.dom.attr("title", val);
+      }
+      //_this.dom.children("span").eq(0).html(val);
     },
     get: function () {
       return title;
@@ -103,7 +107,7 @@ function initBox() {
 
   //重新定位拖拽条的位置
   function locateBar() {
-    bar.css("right", box.innerWidth() + parseInt(box.css("right")) - bar.width() / 2)
+    bar.css("right", box.width() + parseInt(box.css("right")) - bar.width() / 2)
       .css("top", box.css("top"))
       .css("height", box.innerHeight());
   }
@@ -112,7 +116,7 @@ function initBox() {
   function mousemoveBar(e) {
     if (canDrag) {
       let dif = px - e.clientX;
-      box.innerWidth(width + dif);
+      box.width(width + dif);
     }
   }
 
@@ -125,7 +129,7 @@ function initBox() {
   bar.on("mousedown", function (e) {
     canDrag = true;
     px = e.clientX;
-    width = box.innerWidth();
+    width = box.width();
     $(document).on("mousemove", mousemoveBar).one("mouseup", mouseupBar);
     return false;
   });
@@ -191,7 +195,7 @@ let BABYUI = {
     $(".baby-box").remove();
     $(".colorpicker").remove();
     $(".baby-dragbar").remove();
-    BABYUI.isInit = false;
+    isInit = false;
   },
   /**文件夹控件
    * @example let folder = new BABYUI.Folder("根文件夹")
@@ -403,7 +407,7 @@ let BABYUI = {
     })
 
   },
-  Message: function (title, value, parent, canDrag, onDrop, onclick, ondblclick) {
+  Message: function (title, value, parent, canDrag, onDrop, onclick, ondblclick, ontribleclick) {
     let _this = this;
     let strVar = "";
     strVar += " <div class=\"baby-message\" title=\"" + title + "\">\n";
@@ -424,8 +428,8 @@ let BABYUI = {
         return value;
       }
     })
+    let picData = null;
     if (canDrag) {
-      let picData = null;
       this.dom.on("dragenter", function () {
         return false;
       }).on("dragover", function () {
@@ -443,21 +447,39 @@ let BABYUI = {
         typeof onDrop == "function" && onDrop(picData, _this)
       })
     }
-    let timeout = null;
-    if (onclick) {
-      this.dom.click(function () {
-        window.clearTimeout(timeout);
-        timeout = window.setTimeout(function () {
-          onclick(picData, _this);
-        }, 300)
-      })
-    }
-    if (ondblclick) {
-      this.dom.on("dblclick", function () {
-        window.clearTimeout(timeout);
-        ondblclick(picData, _this);
-      })
-    }
+    let timeout1 = null;
+    let timeout2 = null;
+    let timeout3 = null;
+    let gap = 300;//300ms;
+    //1,2,3点击事件
+    this.dom.click(function () {
+      if (!timeout1 && !timeout2 && !timeout3) {
+        timeout1 = window.setTimeout(function () {
+          timeout1 = null;
+          if (typeof onclick == "function") {
+            onclick(_this);
+          }
+        }, gap)
+      } else if (timeout1 && !timeout2 && !timeout3) {
+        window.clearTimeout(timeout1);
+        timeout1 = null;
+        timeout2 = window.setTimeout(function () {
+          timeout2 = null;
+          if (typeof ondblclick == "function") {
+            ondblclick(_this);
+          }
+        }, gap)
+      } else if (!timeout1 && timeout2 && !timeout3) {
+        window.clearTimeout(timeout2);
+        timeout2 = null;
+        timeout3 = window.setTimeout(function () {
+          timeout3 = null;
+          if (typeof ontribleclick == "function") {
+            ontribleclick(_this);
+          }
+        }, gap)
+      }
+    })
   }
 };
 

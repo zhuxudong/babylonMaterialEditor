@@ -793,7 +793,7 @@ class MultiDebug {
             MultiDebug.exe("lanModule", "refreshSingleLan", {
               stat: "success",
               config: true,
-              title: "...",
+              title: "您正在调试...",
               data: {stat: "success"}
             }, li);
             //通知其他在线用户
@@ -864,6 +864,10 @@ class MultiDebug {
             app.hideMesh(data.mesh);
           }
             break;
+          case "显示物体": {
+            app.showMesh(data.mesh);
+          }
+            break;
           case "调试材质": {
             //自动锁定
             if (data.stat == "success" || data.stat == "warn") {
@@ -873,14 +877,11 @@ class MultiDebug {
               //检测物体是否有材质
               if (MultiDebug.exe("debugModule", "showDebug", data.mesh)) {
                 //显示调试框
-                app.showDebug(data.mesh);
+                app.material.showDebug(data.mesh);
                 //高亮显示
                 MultiDebug.exe("lanModule", "highlightLi", li);
               }
             }
-            // else {
-            //    Tool.showMessage("请先锁定...", 2, "danger");
-            //}
           }
             break;
           case "复制材质":
@@ -934,37 +935,37 @@ class MultiDebug {
     debugModule: {
       /**当调试值发生变化时候触发的事件
        * @param {object} mesh -当前正在调试的物体或灯光*/
-      onChange: function (mesh) {
-        if (mesh && mesh.material) {
-          //获取调试的JSON
-          let json = createJSON({meshes: mesh, console: false});
-          json = JSON.parse(json);
-          json = json.materials[mesh.material.name];
-          //发送到服务器
-          MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
-          //发送给其他人材质JSON
-          MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
-            materialId: mesh.material.id,
-            json: json
-          })
-        }
-        if (mesh && mesh instanceof BABYLON.Light) {
-          //获取调试的JSON
-          let lightName = mesh.name;
-          let json = createJSON({lights: mesh, console: false});
-          json = JSON.parse(json);
-          json = json.lights[lightName];
-          if (json) {
-            //发送灯光JSON到服务器
-            MultiDebug.exe("socketModule", "setServerData", "debugInfo.lights." + lightName, json);
-            //发送给其他人灯光JSON
-            MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
-              lightName: lightName,
-              json: json
-            })
-          }
-        }
-      }
+      // onChange: function (mesh) {
+      //   if (mesh && mesh.material) {
+      //     //获取调试的JSON
+      //     let json = createJSON({meshes: mesh, console: false});
+      //     json = JSON.parse(json);
+      //     json = json.materials[mesh.material.name];
+      //     //发送到服务器
+      //     MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
+      //     //发送给其他人材质JSON
+      //     MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
+      //       materialId: mesh.material.id,
+      //       json: json
+      //     })
+      //   }
+      //   if (mesh && mesh instanceof BABYLON.Light) {
+      //     //获取调试的JSON
+      //     let lightName = mesh.name;
+      //     let json = createJSON({lights: mesh, console: false});
+      //     json = JSON.parse(json);
+      //     json = json.lights[lightName];
+      //     if (json) {
+      //       //发送灯光JSON到服务器
+      //       MultiDebug.exe("socketModule", "setServerData", "debugInfo.lights." + lightName, json);
+      //       //发送给其他人灯光JSON
+      //       MultiDebug.exe("socketModule", "broadcastOther", "onReceiveDebugChange", {
+      //         lightName: lightName,
+      //         json: json
+      //       })
+      //     }
+      //   }
+      // }
     },
     /**@namespace*/
     socketModule: {
@@ -2468,7 +2469,7 @@ class MultiDebug {
      * @param {function} onsuccess - 获取成功后的回调函数 (info:服务器返回的数据)
      * */
     this.getServerData = function (key, onsuccess) {
-      socket.emit("onGetServerData", key + "", onsuccess);
+      socket.emit("onGetServerData", key, onsuccess);
     }
     /**设置服务器端数据
      * @param {string} key - 要设置的服务器的数据的键值,可以.连接，如a.b.c
@@ -2476,14 +2477,7 @@ class MultiDebug {
      * @param {function} onsuccess - 获取成功后的回调函数 (ori:服务器本来的数据,overwrite:覆盖后的数据)
      * */
     this.setServerData = function (key, data, onsuccess) {
-      key = key + "";
-      let eventName = "onSetServerData__" + key;
-      socket.off(eventName);
-      socket.on(eventName, function (ori, overwrite) {
-        socket.off(eventName);
-        typeof onsuccess == "function" && onsuccess(ori, overwrite);
-      })
-      socket.emit("onSetServerData", key, data);
+      socket.emit("onSetServerData", key, data, onsuccess);
     }
     /**通知其他在线用户
      * @param {string} eventName - 通知的事件名字

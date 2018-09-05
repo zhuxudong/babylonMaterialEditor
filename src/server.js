@@ -429,6 +429,13 @@ let socketEvents = {
     let data = server.getServerData(key)
     cb(data)
   },
+  /**客户端请求 设置服务器端数据
+   * @param {string} key - 要设置的服务器的数据的键值,可以.连接，如a.b.c
+   * @param {Object} data - 键值数据
+   * */
+  onSetServerData: function (key, data, cb) {
+    server.setServerData(key, data, cb)
+  },
   /**获取公私图片库文件列表*/
   onGetPicFileList: function (cb) {
     let publicTexture = server.getFileList(finalPath.publicTexturePath);
@@ -441,6 +448,14 @@ let socketEvents = {
       privateTexture: privateTexture,
       privateSkybox: privateSkybox
     });
+  },
+  /**客户端请求 通知其他在线用户
+   * @param {string} eventName - 通知的事件名字
+   * @param {Object} data - 需要发送的数据
+   * */
+  onBroadcastOther: function (eventName, data) {
+    let socket = this;
+    socket.broadcast.emit(eventName, data)
   },
 }
 /**************************************************************************/

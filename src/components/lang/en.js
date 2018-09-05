@@ -35,7 +35,14 @@ let basePro = [
   "useAlphaFromAlbedoTexture",
   "useMicroSurfaceFromReflectivityMapAlpha",
   "useRadianceOverAlpha",
-  "useSpecularOverAlpha"
+  "useSpecularOverAlpha",
+  //新加水调试
+  "waterColor",
+  "windForce",
+  "waveSpeed",
+  "bumpHeight",
+  "waveLength",
+  "colorBlendFactor",
 ];
 let texturePro = [
   {

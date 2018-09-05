@@ -1,4 +1,5 @@
 import "./colorPicker.less";
+
 (function ($) {
   let ColorPicker = function () {
     let
@@ -219,9 +220,10 @@ import "./colorPicker.less";
         if (cal.data('colorpicker').onShow.apply(this, [cal.get(0)]) != false) {
           cal.show();
         }
-
-        $(document).on('click', {cal: cal}, hide);
-        return false;
+        setTimeout(function () {
+          $(document).on('click', {cal: cal}, hide);
+        }, 0)
+        return true;
       },
       hide = function (ev) {
         if (!isChildOf(ev.data.cal.get(0), ev.target, ev.data.cal.get(0))) {
