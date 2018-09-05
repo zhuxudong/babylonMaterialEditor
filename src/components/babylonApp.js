@@ -176,7 +176,7 @@ function App(scene) {
       var light = currentDebugMesh instanceof BABYLON.Light;
       if (light) {
         if (!current || (current && current == currentDebugMesh)) {
-          MultiDebug.exe("debugModule", "showLightDebug", currentDebugMesh);
+          MultiDebug.exe("debugModule", "showLightDebug", currentDesaveDebugInfobugMesh);
           _this.showLightDebug(currentDebugMesh);
         }
       } else {
@@ -1204,7 +1204,7 @@ function App(scene) {
     return materialTypeList
   }
   //转换物体的材质类型
-  this.toggleMaterialType = function (mesh, materialType) {
+  this.toggleMaterialType =  function (mesh, materialType) {
     if (BABYLON[materialType]) {
       var oriMaterial = mesh.material;
       mesh.material = new BABYLON[materialType](mesh.material.name, window.scene);

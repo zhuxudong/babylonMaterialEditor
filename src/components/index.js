@@ -911,21 +911,22 @@ class MultiDebug {
             }
             break;
           case "转化材质":
-            if (data.stat == "success") {
+            if (data.stat == "success" || data.stat == "warn") {
+              if (data.stat == "warn") {
+                lock();
+              }
               if (data.mesh.material) {
-                let materiaTypeList = app.getMaterialTypeList();
+                let materiaTypeList = app.material.getMaterialTypeList();
                 let myMaterialType = data.mesh.material.getClassName();
                 let canToggleList = materiaTypeList.filter(function (kind) {
                   return kind != myMaterialType;
                 })
                 Tool.showSelect("您当前的材质类型为:<br>" + myMaterialType + "<br>请选择您要转换的材质类型", canToggleList, function (type) {
-                  app.toggleMaterialType(data.mesh, type)
+                  app.material.toggleMaterialType(data.mesh, type)
                 })
               } else {
                 Tool.showMessage("请先给物体赋予材质再进行转化", 1, "warn")
               }
-            } else {
-              Tool.showMessage("请先锁定", 1, "warn")
             }
             break;
         }
@@ -943,6 +944,7 @@ class MultiDebug {
           let json = createJSON(scene, {meshes: mesh, console: false, window: false});
           json = JSON.parse(json);
           json = json.materials[mesh.material.name]
+          console.log(json)
           //发送到服务器
           MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
           //发送给其他人材质JSON

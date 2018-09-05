@@ -129,6 +129,7 @@ class Material {
   currentCopyMaterial = null;
   currentCopyMesh = null;
   currentCopyJSON = null;
+  materialTypeList = ["StandardMaterial", "PBRMaterial", "PBRMetallicRoughnessMaterial", "PBRSpecularGlossinessMaterial"]
 
   showTitle(control, par, exp) {
     control.title = (par ? ("参数介绍:" + par) : "") + (exp ? ("\n调试经验:" + exp) : "");
@@ -976,7 +977,7 @@ class Material {
     }
   }
 
-  //复制粘贴材质
+  //复制材质
   copyMaterial(material, mesh) {
     if (material) {
       this.currentCopyMaterial = material;
@@ -993,6 +994,7 @@ class Material {
     }
   }
 
+  //粘贴材质
   pasteMaterial(material, mesh) {
     if (this.currentCopyMaterial) {
       if (material) {
@@ -1009,6 +1011,7 @@ class Material {
             MultiDebug.exe("debugModule", "showDebug", mesh);
             this.showDebug(mesh);
           }
+
           //更新日志
           Tool.showMessage("您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]", 3);
           MultiDebug.exe("chatModule", "appendLogContentBuffer", "您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]");
@@ -1020,6 +1023,40 @@ class Material {
       }
     } else {
       Tool.showMessage("您还没有复制材质...", 1, "danger");
+    }
+  }
+
+  //获取材质类型列表
+  getMaterialTypeList() {
+    return this.materialTypeList;
+  }
+
+  //转换物体的材质类型
+  toggleMaterialType(mesh, materialType) {
+    if (BABYLON[materialType]) {
+      let oriMaterial = mesh.material;
+      mesh.material = new BABYLON[materialType](mesh.material.name, scene);
+      let currentMaterial = mesh.material;
+      currentMaterial._babylonMaterialEditor = oriMaterial._babylonMaterialEditor;
+      //删除原来的材质
+      scene.meshes.forEach(function (mesh) {
+        if (mesh.material && mesh.material == oriMaterial) {
+          mesh.material = currentMaterial;
+          return true;
+        }
+      })
+      oriMaterial.dispose();
+      //更新调试窗口
+      // _this.refreshDebugUI(mesh);
+      if (MultiDebug.get("debugModule", "currentDebugMesh") == mesh) {
+        MultiDebug.exe("debugModule", "showDebug", mesh);
+        this.showDebug(mesh);
+      }
+      //保存当前调试物体的数据到服务器
+      MultiDebug.exeA("debugModule", "onChange", mesh)
+      Tool.showMessage("成功转化成 " + materialType + " 材质类型")
+    } else {
+      Tool.showMessage("您当前BABYLON版本不支持 " + materialType + " 材质类型", 1, "warn");
     }
   }
 }

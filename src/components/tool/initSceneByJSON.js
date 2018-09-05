@@ -65,6 +65,7 @@ function initSceneByJSON(scene, json, material = null, light = null) {
     //材质转换
     if (material.getClassName() !== json.materialType) {
       let newMaterial = new BABYLON[json.materialType](material.name, scene);
+      newMaterial._babylonMaterialEditor = material._babylonMaterialEditor;
       scene.meshes.forEach(function (mesh) {
         if (mesh.material && mesh.material === material) {
           mesh.material = newMaterial;
