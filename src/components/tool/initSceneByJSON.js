@@ -55,16 +55,17 @@ function initSceneByJSON(scene, json, material = null, light = null) {
   }
 
   function initMaterial(json, material, publicPath, appPath) {
-    if (!json.materialType) {
-      json.materialType = "StandardMaterial";
+    let materialType = json.materialType;
+    if (!materialType) {
+      materialType = "StandardMaterial";
     }
-    if (!BABYLON[json.materialType]) {
-      console.warn("您的BABYLON不支持" + json.materialType + "材质类型，请更新到最新版本的BABYLON版本...");
-      json.materialType = "StandardMaterial";
+    if (!BABYLON[materialType]) {
+      console.warn("您的BABYLON不支持" + materialType + "材质类型，请更新到最新版本的BABYLON版本...");
+      materialType = "StandardMaterial";
     }
     //材质转换
-    if (material.getClassName() !== json.materialType) {
-      let newMaterial = new BABYLON[json.materialType](material.name, scene);
+    if (material.getClassName() !== materialType) {
+      let newMaterial = new BABYLON[materialType](material.name, scene);
       newMaterial._babylonMaterialEditor = material._babylonMaterialEditor;
       scene.meshes.forEach(function (mesh) {
         if (mesh.material && mesh.material === material) {

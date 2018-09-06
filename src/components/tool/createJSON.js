@@ -42,6 +42,10 @@ function createJSON(scene, option) {
 
   function initMaterialJSON(material) {
     json.materials[material.name] = {};
+    if (!material._babylonMaterialEditor && opt.warn) {
+      console.warn("如果你想调试[" + material.name + "]材质,请先进行editMaterial(material)")
+      return;
+    }
     let keyValue = json.materials[material.name];
     //后面根据materialType来生成相应材质
     if (material.getClassName) {
@@ -157,11 +161,7 @@ function createJSON(scene, option) {
     initLightJSON(light);
   });
   materials.forEach(function (material) {
-    if (material._babylonMaterialEditor) {
-      initMaterialJSON(material);
-    } else if (opt.warn) {
-      console.warn("如果你想调试[" + material.name + "]材质,请先进行editMaterial(material)")
-    }
+    initMaterialJSON(material);
   });
   let str = JSON.stringify(json);
   if (opt.window) {
