@@ -190,8 +190,17 @@ class Server {
     this.socketList = [];
     this.serverData = {
       lockInfo: {},
-      debugInfo: {}
+      debugInfo: {},
+      chatContent: {},
+      logContent: {}
     };
+    //初始化聊天记录
+    socketEvents.onGetAppFile("chatContent", (data) => {
+      this.setServerData("chatContent", JSON.parse(data))
+    })
+    socketEvents.onGetAppFile("logContent", (data) => {
+      this.setServerData("logContent", JSON.parse(data))
+    })
     io.on('connection', (socket) => {
       this.on(socket, socketEvents);
     })
@@ -345,6 +354,25 @@ class Server {
     return dirList;
   }
 
+  /**发送用户信息保存成功信息*/
+  sendUserInfoChange(socket) {
+    //发送本人的信息
+    let userInfo = this.getUserInfo(socket);
+    socket.emit("onUserInfoChange", {
+      myName: userInfo.userName,
+      myImg: userInfo.userImg,
+      userList: this.socketList.map((socket) => {
+          return this.getUserInfo(socket);
+        }
+      )
+    })
+    //不发送本人的信息
+    socket.to("editor room").emit("onUserInfoChange", {
+      userList: this.socketList.map((socket) => {
+        return this.getUserInfo(socket);
+      })
+    });
+  }
 }
 
 let server = null;
@@ -367,6 +395,7 @@ let socketEvents = {
         } else {
           //登录成功，加入房间
           socket.join("editor room");
+          //加入userList
           server.socketList.push(server.createUserInfo(socket));
           server.updateUserInfo(socket, {
             userName: account,
@@ -380,7 +409,9 @@ let socketEvents = {
           console.log(account + " 已登录...")
           cb(server.getUserInfo(socket));
           //登录成功！
-          socket.emit("onLogin")
+          socket.emit("onLogin");
+          //更新用户列表
+          server.sendUserInfoChange(socket)
         }
       })
     } else {
@@ -413,16 +444,22 @@ let socketEvents = {
       }
       return true;
     })
-
-    // let socket = this;
-    // //通知其他人下线
-    // socket.broadcast.emit("onOtherPeopleLogOut", socket.info.userName, socket.info.userImg);
-    // //存放聊天记录
-    // multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "chatContent"), "chatContent", true);
-    // //存放日志记录
-    // multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "logContent"), "logContent", true);
-    // multiDebug.removeSocket(socket);
-
+    //通知其他人下线
+    let userInfo = server.getUserInfo(socket)
+    if (!userInfo) {
+      return;
+    }
+    socket.to("editor room").emit("onOtherPeopleLogOut", userInfo.userName, userInfo.userImg);
+    //存放聊天记录
+    socketEvents.onGetServerData("chatContent", (data) => {
+      socketEvents.onSaveAppFile("chatContent", JSON.stringify(data), true);
+    })
+    //存放日志记录
+    socketEvents.onGetServerData("logContent", (data) => {
+      socketEvents.onSaveAppFile("logContent", JSON.stringify(data), true);
+    })
+    //更新用户列表
+    server.sendUserInfoChange(socket);
   },
   /**客户端请求 获取服务器端数据
    * @param {string} key - 要获取的服务器的数据的键值,可以.连接，如a.b.c
@@ -474,13 +511,34 @@ let socketEvents = {
   /**获取APP相对路径的文件内容*/
   onGetAppFile: function (file, cb) {
     file = path.join(finalPath.appDataPath, file);
-    let content = fs.readFileSync(file, "utf-8")
-    cb(content)
+    if (fs.pathExistsSync(file)) {
+      let content = fs.readFileSync(file, "utf-8")
+      cb(content)
+    }
   },
   /**删除文件,app相对路径*/
   onDelAppFile: function (file) {
     fs.remove(path.join(finalPath.appDataPath, file))
   },
+  /**客户端请求 存储用户信息到服务器
+   * @param data.userImg - 用户头像base64
+   * */
+  onSaveUserInfo(data) {
+    let socket = this;
+    let newImg = data.userImg;
+    let userInfo = server.getUserInfo(socket);
+    let file = path.resolve(finalPath.userInfoPath, server.encode(userInfo.userName));
+    if (fs.pathExistsSync(file)) {
+      fs.outputJson(file, {
+        userPassword: server.encode(userInfo.userPassword),
+        userImg: newImg
+      })
+      server.updateUserInfo(socket, {
+        userImg: newImg
+      })
+      server.sendUserInfoChange(socket);
+    }
+  }
 }
 /**************************************************************************/
 /**************************************************************************/

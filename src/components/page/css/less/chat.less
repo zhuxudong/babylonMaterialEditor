@@ -35,11 +35,11 @@
   margin-left: -350px;
   margin-top: -200px;
   background: @color-gray;
-  z-index: 2;
   pointer-events: auto;
   overflow: hidden;
   border-radius: 5px;
   box-shadow: 0 0 10px @color-shadow;
+  z-index: 0;
   .dragbar-top, .dragbar-bottom, .dragbar-left, .dragbar-right {
     position: absolute;
     z-index: 65540;
@@ -382,7 +382,7 @@
           &:before {
             left: auto;
             right: 0;
-            margin-right: -12px;
+            margin-right: -11px;
             margin-left: 0;
             border-left-color: @color-chat-list;
           }

@@ -15,6 +15,31 @@
   &:hover {
     opacity: 1;
   }
+  @keyframes reminder {
+    0% {
+      color: #fff;
+      background: @color-blue-shadow;
+    }
+    10% {
+      background: transparent;
+    }
+    20% {
+      background: @color-blue-shadow;
+    }
+    30% {
+      background: transparent;
+    }
+    40% {
+      background: @color-blue-shadow;
+    }
+
+  }
+  .reminder-once {
+    animation: reminder 1s linear;
+  }
+  .reminder-infinite {
+    animation: reminder 1s linear infinite;
+  }
   .nav-top-toggle {
     padding-top: 5px;
     font-size: 1.5em;

@@ -338,13 +338,16 @@ class MultiDebug {
         MultiDebug.exe("socketModule", "getServerData", "chatContent", function (data) {
           //初始化到缓存
           MultiDebug.exe("chatModule", "initChatContentBuffer", data);
-          //通知其他人
-          MultiDebug.exe("socketModule", "broadcastOtherMylogin");
         })
         //------处理日志信息
         MultiDebug.exe("socketModule", "getServerData", "logContent", function (data) {
           //初始化到缓存
           MultiDebug.exe("chatModule", "initLogContentBuffer", data);
+        })
+        //通知其他人
+        MultiDebug.exe("socketModule", "broadcastOther", "onOtherPeopleLogin", {
+          name: MultiDebug.get("socketModule", "myName"),
+          img: MultiDebug.get("socketModule", "myImg")
         })
       },
       /**有其他用户登触发的事件
@@ -355,35 +358,18 @@ class MultiDebug {
       onOtherPeopleLogin: function (data) {
         let name = data.name
         let img = data.img;
-        MultiDebug.exe("chatModule", "getServerImg", img, function (base64) {
-          let content = "尊敬的 " + name + " 上线了...";
-          //桌面通知
-          MultiDebug.exe("chatModule", "showDesktopMessage", "", content, base64);
-          //追加到日志
-          //MultiDebug.exe("chatModule", "appendLogContentBuffer", content);
-        })
+        let content = "尊敬的 " + name + " 上线了...";
+        // //桌面通知
+        MultiDebug.exe("chatModule", "showDesktopMessage", "", content, img);
       },
       /**其他用户离开房间触发的事件
        * @param {string} userName - 登陆人姓名
        * @param {string} userImg - 登陆人头像
        * */
       onOtherPeopleLogOut: function (userName, userImg) {
-        MultiDebug.exe("chatModule", "getparamServerImg", userImg, function (base64) {
-          let content = userName + " 离开房间了...";
-          //桌面通知
-          MultiDebug.exe("chatModule", "showDesktopMessage", "", content, base64);
-          //追加到日志
-          //MultiDebug.exe("chatModule", "appendLogContentBuffer", content);
-        })
-      },
-      /**用户需要注册时 触发的事件，此事件发生在服务器找不到客户端IP信息时*/
-      onRegister: function () {
-        MultiDebug.exe("socketModule", "showLogin");
-      },
-      /**用户昵称重名触发的事件
-       * @param {string} userName - 重复的名字*/
-      onNameRepeat: function (userName) {
-        MultiDebug.exe("socketModule", "showNameRepeat", userName)
+        let content = userName + " 离开房间了...";
+        //桌面通知
+        MultiDebug.exe("chatModule", "showDesktopMessage", "", content, userImg);
       },
       /**用户信息发生变化触发的事件,如登陆，登出，改名，改头像...
        * @param {Object} data.myName - 用户名字,如果有此参数代表事件是由当前客户端触发的，否则是他人触发
@@ -446,9 +432,7 @@ class MultiDebug {
         //桌面提示
         let blur = MultiDebug.get("chatModule", "blur");
         if (blur) {
-          MultiDebug.exe("chatModule", "getServerImg", data.fromImg, function (base64) {
-            MultiDebug.exe("chatModule", "showDesktopMessage", data.from, data.content, base64)
-          })
+            MultiDebug.exe("chatModule", "showDesktopMessage", data.from, data.content, data.fromImg)
         }
         //长短提示
         if (currentChannel == publicRoom && data.to == publicRoom) {
@@ -1810,50 +1794,6 @@ class MultiDebug {
     this.hide = function () {
       navChat.hide();
     }
-    /**获取图片资源，有缓存的话会读取缓存
-     * @param {string} imgPath -图片服务器相对路径
-     * @param {function} onsuccess - 读取成功的回调函数 (base64:图片数据)
-     * @param {boolean} force - 强制读取非缓存内容
-     * */
-    this.getServerImg = function (imgPath, onsuccess, force) {
-      if (!imgPath) {
-        return
-      }
-      if (!force && imgBuffer.hasOwnProperty(imgPath)) {
-        onsuccess && onsuccess(imgBuffer[imgPath]);
-      } else {
-        //如果已经有请求正在发送，则只需要等待请求，最多等待5s.
-        if (ajaxing[imgPath]) {
-          let time = 0;
-          (function () {
-            //等待请求完毕
-            if (!ajaxing[imgPath]) {
-              onsuccess(imgBuffer[imgPath])
-            } else {
-              if (time++ < 10) {
-                window.setTimeout(arguments.callee, 500)
-              } else {
-                onsuccess && onsuccess(null);
-              }
-            }
-          })();
-        } else {
-          ajaxing[imgPath] = true;
-          $.ajax(SERVERFIX + imgPath, {
-            error: function () {
-              ajaxing[imgPath] = false;
-              onsuccess && onsuccess(null);
-            },
-            success: function (base64) {
-              setImgBuffer(imgPath, base64);
-              ajaxing[imgPath] = false;
-              onsuccess && onsuccess(base64);
-            }
-          })
-        }
-
-      }
-    }
     /**
      * 显示聊天窗口，位置居中屏幕
      * */
@@ -1881,48 +1821,45 @@ class MultiDebug {
     this.showContentReminder = function (userName, once) {
       module.hideContentReminder(userName);
       window.setTimeout(function () {
-        chatList.children().each(function (i, user) {
-          user = $(user);
-          if (user.find("div:last-child").html() == userName) {
-            if (once) {
-              user.addClass("reminder-once");
-              $("#z_chatMenu").addClass("reminder-once")
-            } else {
-              user.addClass("reminder-infinite");
-              $("#z_chatMenu").addClass("reminder-infinite")
-            }
-          }
-        })
+        if (once) {
+          chatList.find(`.user-name:contains(${userName})`).addClass("reminder-once")
+          $("#z_chatMenu").addClass("reminder-once")
+          $("#z_chatMenu").find(`#z_online li:contains(${userName})`).addClass("reminder-once")
+        } else {
+          chatList.find(`.user-name:contains(${userName})`).addClass("reminder-infinite")
+          $("#z_chatMenu").addClass("reminder-infinite")
+          $("#z_chatMenu").find(`#z_online li:contains(${userName})`).addClass("reminder-infinite")
+        }
       }, 100)
     }
     /**取消消息提醒
      * @param {string} userName - 需要取消消息未读提醒的频道名字
      * */
     this.hideContentReminder = function (userName) {
-      $("#z_chatMenu").removeClass("reminder-infinite")
-      chatList.children().each(function (i, user) {
-        user = $(user);
-        if (user.find("div:last-child").html() == userName) {
-          user.removeClass("reminder-infinite reminder-once");
-        }
-      })
+      chatList.find(`.user-name:contains(${userName})`).removeClass("reminder-once reminder-infinite")
+      $("#z_chatMenu").removeClass("reminder-once reminder-infinite")
+      $("#z_chatMenu").find(`#z_online li:contains(${userName})`).removeClass("reminder-once reminder-infinite")
     }
 
     /**显示桌边提醒
      * @param {string} title - 需要显示在桌面的标题
      * @param {string} message - 需要显示在桌面的文字
-     * @param {string} imgURL - 需要显示在桌面的图片URL
+     * @param {string} img - 需要显示在桌面的图片base64
      * @param {number} time -   消息显示的时间,默认3s
      * @return {object} notification -   消息对象，可以通过hideDesktopMessage（notification）来关闭
      * */
-    this.showDesktopMessage = function (title, message, imgURL, time) {
+    this.showDesktopMessage = function (title, message, img, time) {
       // if (Notification.permission == "default") {
       Notification.requestPermission && Notification.requestPermission()
       // }
-      let notification = new Notification(title, {
-        body: message,
-        icon: imgURL
-      });
+      let body = {
+        body: message
+      }
+      if (img) {
+        body.icon = img;
+      }
+      let notification = new Notification(title, body);
+      Tool.showMessage(message, 1, "success");
       window.setTimeout(function () {
         notification.close()
       }, time ? time * 1000 : 3000)
@@ -1979,7 +1916,7 @@ class MultiDebug {
     /**更新聊天框在线人员
      * @param {Object[]} users
      * @param {string} users[].userName -用户名字
-     * @param {string} users[].userImg  - 用户头像路径
+     * @param {string} users[].userImg  - 用户头像base64
      * */
     this.updateUserList = function (users) {
       //删除用户列表,除了公共聊天室和消息日志
@@ -1995,14 +1932,12 @@ class MultiDebug {
         let img = $("<div class=user-img>");
         let name = $("<div class=user-name >" + userInfo.userName + "</div>");
         if (userInfo.userImg) {
-          module.getServerImg(userInfo.userImg, function (base64) {
-            img.css("background-image", "url(" + base64 + ")");
-            //刷新一次聊天窗口，防止用户昵称和头像的变化
-            if (one) {
-              one = false;
-              MultiDebug.exeI("chatModule", "onToggleUserChannel", module.currentChannel);
-            }
-          }, true)
+          img.css("background-image", "url(" + userInfo.userImg + ")");
+          //刷新一次聊天窗口，防止用户昵称和头像的变化
+          if (one) {
+            one = false;
+            MultiDebug.exeI("chatModule", "onToggleUserChannel", module.currentChannel);
+          }
         }
         user.append(img).append(name)
         chatList.append(user)
@@ -2016,10 +1951,7 @@ class MultiDebug {
     this.updateMyUserInfo = function (myInfo) {
       myName.html(myInfo.userName);
       if (myInfo.userImg) {
-        module.getServerImg(myInfo.userImg, function (base64) {
-          myImg.css("background-image", "url(" + base64 + ")");
-          //更新聊天信息
-        }, true)
+        myImg.css("background-image", "url(" + myInfo.userImg + ")");
       }
     }
     /**更新聊天窗口顶部chatwho 内容
@@ -2127,9 +2059,7 @@ class MultiDebug {
           wrapper.addClass("other")
         }
         if (data.fromImg) {
-          module.getServerImg(data.fromImg, function (base64) {
-            userImg.css("background-image", "url(" + base64 + ")");
-          })
+            userImg.css("background-image", "url(" + data.fromImg + ")");
         }
         chatBody.append(wrapper);
       })
@@ -2186,9 +2116,7 @@ class MultiDebug {
           wrapper.addClass("other")
         }
         if (data.fromImg) {
-          module.getServerImg(data.fromImg, function (base64) {
-            userImg.css("background-image", "url(" + base64 + ")");
-          })
+          userImg.css("background-image", "url(" + data.fromImg + ")");
         }
         chatBody.append(wrapper);
       })
@@ -2448,40 +2376,6 @@ class MultiDebug {
         }
       })
     }
-    /**显示登陆框*/
-    this.showLogin = function () {
-      Tool.showPromptWithFile("请注册您的用户名，用户名将永久有效", "请上传您的头像", function (text, file, base64) {
-        socket.emit("onSaveUserInfo", {
-          userName: text,
-          userImg: base64,
-          logining: true
-        })
-      }, true);
-    }
-    /**重命名界面
-     *@param {string} data.myName - 本人姓名
-     *@param {string} data.myImg - 本人图片路径
-     */
-    this.showRename = function (data) {
-      Tool.showPromptWithFile("当前昵称:【" + data.myName + "】<br><br>新昵称:", "您可以重新上传头像<br>", function (text, file, base64) {
-        socket.emit("onSaveUserInfo", {
-          userName: text,
-          userImg: base64,
-          logining: false
-        })
-      }, false, data.myImg ? SERVERFIX + data.myImg : null, true);
-    }
-    /**显示重名提示窗口
-     * @param {string} userName - 重复的名字*/
-    this.showNameRepeat = function (userName) {
-      Tool.showPrompt(userName + " 已被别人注册，请更换昵称", function (text) {
-        socket.emit("onSaveUserInfo", {
-          userName: text,
-          userImg: null,
-          logining: true
-        })
-      }, true);
-    }
     /**获取服务器端数据
      * @param {string} key - 要获取的服务器的数据的键值,可以.连接，如a.b.c
      * @param {function} onsuccess - 获取成功后的回调函数 (info:服务器返回的数据)
@@ -2497,33 +2391,25 @@ class MultiDebug {
     this.setServerData = function (key, data, onsuccess) {
       socket.emit("onSetServerData", key, data, onsuccess);
     }
+    /**重命名界面
+     *@param {string} data.myName - 本人姓名
+     *@param {string} data.myImg - 本人图片路径
+     */
+    this.showRename = function (data) {
+      Tool.showPromptWithFile("当前昵称:【" + data.myName + "】<br><br>新昵称:", "您可以重新上传头像<br>", function (text, file, base64) {
+        socket.emit("onSaveUserInfo", {
+          // userName: text,
+          userImg: base64
+          // logining: false
+        })
+      }, false, data.myImg ? data.myImg : null, true);
+    }
     /**通知其他在线用户
      * @param {string} eventName - 通知的事件名字
      * @param {Object} data - 需要发送的数据
      * */
     this.broadcastOther = function (eventName, data) {
       socket.emit("onBroadcastOther", eventName, data);
-    }
-    /**通知其他人我已经登陆*/
-    this.broadcastOtherMylogin = function () {
-      let times = 0;
-
-      function reminderOther() {
-        let myName = MultiDebug.get("socketModule", "myName");
-        let myImg = MultiDebug.get("socketModule", "myImg");
-        if (myName) {
-          module.broadcastOther("onOtherPeopleLogin", {
-            name: myName,
-            img: myImg
-          })
-        } else {
-          if (times++ < 10) {
-            window.setTimeout(arguments.callee, 500);
-          }
-        }
-      }
-
-      reminderOther();
     }
     /**获取公私图片库文件列表
      * @param {function} onsuccess 成功回调函数 (data:Object,data.publicTexture,data.publicSkybox,data.privateTexture,data.privateSkybox,data.appName)*/

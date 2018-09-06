@@ -284,7 +284,8 @@ let Tool = {
     $(".z-prompt-file").remove();
     $(".z-cover").remove();
     let cover = $("<div class='z-cover'>");
-    let dialog = $("<div class='z-prompt-file'><span class='text'>" + text1 + "</span><input type='text'><span>" + text2 + "</span><div class='wrapper'><div class='iconfont upload'></div><input type='file'></div><div class='button-group'><button class='btn color-success'>确定</button><button  class='btn color-danger'>取消</button>")
+    // let dialog = $("<div class='z-prompt-file'><span class='text'>" + text1 + "</span><input type='text'><span>" + text2 + "</span><div class='wrapper'><div class='iconfont upload'></div><input type='file'></div><div class='button-group'><button class='btn color-success'>确定</button><button  class='btn color-danger'>取消</button>")
+    let dialog = $("<div class='z-prompt-file'><span>" + text2 + "</span><div class='wrapper'><div class='iconfont upload'></div><input type='file'></div><div class='button-group'><button class='btn color-success'>确定</button><button  class='btn color-danger'>取消</button>")
     $(".babylon-material-editor").append(cover);
     $(".babylon-material-editor").append(dialog);
     if (noCancel) {
@@ -295,10 +296,10 @@ let Tool = {
     let fileDom = $(".z-prompt-file input[type=file]");
     let base64 = null;
     if (filePath) {
-      $.get(filePath, function (data) {
-        upload.css("background-image", "url(" + data + ")");
-        upload.removeClass("iconfont");
-      })
+      // $.get(filePath, function (data) {
+      upload.css("background-image", "url(" + filePath + ")");
+      upload.removeClass("iconfont");
+      // })
     }
     inputs.on("input", function (e) {
       let target = $(e.srcElement || e.target)
