@@ -502,7 +502,6 @@ class MultiDebug {
        * @param {string} itemName - 选项名字*/
       onClickMainMenu: function (itemName) {
         let myName = MultiDebug.get("socketModule", "myName");
-        let myIP = MultiDebug.get("socketModule", "myIP");
 
         function lock(noMessage) {
           let lanList = MultiDebug.get("lanModule", "lanList");
@@ -514,13 +513,12 @@ class MultiDebug {
               //更新服务器
               MultiDebug.exe("socketModule", "setServerData", "lockInfo." + name, {
                 userName: myName,
-                userIP: myIP
               });
               //更新本地LANLIST
               MultiDebug.exe("lanModule", "refreshSingleLan", {
                 stat: "success",
                 config: true,
-                title: "...",
+                title: "您正在调试...",
                 data: {stat: "success"}
               }, $(dom));
               //通知其他在线用户
@@ -574,7 +572,13 @@ class MultiDebug {
         function saveVersion() {
           Tool.showPrompt("请输入你要保存的版本的名字", function (data) {
             //没有重名的
-            let json = createJSON({console: false});
+            let json = createJSON(scene, {
+              appPath: MultiDebug.get("socketModule", "appLibPath"),
+              publicPath: MultiDebug.get("socketModule", "publicLibPath"),
+              console: false,
+              window: false,
+              mini: false
+            });
             MultiDebug.exe("socketModule", "saveAppFile", "version/" + new Date().getTime() + " " + data, json);
             Tool.showMessage("保存版本" + data + "成功......");
             MultiDebug.exe("chatModule", "appendLogContentBuffer", "保存版本" + data + "成功......")
@@ -606,8 +610,8 @@ class MultiDebug {
                 //自动一键锁定
                 lock(true);
                 //版本回溯,无缓存
-                $.get(APPFIX + appName + "/multidebug.bak/version/" + fileName, function (data) {
-                  initSceneByJSON(data);
+                MultiDebug.exe("socketModule", "getAppFile", "version/" + fileName, (data) => {
+                  initSceneByJSON(scene, data);
                   Tool.showMessage("版本已经成功回溯到 " + showName);
                   //Tool.showMessage("请注意，服务器只保存您锁定的物体的数据!他人锁定的物体不会进行保存...", 2, "warn");
                   MultiDebug.exe("chatModule", "appendLogContentBuffer", "版本已经成功回溯到 " + showName)
@@ -622,11 +626,11 @@ class MultiDebug {
                     }
                   })
                   //灯光发送到服务器
-                  window.scene.lights.forEach(function (light) {
+                  scene.lights.forEach(function (light) {
                     MultiDebug.exeA("debugModule", "onChange", light);
                   })
                   //重置调试UI
-                  app.refreshDebugUI();
+                  app.material.refreshDebugUI(MultiDebug.get("debugModule", "currentDebugMesh"));
                 })
               }
             })
@@ -669,10 +673,10 @@ class MultiDebug {
         }
 
         function setOutlineWidth() {
-          Tool.showPrompt("设置描边粗细<br>当前:" + app.getOutlineWidth(), function (num) {
+          Tool.showPrompt("设置描边粗细<br>当前:" + app.outline.getOutlineWidth(), function (num) {
             num = Number(num);
             if (typeof num == "number") {
-              app.setOutlineWidth(num);
+              app.outline.setOutlineWidth(num);
               MultiDebug.exe("socketModule", "setServerData", "outlineWidth", num)
             }
           })
@@ -688,10 +692,10 @@ class MultiDebug {
         }
 
         function setLightBallSize() {
-          Tool.showPrompt("设置光球大小<br>当前:" + app.getLightBallSize(), function (num) {
+          Tool.showPrompt("设置光球大小<br>当前:" + app.light.getLightBallSize(), function (num) {
             num = Number(num);
             if (typeof num == "number") {
-              app.setLightBallSize(num);
+              app.light.setLightBallSize(num);
               MultiDebug.exe("socketModule", "setServerData", "lightBallSize", num)
             }
           })
@@ -944,7 +948,6 @@ class MultiDebug {
           let json = createJSON(scene, {meshes: mesh, console: false, window: false});
           json = JSON.parse(json);
           json = json.materials[mesh.material.name]
-          console.log(json)
           //发送到服务器
           MultiDebug.exe("socketModule", "setServerData", "debugInfo.materials." + mesh.material.name, json);
           //发送给其他人材质JSON
@@ -956,7 +959,7 @@ class MultiDebug {
         if (mesh && mesh instanceof BABYLON.Light) {
           //获取调试的JSON
           let lightName = mesh.name;
-          let json = createJSON({lights: mesh, console: false});
+          let json = createJSON(scene, {lights: mesh, console: false});
           json = JSON.parse(json);
           json = json.lights[lightName];
           if (json) {
@@ -2530,11 +2533,12 @@ class MultiDebug {
     /**获取APP相对路径下的文件列表数组
      * @param {string} path - 相对APP项目的相对路径*/
     this.getAppFileList = function (path, onsuccess) {
-      socket.emit("onGetAppFileList", path);
-      socket.on("onGetAppFileList", function (data) {
-        socket.off("onGetAppFileList");
-        onsuccess && onsuccess(data);
-      })
+      socket.emit("onGetAppFileList", path, onsuccess);
+    }
+    /**获取APP相对路径下的文件内容
+     * @param {string} path - 相对APP项目的相对路径*/
+    this.getAppFile = function (path, onsuccess) {
+      socket.emit("onGetAppFile", path, onsuccess);
     }
     /**删除APP相对路径下的文件
      * @param {string} path - 路径*/

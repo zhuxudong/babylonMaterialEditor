@@ -26,6 +26,29 @@ class Outline {
       this.renderMesh(pickedMesh);
     }
   };
+  onmouseup = (e) => {
+    let button = e.event.button;//0,1,2
+    let pickedMesh = e.pickInfo.pickedMesh;
+    if (pickedMesh) {
+      if (pickedMesh.li) {
+        MultiDebug.exe("lanModule", "scrollToLi", pickedMesh.li);
+        if (pickedMesh.li[0].data.stat != "danger") {
+          //左键将副菜单栏显示在局域网栏
+          //if (button == 0) {
+          //    MultiDebug.exe("lanModule", "showSubMenu", pickedMesh.li, {
+          //        src: pickedMesh.li
+          //    })
+          //} else
+          if (button == 2) {
+            //右键将副菜单栏显示在物体上面；
+            MultiDebug.exe("lanModule", "showSubMenu", pickedMesh.li, {
+              src: pickedMesh.li
+            }, e.event.clientX + 20, e.event.clientY)
+          }
+        }
+      }
+    }
+  }
 
   constructor() {
     this.hightlight = new BABYLON.HighlightLayer("debug", scene);
@@ -72,11 +95,13 @@ class Outline {
   init() {
     this.dispose();
     scene.onPointerObservable.add(this.onmousemove, 4);
+    scene.onPointerObservable.add(this.onmouseup, 2);
   }
 
   dispose() {
     this.unrenderMesh(this.currentOutlineMesh)
     scene.onPointerObservable.removeCallback(this.onmousemove);
+    scene.onPointerObservable.removeCallback(this.onmouseup);
   }
 }
 
@@ -173,6 +198,16 @@ class Material {
     } else if (mesh.material instanceof BABYLON.PBRBaseMaterial) {
       this.showPBRMaterial(mesh.material, folder, uvNum);
     }
+  }
+
+  //刷新调试窗口，并保存到服务器
+  refreshDebugUI(mesh) {
+    if (MultiDebug.get("debugModule", "currentDebugMesh") == mesh) {
+      MultiDebug.exe("debugModule", "showDebug", mesh);
+      this.showDebug(mesh);
+    }
+    //保存当前调试物体的数据到服务器
+    MultiDebug.exeA("debugModule", "onChange", mesh)
   }
 
   //立方体纹理
@@ -1007,16 +1042,11 @@ class Material {
             materials: json
           }, material);
           //更新调试框
-          if (MultiDebug.get("debugModule", "currentDebugMesh") == mesh) {
-            MultiDebug.exe("debugModule", "showDebug", mesh);
-            this.showDebug(mesh);
-          }
-
+          this.refreshDebugUI(mesh)
           //更新日志
           Tool.showMessage("您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]", 3);
           MultiDebug.exe("chatModule", "appendLogContentBuffer", "您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]");
-          //保存到服务器
-          MultiDebug.exeI("debugModule", "onChange", mesh)
+
         })
       } else {
         Tool.showMessage("该物体没有材质...", 1, "danger");
@@ -1047,13 +1077,7 @@ class Material {
       })
       oriMaterial.dispose();
       //更新调试窗口
-      // _this.refreshDebugUI(mesh);
-      if (MultiDebug.get("debugModule", "currentDebugMesh") == mesh) {
-        MultiDebug.exe("debugModule", "showDebug", mesh);
-        this.showDebug(mesh);
-      }
-      //保存当前调试物体的数据到服务器
-      MultiDebug.exeA("debugModule", "onChange", mesh)
+      this.refreshDebugUI(mesh)
       Tool.showMessage("成功转化成 " + materialType + " 材质类型")
     } else {
       Tool.showMessage("您当前BABYLON版本不支持 " + materialType + " 材质类型", 1, "warn");
@@ -1239,6 +1263,7 @@ class App {
 
   viewMode() {
     this.outline.dispose();
+    MultiDebug.exe("debugModule", "hideDebug");
   }
 
   showMesh(mesh) {
@@ -1248,6 +1273,14 @@ class App {
     mesh.isVisible = true;
     this.hideMeshes = this.hideMeshes.filter(function (hideMesh) {
       return hideMesh != mesh;
+    })
+    Tool.showMessage("您已经成功显示了" + mesh.name + "~~~", 1);
+    MultiDebug.exe("chatModule", "appendLogContentBuffer", "您已经成功显示了" + mesh.name + "~~~");
+  }
+
+  showMeshes() {
+    this.hideMeshes.forEach((mesh) => {
+      this.showMesh(mesh)
     })
   }
 

@@ -344,6 +344,7 @@ class Server {
     }
     return dirList;
   }
+
 }
 
 let server = null;
@@ -459,6 +460,26 @@ let socketEvents = {
     let socket = this;
     // socket.broadcast.emit(eventName, data)
     socket.to("editor room").emit(eventName, data)
+  },
+  /**保存文件到app相对路径*/
+  onSaveAppFile: function (file, content) {
+    file = path.join(finalPath.appDataPath, file)
+    fs.outputFile(file, content)
+  },
+  /**获取APP相对路径的文件列表数组*/
+  onGetAppFileList: function (file, cb) {
+    let dirList = server.getFileList(path.join(finalPath.appDataPath, file));
+    cb(dirList)
+  },
+  /**获取APP相对路径的文件内容*/
+  onGetAppFile: function (file, cb) {
+    file = path.join(finalPath.appDataPath, file);
+    let content = fs.readFileSync(file, "utf-8")
+    cb(content)
+  },
+  /**删除文件,app相对路径*/
+  onDelAppFile: function (file) {
+    fs.remove(path.join(finalPath.appDataPath, file))
   },
 }
 /**************************************************************************/
