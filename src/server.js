@@ -364,6 +364,8 @@ let socketEvents = {
         if (server.decode(json.userPassword) !== password) {
           cb("密码输入错误！")
         } else {
+          //登录成功，加入房间
+          socket.join("editor room");
           server.socketList.push(server.createUserInfo(socket));
           server.updateUserInfo(socket, {
             userName: account,
@@ -455,7 +457,8 @@ let socketEvents = {
    * */
   onBroadcastOther: function (eventName, data) {
     let socket = this;
-    socket.broadcast.emit(eventName, data)
+    // socket.broadcast.emit(eventName, data)
+    socket.to("editor room").emit(eventName, data)
   },
 }
 /**************************************************************************/
