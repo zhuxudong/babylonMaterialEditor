@@ -278,9 +278,7 @@ class MultiDebug {
       /**发送聊天信息触发的事件
        * @param {Object} data[] - 聊天数据包
        * @param {string} data.from - 发送者名字
-       * @param {string} data.fromImg - 发送者头像
        * @param {string} data.to - 发送对象名字
-       * @param {string} data.toImg - 发送对象头像
        * @param {string} data.content - 聊天内容
        * @param {string} data.time - 聊天历史时间
        * */
@@ -432,7 +430,7 @@ class MultiDebug {
         //桌面提示
         let blur = MultiDebug.get("chatModule", "blur");
         if (blur) {
-            MultiDebug.exe("chatModule", "showDesktopMessage", data.from, data.content, data.fromImg)
+          MultiDebug.exe("chatModule", "showDesktopMessage", data.from, data.content, data.fromImg)
         }
         //长短提示
         if (currentChannel == publicRoom && data.to == publicRoom) {
@@ -445,7 +443,6 @@ class MultiDebug {
         } else if (currentChannel != data.from && data.to == myName) {
           MultiDebug.exe("chatModule", "showContentReminder", data.from, false)
         }
-
       },
       /** @param {Object} data -点击的那个选项的信息
        * @param {string} dom -dom名字
@@ -2014,9 +2011,7 @@ class MultiDebug {
     /**根据传进来的JSON初始化聊天窗口,默认滚屏到底部
      * @param {Object[]} data - 聊天记录数据包
      * @param {string} data[].from - 发送者名字
-     * @param {string} data[].fromImg - 发送者头像
      * @param {string} data[].to - 发送对象名字
-     * @param {string} data[].toImg - 发送对象头像
      * @param {string} data[].content - 聊天内容
      * @param {string} data[].time - 聊天历史时间
      * @param {function} onsuccess - 初始化成功后的回调函数
@@ -2026,13 +2021,15 @@ class MultiDebug {
         return;
       }
       chatBody.html("");
+      let userList = MultiDebug.get("socketModule", "userList");
+      let myImg = MultiDebug.get("socketModule", "myImg");
+      let myName = MultiDebug.get("socketModule", "myName");
       [].concat(data).forEach(function (data) {
-        let myName = MultiDebug.get("socketModule", "myName");
-        let isPublic = module.currentChannel == module.publicRoom;
-        let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
-        let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
-        let isMe = !isPublic && data.from == myName && data.to == module.currentChannel;
-        let isOther = !isPublic && data.from == module.currentChannel && data.to == myName;
+        let isPublic = module.currentChannel === module.publicRoom;
+        let isPublicMe = isPublic && data.from === myName && data.to === module.publicRoom;
+        let isPublicOther = isPublic && data.from !== myName && data.to === module.publicRoom;
+        let isMe = !isPublic && data.from === myName && data.to === module.currentChannel;
+        let isOther = !isPublic && data.from === module.currentChannel && data.to === myName;
         //过滤其他频道信息
         if (!isMe && !isOther && !isPublicMe && !isPublicOther) {
           return;
@@ -2054,12 +2051,16 @@ class MultiDebug {
           time.html(Tool.getDayTime(data.time));
         }
         if (isMe || isPublicMe) {
-          wrapper.addClass("me")
+          wrapper.addClass("me");
+          userImg.css("background-image", "url(" + myImg + ")");
         } else {
-          wrapper.addClass("other")
-        }
-        if (data.fromImg) {
-            userImg.css("background-image", "url(" + data.fromImg + ")");
+          wrapper.addClass("other");
+          userList.some((user) => {
+            if (user.userName === data.from) {
+              userImg.css("background-image", "url(" + user.userImg + ")");
+              return true;
+            }
+          })
         }
         chatBody.append(wrapper);
       })
@@ -2072,9 +2073,7 @@ class MultiDebug {
     /**根据传进来的JSON追加聊天信息,默认滚屏到底部
      * @param {Object[]} data - 聊天记录数据包
      * @param {string} data[].from - 发送者名字
-     * @param {string} data[].fromImg - 发送者头像
      * @param {string} data[].to - 发送对象名字
-     * @param {string} data[].toImg - 发送对象头像
      * @param {string} data[].content - 聊天内容
      * @param {string} data[].time - 聊天历史时间
      * @param {function} onsuccess - 初始化成功后的回调函数
@@ -2083,8 +2082,10 @@ class MultiDebug {
       if (!data) {
         return;
       }
+      let userList = MultiDebug.get("socketModule", "userList");
+      let myImg = MultiDebug.get("socketModule", "myImg");
+      let myName = MultiDebug.get("socketModule", "myName");
       [].concat(data).forEach(function (data) {
-        let myName = MultiDebug.get("socketModule", "myName");
         let isPublic = module.currentChannel == module.publicRoom;
         let isPublicMe = isPublic && data.from == myName && data.to == module.publicRoom;
         let isPublicOther = isPublic && data.from != myName && data.to == module.publicRoom;
@@ -2111,12 +2112,16 @@ class MultiDebug {
           time.html(Tool.getDayTime(data.time));
         }
         if (isMe || isPublicMe) {
-          wrapper.addClass("me")
+          wrapper.addClass("me");
+          userImg.css("background-image", "url(" + myImg + ")");
         } else {
-          wrapper.addClass("other")
-        }
-        if (data.fromImg) {
-          userImg.css("background-image", "url(" + data.fromImg + ")");
+          wrapper.addClass("other");
+          userList.some((user) => {
+            if (user.userName === data.from) {
+              userImg.css("background-image", "url(" + user.userImg + ")");
+              return true;
+            }
+          })
         }
         chatBody.append(wrapper);
       })
@@ -2255,9 +2260,9 @@ class MultiDebug {
         textarea.val("");
         let data = {
           from: MultiDebug.get("socketModule", "myName"),
-          fromImg: MultiDebug.get("socketModule", "myImg"),
+          // fromImg: MultiDebug.get("socketModule", "myImg"),
           to: module.currentChannel,
-          toImg: module.currentImg,
+          // toImg: module.currentImg,
           content: content,
           time: new Date().getTime()
         }
