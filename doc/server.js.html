@@ -39,12 +39,14 @@ const io = require("socket.io")();
 const config = {
   // 公共材质库相关配置
   public: {
-    context: "./static",
+    // context: "./static",
+    context: "../dist/static",
     materialLibPath: "materialLib",
   },
   // 项目相关配置
   app: {
-    context: "./static/model",
+    // context: "./static/model",
+    context: "../dist/static/model",
     // finalPath = private.app+private.app.appName
     appName: "demo",
     materialLibPath: "materialLib",
@@ -52,8 +54,9 @@ const config = {
     dataPath: 'editorData'
   },
   // 用户账号密码头像
-  userInfoPath: "./static/users",
-  // 根路径,用于项目上线后根据服务器或者CDN的根路径去寻找公有库和私有库的图片资源
+  // userInfoPath: "./static/users",
+  userInfoPath: "../dist/static/users",
+  // 根路径,上面的context都是基于此根路径
   root: "./",
   // socket port
   port: 3000
@@ -135,16 +138,16 @@ function checkPort(port) {
 /** 初始化所有最终路径
  * */
 function initFinalPath() {
-  finalPath.appPath = path.resolve(__dirname, config.app.context, config.app.appName);
+  finalPath.appPath = path.resolve(__dirname, config.root, config.app.context, config.app.appName);
   finalPath.appLibPath = path.resolve(finalPath.appPath, config.app.materialLibPath);
   finalPath.appSkyboxPath = path.resolve(finalPath.appLibPath, "skyboxes");
   finalPath.appTexturePath = path.resolve(finalPath.appLibPath, "textures");
   finalPath.appDataPath = path.resolve(finalPath.appPath, config.app.dataPath);
-  finalPath.publicPath = path.resolve(__dirname, config.public.context);
+  finalPath.publicPath = path.resolve(__dirname, config.root, config.public.context);
   finalPath.publicLibPath = path.resolve(finalPath.publicPath, config.public.materialLibPath);
   finalPath.publicSkyboxPath = path.resolve(finalPath.publicLibPath, "skyboxes");
   finalPath.publicTexturePath = path.resolve(finalPath.publicLibPath, "textures");
-  finalPath.userInfoPath = path.resolve(__dirname, config.userInfoPath);
+  finalPath.userInfoPath = path.resolve(__dirname, config.root, config.userInfoPath);
 }
 
 /** 生成所有最终路径*/
@@ -175,7 +178,7 @@ function consolePath() {
 /** 监听最终端口*/
 function listen(port) {
   io.listen(port);
-  socket = new Socket(io);
+  server = new Server(io);
 }
 
 function polyfill() {
@@ -210,22 +213,36 @@ function polyfill() {
 /**************************************************************************/
 
 /**************************************************************************/
-class Socket {
+class Server {
   constructor(io) {
     this.socketList = [];
+    this.serverData = {
+      lockInfo: {},
+      debugInfo: {},
+      chatContent: {},
+      logContent: {}
+    };
+    //初始化聊天记录
+    socketEvents.onGetAppFile("chatContent", (data) => {
+      this.setServerData("chatContent", JSON.parse(data))
+    })
+    socketEvents.onGetAppFile("logContent", (data) => {
+      this.setServerData("logContent", JSON.parse(data))
+    })
     io.on('connection', (socket) => {
-      this.socketList.push(this.createUserInfo(socket));
       this.on(socket, socketEvents);
     })
   }
 
-  createUserInfo(socket, userName, userPassword, userImg, appPath, publicPath) {
+  createUserInfo(socket, userName, userPassword, userImg, appPath, appLibPath, publicPath, publicLibPath) {
     socket.userInfo = {
       userName: userName,
       userPassword: userPassword,
       userImg: userImg,
       appPath: appPath,
-      publicPath: publicPath
+      publicPath: publicPath,
+      appLibPath: appLibPath,
+      publicLibPath: publicLibPath
     }
     return socket;
   }
@@ -272,9 +289,121 @@ class Socket {
     }
     return c;
   }
+
+  //获取服务器数据
+  getServerData(key) {
+    let string = String(key);
+    let keys = string.split(".");
+    //服务器存放数据的位置
+    let location = this.serverData;
+    let exists = keys.every(function (key) {
+      if (location.hasOwnProperty(key)) {
+        location = location[key];
+        return true;
+      } else {
+        return false;
+      }
+    })
+    if (exists) {
+      return location;
+    }
+  }
+
+  //设置服务器数据
+  setServerData(key, data, onsuccess) {
+    let string = String(key);
+    let keys = string.split(".");
+    //服务器存放数据的位置
+    let location = this.serverData;
+    let ori = null;
+    keys.forEach(function (key, i) {
+      if (location.hasOwnProperty(key)) {
+        ori = location[key];
+      } else {
+        location[key] = {};
+        ori = null;
+      }
+      if (i == keys.length - 1) {
+        location[key] = data;
+      } else {
+        location = location[key];
+      }
+    })
+    onsuccess &amp;&amp; onsuccess(ori, data);
+  }
+
+  //是否目录
+  isDir(path) {
+    try {
+      if (fs.pathExistsSync(path)) {
+        let stat = fs.lstatSync(path);
+        return stat.isDirectory();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  //是否文件
+  isFile(path) {
+    try {
+      if (fs.pathExistsSync(path)) {
+        let stat = fs.lstatSync(path);
+        return stat.isFile();
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  /**读取路径的所有文件，返回文件列表数组，排除文件夹
+   * @parawm {string} dirPath - 文件夹路径
+   * */
+  getFileList(dirPath) {
+    let dirList = [];
+    if (fs.pathExistsSync(dirPath)) {
+      dirList = fs.readdirSync(dirPath).filter((p) => {
+        return this.isFile(path.join(dirPath, p));
+      });
+    }
+    return dirList;
+  }
+
+  /**读取路径的所有文件夹，返回文件列表数组，排除文件夹
+   * @parawm {string} dirPath - 文件夹路径
+   * */
+  getDirList(dirPath) {
+    let dirList = [];
+    if (fs.pathExistsSync(dirPath)) {
+      dirList = fs.readdirSync(dirPath).filter((p) => {
+        return this.isDir(path.join(dirPath, p));
+      });
+    }
+    return dirList;
+  }
+
+  /**发送用户信息保存成功信息*/
+  sendUserInfoChange(socket) {
+    //发送本人的信息
+    let userInfo = this.getUserInfo(socket);
+    socket.emit("onUserInfoChange", {
+      myName: userInfo.userName,
+      myImg: userInfo.userImg,
+      userList: this.socketList.map((socket) => {
+          return this.getUserInfo(socket);
+        }
+      )
+    })
+    //不发送本人的信息
+    socket.to("editor room").emit("onUserInfoChange", {
+      userList: this.socketList.map((socket) => {
+        return this.getUserInfo(socket);
+      })
+    });
+  }
 }
 
-let socket = null;
+let server = null;
 
 
 //--------事件接口--------
@@ -285,20 +414,32 @@ let socketEvents = {
    * @param {function} cb -回调用户信息
    * */
   login(account, password, cb) {
-    let file = path.resolve(finalPath.userInfoPath, socket.encode(account));
+    let socket = this;
+    let file = path.resolve(finalPath.userInfoPath, server.encode(account));
     if (fs.pathExistsSync(file)) {
       fs.readJson(file).then((json) => {
-        if (socket.decode(json.userPassword) !== password) {
+        if (server.decode(json.userPassword) !== password) {
           cb("密码输入错误！")
         } else {
-          socket.updateUserInfo(this, {
+          //登录成功，加入房间
+          socket.join("editor room");
+          //加入userList
+          server.socketList.push(server.createUserInfo(socket));
+          server.updateUserInfo(socket, {
             userName: account,
             userPassword: password,
             userImg: json.userImg,
             appPath: path.relative(config.root, finalPath.appPath),
-            publicPath: path.relative(config.root, finalPath.publicPath)
+            appLibPath: path.relative(config.root, finalPath.appLibPath),
+            publicPath: path.relative(config.root, finalPath.publicPath),
+            publicLibPath: path.relative(config.root, finalPath.publicLibPath),
           })
-          cb(socket.getUserInfo(this))
+          console.log(account + " 已登录...")
+          cb(server.getUserInfo(socket));
+          //登录成功！
+          socket.emit("onLogin");
+          //更新用户列表
+          server.sendUserInfoChange(socket)
         }
       })
     } else {
@@ -311,10 +452,10 @@ let socketEvents = {
    * @param {function} cb -回调用户信息
    * */
   register(account, password, cb) {
-    let file = path.resolve(finalPath.userInfoPath, socket.encode(account));
+    let file = path.resolve(finalPath.userInfoPath, server.encode(account));
     if (!fs.pathExistsSync(file)) {
       fs.outputJson(file, {
-        userPassword: socket.encode(password),
+        userPassword: server.encode(password),
         userImg: null
       }).then(cb)
     } else {
@@ -323,46 +464,58 @@ let socketEvents = {
   },
   /**退出联机调试系统*/
   disconnect: function () {
-    socket.socketList = socket.socketList.filter((s) => socket.id !== s.id);
-
-    // let socket = this;
-    // //通知其他人下线
-    // socket.broadcast.emit("onOtherPeopleLogOut", socket.info.userName, socket.info.userImg);
-    // //存放聊天记录
-    // multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "chatContent"), "chatContent", true);
-    // //存放日志记录
-    // multiDebug.saveFileFromServerData(PATH.join(APPDATAFIX, "logContent"), "logContent", true);
-    // multiDebug.removeSocket(socket);
-
-  },
-  /**客户端请求 存储用户信息到服务器
-   * @param data.userName - 用户名字
-   * @param data.userImg - 用户头像base64
-   * @param data.logining - 是否在注册的时候请求服务器
-   * */
-  onSaveUserInfo: function (data) {
     let socket = this;
-    multiDebug.saveUserInfo(data.userName, data.userImg, data.logining, socket);
+    server.socketList = server.socketList.filter((s) => {
+      if (socket.id === s.id) {
+        console.log(server.getUserInfo(socket).userName + " 已退出...")
+        return false
+      }
+      return true;
+    })
+    //通知其他人下线
+    let userInfo = server.getUserInfo(socket)
+    if (!userInfo) {
+      return;
+    }
+    socket.to("editor room").emit("onOtherPeopleLogOut", userInfo.userName, userInfo.userImg);
+    //存放聊天记录
+    socketEvents.onGetServerData("chatContent", (data) => {
+      socketEvents.onSaveAppFile("chatContent", JSON.stringify(data), true);
+    })
+    //存放日志记录
+    socketEvents.onGetServerData("logContent", (data) => {
+      socketEvents.onSaveAppFile("logContent", JSON.stringify(data), true);
+    })
+    //更新用户列表
+    server.sendUserInfoChange(socket);
   },
   /**客户端请求 获取服务器端数据
    * @param {string} key - 要获取的服务器的数据的键值,可以.连接，如a.b.c
+   * @param {function} cb - 回调服务器端数据
    * */
-  onGetServerData: function (key) {
-    let socket = this;
-    let eventName = "onGetServerData__" + key;
-    let data = multiDebug.getServerData(key)
-    socket.emit(eventName, data);
+  onGetServerData: function (key, cb) {
+    let data = server.getServerData(key)
+    cb(data)
   },
   /**客户端请求 设置服务器端数据
    * @param {string} key - 要设置的服务器的数据的键值,可以.连接，如a.b.c
    * @param {Object} data - 键值数据
    * */
-  onSetServerData: function (key, data) {
-    let socket = this;
-    let eventName = "onSetServerData__" + key;
-    multiDebug.setServerData(key, data, function (ori, data) {
-      socket.emit(eventName, ori, data);
-    })
+  onSetServerData: function (key, data, cb) {
+    server.setServerData(key, data, cb)
+  },
+  /**获取公私图片库文件列表*/
+  onGetPicFileList: function (cb) {
+    let publicTexture = server.getFileList(finalPath.publicTexturePath);
+    let publicSkybox = server.getDirList(finalPath.publicSkyboxPath);
+    let privateTexture = server.getFileList(finalPath.appTexturePath);
+    let privateSkybox = server.getDirList(finalPath.appSkyboxPath);
+    cb({
+      publicTexture: publicTexture,
+      publicSkybox: publicSkybox,
+      privateTexture: privateTexture,
+      privateSkybox: privateSkybox
+    });
   },
   /**客户端请求 通知其他在线用户
    * @param {string} eventName - 通知的事件名字
@@ -370,59 +523,49 @@ let socketEvents = {
    * */
   onBroadcastOther: function (eventName, data) {
     let socket = this;
-    socket.broadcast.emit(eventName, data)
-  },
-  /**获取公私图片库文件列表*/
-  onGetPicFileList: function () {
-    let socket = this;
-    let publicTextureFix = PATH.join(MATERIALLIBFIX, TEXTURE);
-    let publicSkyboxFix = PATH.join(MATERIALLIBFIX, SKYBOX);
-    let privateFix = PATH.join(APPFIX, "materialLib/");
-    let privateTextureFix = PATH.join(privateFix, TEXTURE);
-    let privateSkyboxFix = PATH.join(privateFix, SKYBOX);
-    //初始化创建文件夹
-    multiDebug.mkdir(publicTextureFix);
-    multiDebug.mkdir(publicSkyboxFix);
-    multiDebug.mkdir(privateSkyboxFix);
-    multiDebug.mkdir(privateTextureFix);
-    let publicTexture = multiDebug.getFileList(publicTextureFix);
-    let publicSkybox = multiDebug.getDirList(publicSkyboxFix);
-    let privateTexture = multiDebug.getFileList(privateTextureFix);
-    let privateSkybox = multiDebug.getDirList(privateSkyboxFix);
-    socket.emit("onGetPicFileList", {
-      publicTexture: publicTexture,
-      publicSkybox: publicSkybox,
-      privateTexture: privateTexture,
-      privateSkybox: privateSkybox,
-      appName: APPNAME
-    });
-
-  },
-  /**获取APP相对路径的文件列表数组*/
-  onGetAppFileList: function (path) {
-    let socket = this;
-    let dirList = multiDebug.getFileList(PATH.join(APPDATAFIX, path));
-    socket.emit("onGetAppFileList", dirList);
+    // socket.broadcast.emit(eventName, data)
+    socket.to("editor room").emit(eventName, data)
   },
   /**保存文件到app相对路径*/
-  onSaveAppFile: function (path, content) {
-    multiDebug.saveAppFile(path, content);
+  onSaveAppFile: function (file, content) {
+    file = path.join(finalPath.appDataPath, file)
+    fs.outputFile(file, content)
+  },
+  /**获取APP相对路径的文件列表数组*/
+  onGetAppFileList: function (file, cb) {
+    let dirList = server.getFileList(path.join(finalPath.appDataPath, file));
+    cb(dirList)
+  },
+  /**获取APP相对路径的文件内容*/
+  onGetAppFile: function (file, cb) {
+    file = path.join(finalPath.appDataPath, file);
+    if (fs.pathExistsSync(file)) {
+      let content = fs.readFileSync(file, "utf-8")
+      cb(content)
+    }
   },
   /**删除文件,app相对路径*/
-  onDelAppFile: function (path) {
-    multiDebug.delAppFile(path);
+  onDelAppFile: function (file) {
+    fs.remove(path.join(finalPath.appDataPath, file))
   },
-  /**获取材质库文件列表*/
-  onGetMaterialLibFileList: function (path) {
-    path = PATH.join(MATERIALLIBFIX, path);
-    let dirList = multiDebug.getFileList(path);
+  /**客户端请求 存储用户信息到服务器
+   * @param data.userImg - 用户头像base64
+   * */
+  onSaveUserInfo(data) {
     let socket = this;
-    socket.emit("onGetMaterialLibFileList", dirList)
-  },
-  /**写文件到材质库路径*/
-  onSaveMaterialLibFile: function (path, content) {
-    path = PATH.join(MATERIALLIBFIX, path);
-    multiDebug.saveFile(path, content);
+    let newImg = data.userImg;
+    let userInfo = server.getUserInfo(socket);
+    let file = path.resolve(finalPath.userInfoPath, server.encode(userInfo.userName));
+    if (fs.pathExistsSync(file)) {
+      fs.outputJson(file, {
+        userPassword: server.encode(userInfo.userPassword),
+        userImg: newImg
+      })
+      server.updateUserInfo(socket, {
+        userImg: newImg
+      })
+      server.sendUserInfoChange(socket);
+    }
   }
 }
 /**************************************************************************/
@@ -440,7 +583,74 @@ checkArgs()
     console.log("*** something unexpected happened,exit......")
     console.log(err)
   })
-</code></pre>
+
+function main() {
+  document.body.innerHTML = "";
+  document.oncontextmenu = function () {
+    return false
+  }
+  let target = document.createElement("div")
+  target.style.position = "absolute"
+  target.style.width = "50px"
+  target.style.height = "50px"
+  target.style.borderRadius = "50%"
+  target.style.background = "#da7373"
+  target.style.left = "50%"
+  target.style.top = "50%"
+  target.style.transform = "translate(-50%,-50%)"
+  document.body.appendChild(target)
+  let man = document.createElement("div")
+  man.style.position = "absolute"
+  man.style.width = "50px"
+  man.style.height = "50px"
+  man.style.borderRadius = "50%"
+  man.style.left = "100px"
+  man.style.top = "100px"
+  man.style.background = "rgb(164, 115, 218)";
+  man.style.marginTop = "-25px"
+  man.style.marginLeft = "-25px"
+  document.body.appendChild(man);
+
+
+  let interval = null;
+  let speed = 3;
+  /**鼠标右键事件*/
+  document.addEventListener("mousedown", function (e) {
+    if (e.button != 2)
+      return;
+    clearInterval(interval)
+    interval = setInterval(function () {
+      let oriX = parseFloat(man.style.left);
+      let oriY = parseFloat(man.style.top);
+      let clientX = parseFloat(e.clientX);
+      let clientY = parseFloat(e.clientY);
+      let difX = clientX - oriX;
+      let difY = clientY - oriY;
+      let difAll = Math.sqrt(Math.pow(difX, 2) + Math.pow(difY, 2));
+      let angle = Math.atan(Math.abs(difY / difX));
+      let dirX = difX > 0 ? 1 : difX === 0 ? 0 : -1;
+      let dirY = difY > 0 ? 1 : difY === 0 ? 0 : -1;
+      if (difAll &lt;= speed) {
+        man.style.left = clientX + "px";
+        man.style.top = clientY + "px";
+        clearInterval(interval)
+      } else {
+        man.style.left = oriX + dirX * speed * Math.cos(angle) + "px";
+        man.style.top = oriY + dirY * speed * Math.sin(angle) + "px";
+      }
+    }, 20)
+  })
+  /**键盘事件*/
+  document.addEventListener("keydown", function (e) {
+    switch (e.code) {
+      case "Keys":
+      case "KeyS": {
+        clearInterval(interval);
+      }
+        break;
+    }
+  })
+}</code></pre>
         </article>
     </section>
 
@@ -456,7 +666,7 @@ checkArgs()
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Sep 03 2018 15:47:50 GMT+0800 (中国标准时间)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Sep 08 2018 10:36:49 GMT+0800 (中国标准时间)
 </footer>
 
 <script> prettyPrint(); </script>
