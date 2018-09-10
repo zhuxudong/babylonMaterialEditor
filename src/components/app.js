@@ -369,6 +369,7 @@ class Material {
           let texture = null;
           if (!this.initialTexture[material.name]) {
             Tool.showMessage("该材质没有自带纹理,您贴不上", 1, "warn");
+            return;
           }
           if (texture = this.initialTexture[material.name][info.name]) {
             material[info.name] = texture;
@@ -831,6 +832,10 @@ class Material {
           hide();
         }, (control) => {
           let texture = null;
+          if (!this.initialTexture[material.name]) {
+            Tool.showMessage("该材质没有自带纹理,您贴不上", 1, "warn");
+            return;
+          }
           if (texture = this.initialTexture[material.name][info.name]) {
             material[info.name] = texture;
             control.value = "自带";
@@ -1046,7 +1051,6 @@ class Material {
           //更新日志
           Tool.showMessage("您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]", 3);
           MultiDebug.exe("chatModule", "appendLogContentBuffer", "您成功将 [" + this.currentCopyMaterial.name + "] 复制给 [" + material.name + "]");
-
         })
       } else {
         Tool.showMessage("该物体没有材质...", 1, "danger");
