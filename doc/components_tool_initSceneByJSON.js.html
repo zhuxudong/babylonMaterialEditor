@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/tool/initSceneByJSON.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/tool/initSceneByJSON.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** @module*/
+
+import {basePro, texturePro} from "../lang/en";
+
+/**根据JSON初始化场景
+ * @param {Object} scene 需要初始化的场景
+ * @param {Object|String} json 全部数据
+ * @param {Object} material - 如果有此参数,材质中只初始化这个材质球
+ * @param {Object} light - 如果有此参数,灯光中只初始化这个灯光
+ * */
+
+function initSceneByJSON(scene, json, material = null, light = null) {
+  if (!json) {
+    console.warn("请输入JSON");
+    return;
+  }
+  if (typeof json === "string") {
+    json = JSON.parse(json);
+  }
+
+  //立方体纹理
+  function createCubeTexture(path, picName, textureName) {
+    let texture = null;
+    let type = "skybox";//"skybox,dds,hdr,ktx"
+    let index = picName.lastIndexOf(".");
+    if (index !== -1) {
+      type = picName.slice(index + 1);
+    }
+    if (type === "skybox") {
+      texture = new BABYLON.CubeTexture(path + "/skyboxes/" + picName + "/" + picName, scene);
+    } else if (type === "dds") {
+      try {
+        if (BABYLON.CubeTexture.CreateFromPrefilteredData) {
+          texture = BABYLON.CubeTexture.CreateFromPrefilteredData(path + "/textures/" + picName, scene);
+        } else {
+          console.error("您当前的BABYLON版本并不支持DDS格式，请更换最新版本的BABYLON");
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    } else if (type === "hdr") {
+      texture = new BABYLON.HDRCubeTexture(path + "/textures/" + picName, scene, 256)
+    } else {
+      console.warn(picName + ":立方体纹理不支持这种格式");
+    }
+    texture.name = textureName;
+    return texture;
+  }
+
+  //平面纹理
+  function createTexture(path, picName, textureName) {
+    let texture = new BABYLON.Texture(path + "/textures/" + picName, scene);
+    texture.name = textureName;
+    return texture;
+  }
+
+  function initMaterial(json, material, publicPath, appPath) {
+    let materialType = json.materialType;
+    if (!materialType) {
+      materialType = "StandardMaterial";
+    }
+    if (!BABYLON[materialType]) {
+      console.warn("您的BABYLON不支持" + materialType + "材质类型，请更新到最新版本的BABYLON版本...");
+      materialType = "StandardMaterial";
+    }
+    //材质转换
+    if (material.getClassName() !== materialType) {
+      let newMaterial = new BABYLON[materialType](material.name, scene);
+      newMaterial._babylonMaterialEditor = material._babylonMaterialEditor;
+      scene.meshes.forEach(function (mesh) {
+        if (mesh.material &amp;&amp; mesh.material === material) {
+          mesh.material = newMaterial;
+        }
+      })
+      material.dispose();
+      material = newMaterial;
+    }
+    //基础属性
+    basePro.forEach(function (key) {
+      //json中没有的不做处理
+      if (!json.hasOwnProperty(key)) {
+        return;
+      }
+      let value = json[key];
+      //颜色
+      if (material[key] &amp;&amp; material[key].copyFrom) {
+        material[key].copyFrom(value)
+      } else {
+        material[key] = value;
+      }
+    })
+    //纹理
+    texturePro.forEach(function (info) {
+      let texture = info.name;
+      let simple = info.simple;
+      let other = info.other;
+      let fresnel = info.fresnel;
+      let cube = info.cube;
+      let level = simple + "Level";
+      let us = simple + "US";
+      let vs = simple + "VS";
+      let index = simple + "Index";
+      let bias = simple + "Bias";
+      let power = simple + "Power";
+      let noTexture = "no" + simple;
+      let noFre = "nofre" + simple;
+
+      //createJSON生成的数据中是否存在相应的键值
+      function exist(key) {
+        return json.hasOwnProperty(key);
+      }
+
+      //新版本
+      function getPicPath(picStr) {
+        if (!picStr) {
+          return {
+            picName: null,
+            path: null
+          }
+        } else if (picStr.indexOf("private,") === 0) {
+          return {
+            picName: picStr.slice(8),
+            path: appPath
+          }
+        } else if (picStr.indexOf("public,") === 0) {
+          return {
+            picName: picStr.slice(7),
+            path: publicPath
+          }
+        }
+        return {
+          picName: "自带",
+          path: null
+        };
+      }
+
+      //纹理
+      if (exist(texture)) {
+        let textureName = json[texture];
+        //如果没有纹理或者纹理的名字和JSON不一样
+        if (!material[texture] || material[texture].name !== textureName) {
+          let picPath = getPicPath(textureName);
+          let path = picPath.path;
+          let picName = picPath.picName;
+          if (!path || !picName) {
+            // console.warn("请检查材质JSON:" + material.name + "[" + textureName + "]");
+          } else {
+            if (cube) {
+              material[texture] = createCubeTexture(path, picName, textureName);
+            } else {
+              material[texture] = createTexture(path, picName, textureName);
+            }
+          }
+        }
+      }
+      //level,uScale,vScale,coordinatesIndex
+      if (material[texture]) {
+        if (exist(level)) {
+          material[texture].level = json[level];
+        }
+        if (exist(us)) {
+          material[texture].uScale = json[us];
+        }
+        if (exist(vs)) {
+          material[texture].vScale = json[vs];
+        }
+        if (exist(index)) {
+          material[texture].coordinatesIndex = json[index];
+        }
+      }
+      //other    "useParallaxOcclusion","useParallax","parallaxScaleBias"
+      if (other) {
+        other.forEach(function (key) {
+          if (exist(key)) {
+            material[key] = json[key];
+          }
+        })
+      }
+      //fresnel
+      if (exist(bias)) {
+        if (!material[fresnel]) {
+          material[fresnel] = new BABYLON.FresnelParameters();
+        }
+        material[fresnel].bias = json[bias];
+      }
+      if (exist(power)) {
+        if (!material[fresnel]) {
+          material[fresnel] = new BABYLON.FresnelParameters();
+        }
+        material[fresnel].power = json[power];
+      }
+      //no
+      if (exist(noTexture)) {
+        material[texture] = null;
+      }
+      if (exist(noFre)) {
+        material[fresnel] ? material[fresnel].isEnabled = false : null;
+      }
+    })
+  }
+
+  function initLight(json, light) {
+    json.forEach(function (jsonValue, key) {
+      switch (key) {
+        case "intensity":
+          light.intensity = jsonValue;
+          break;
+        case "diffuse":
+          light.diffuse &amp;&amp; light.diffuse.copyFrom &amp;&amp; light.diffuse.copyFrom(jsonValue);
+          break;
+        case "specular":
+          light.specular &amp;&amp; light.specular.copyFrom &amp;&amp; light.specular.copyFrom(jsonValue);
+          break;
+        case "groundColor":
+          light.groundColor &amp;&amp; light.groundColor.copyFrom &amp;&amp; light.groundColor.copyFrom(jsonValue);
+          break;
+        case "position":
+          light.position &amp;&amp; light.position.copyFrom &amp;&amp; light.position.copyFrom(jsonValue);
+          break;
+        case "direction":
+          light.direction &amp;&amp; light.direction.copyFrom &amp;&amp; light.direction.copyFrom(jsonValue);
+          break;
+        //case "lightBallRotation":
+        //    let lightBall = light.lightBall;
+        //    if (lightBall) {
+        //        lightBall.rotation &amp;&amp; lightBall.rotation.copyFrom(jsonValue);
+        //    }
+        //    break;
+      }
+    })
+  }
+
+  json.lights &amp;&amp; json.lights.forEach(function (lightJSON, lightName) {
+    let _light = scene.getLightByName(lightName);
+    if ((light &amp;&amp; light === _light) || (!light &amp;&amp; _light)) {
+      initLight(lightJSON, _light);
+    }
+  })
+  json.materials &amp;&amp; json.materials.forEach(function (materialJSON, materialName) {
+    let _material = scene.getMaterialByName(materialName);
+    if ((material &amp;&amp; material === _material) || (!material &amp;&amp; _material)) {
+      initMaterial(materialJSON, _material, json.publicPath, json.appPath);
+    }
+  })
+}
+
+export default initSceneByJSON</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-client.html">client</a></li><li><a href="module-components_babyui_babyui.html">components/babyui/babyui</a></li><li><a href="module-components_index.html">components/index</a></li><li><a href="module-components_tool_createJSON.html">components/tool/createJSON</a></li><li><a href="module-components_tool_edit.html">components/tool/edit</a></li><li><a href="module-components_tool_initSceneByJSON.html">components/tool/initSceneByJSON</a></li><li><a href="module-components_tool_tool.html">components/tool/tool</a></li><li><a href="module-server.html">server</a></li></ul><h3>Classes</h3><ul><li><a href="module-components_index-MultiDebug.html">MultiDebug</a></li><li><a href="module-components_index-MultiDebug_ChatModule.html">ChatModule</a></li><li><a href="module-components_index-MultiDebug_DebugModule.html">DebugModule</a></li><li><a href="module-components_index-MultiDebug_LanModule.html">LanModule</a></li><li><a href="module-components_index-MultiDebug_MenuModule.html">MenuModule</a></li><li><a href="module-components_index-MultiDebug_PicModule.html">PicModule</a></li><li><a href="module-components_index-MultiDebug_SocketModule.html">SocketModule</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-components_babyui_babyui-BABYUI.html">BABYUI</a></li><li><a href="module-components_index-chatModule.html">chatModule</a></li><li><a href="module-components_index-debugModule.html">debugModule</a></li><li><a href="module-components_index-lanModule.html">lanModule</a></li><li><a href="module-components_index-menuModule.html">menuModule</a></li><li><a href="module-components_index-MultiDebug_Application.html">Application</a></li><li><a href="module-components_index-MultiDebug_Interface.html">Interface</a></li><li><a href="module-components_index-picModule.html">picModule</a></li><li><a href="module-components_index-socketModule.html">socketModule</a></li><li><a href="module-components_tool_tool-Tool.html">Tool</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Sep 13 2018 17:42:39 GMT+0800 (中国标准时间)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
