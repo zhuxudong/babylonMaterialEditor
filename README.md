@@ -56,5 +56,6 @@ editor.openDebug(option...)
 
 ### API文档
 > doc/index.html
-(旧版本API文档链接)[https://zhuxudong.cn/BABYLON-MUL/docs/index.html]
+
+> (旧版本API文档链接)[https://zhuxudong.cn/BABYLON-MUL/docs/index.html]
 
