@@ -60,15 +60,15 @@ class Demo {
   loadMesh() {
     BABYLON.SceneLoader.ImportMesh("", "/static/model/demo/", "MeetMat.obj", this.scene, (meshes) => {
       client.editMesh(meshes)
-      setTimeout(()=>{
+      setTimeout(() => {
         client.editMaterial(this.scene.materials)
-      },1000)
+      }, 1000)
       client.openDebug({
         scene: this.scene
       })
       // editMaterial(this.scene.materials)
-      // let test = createJSON(this.scene)
-      // initSceneByJSON(this.scene, test)
+      // let json = createJSON(this.scene)
+      // initSceneByJSON(this.scene, json)
     })
   }
 
@@ -77,3 +77,4 @@ class Demo {
 
 let demo = new Demo()
 window.d = demo;
+window.scene=demo.scene;
