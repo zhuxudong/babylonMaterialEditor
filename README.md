@@ -1,6 +1,7 @@
-(旧版本链接)[https://github.com/zhuxudong/BABYLON-MUL]
+[旧版本链接](https://github.com/zhuxudong/BABYLON-MUL)
 
 (新版本使用webpack重构模块,删除了材质库和灯光功能,线上线下更加精简)
+
 # 支持功能
 * mesh
 	* 隐藏物体
@@ -20,6 +21,9 @@
 	* 实时显示他人调试结果
 	* 锁定/解锁
 * 聊天室
+
+# [API文档](https://htmlpreview.github.io/?https://github.com/zhuxudong/babylonMaterialEditor/blob/master/doc/index.html)
+
 
 # 开发
 ```
@@ -54,8 +58,6 @@ editor.openDebug(option...)
    *  */
 ```
 
-### API文档
-> doc/index.html
 
-> (旧版本API文档链接)[https://zhuxudong.cn/BABYLON-MUL/docs/index.html]
+
 
