@@ -29,7 +29,7 @@ function createJSON(scene, option) {
     appPath: "",
     console: true,
     warn: true,
-    window: true,
+    window: false,
     mini: false//最终版本设置mini为true，可以删除大量调试JSON
   }
   let opt = Object.assign(defaultOption, option);
